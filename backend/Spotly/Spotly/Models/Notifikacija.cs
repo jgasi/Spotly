@@ -9,7 +9,7 @@ public partial class Notifikacija
 
     public string Poruka { get; set; } = null!;
 
-    public byte[] DatumVrijeme { get; set; } = null!;
+    public DateTime DatumVrijeme { get; set; }
 
     public int? TipNotifikacijeId { get; set; }
 

@@ -11,7 +11,7 @@ public partial class Kazna
 
     public string? NovcaniIznos { get; set; }
 
-    public byte[] DatumVrijeme { get; set; } = null!;
+    public DateTime DatumVrijeme { get; set; }
 
     public int? AdminId { get; set; }
 

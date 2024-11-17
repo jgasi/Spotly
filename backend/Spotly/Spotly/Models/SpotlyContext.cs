@@ -45,19 +45,17 @@ public partial class SpotlyContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost,1433;Database=Spotly;User Id=sa;Password=Lozink4!;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-T03I3I5;Database=Spotly;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Dokumentacija>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Dokument__3214EC277F5EDDF2");
+            entity.HasKey(e => e.Id).HasName("PK__Dokument__3214EC27D9EBD3D3");
 
             entity.ToTable("Dokumentacija");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.KaznaId).HasColumnName("KaznaID");
             entity.Property(e => e.ZahtjevId).HasColumnName("ZahtjevID");
 
@@ -72,17 +70,14 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<Kazna>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Kazna__3214EC27818C3B8A");
+            entity.HasKey(e => e.Id).HasName("PK__Kazna__3214EC2702F41E65");
 
             entity.ToTable("Kazna");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.AdminId).HasColumnName("Admin_ID");
             entity.Property(e => e.DatumVrijeme)
-                .IsRowVersion()
-                .IsConcurrencyToken()
+                .HasColumnType("datetime")
                 .HasColumnName("Datum_vrijeme");
             entity.Property(e => e.KorisnikId).HasColumnName("KorisnikID");
             entity.Property(e => e.NovcaniIznos)
@@ -105,13 +100,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<Korisnik>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Korisnik__3214EC27584F8257");
+            entity.HasKey(e => e.Id).HasName("PK__Korisnik__3214EC2732ECB2AD");
 
             entity.ToTable("Korisnik");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.BrojMobitela)
                 .HasMaxLength(100)
                 .IsUnicode(false)
@@ -120,6 +113,9 @@ public partial class SpotlyContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Ime)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Lozinka)
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Prezime)
@@ -137,16 +133,13 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<Notifikacija>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Notifika__3214EC273452F925");
+            entity.HasKey(e => e.Id).HasName("PK__Notifika__3214EC27586691BF");
 
             entity.ToTable("Notifikacija");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DatumVrijeme)
-                .IsRowVersion()
-                .IsConcurrencyToken()
+                .HasColumnType("datetime")
                 .HasColumnName("Datum_vrijeme");
             entity.Property(e => e.KorisnikId).HasColumnName("KorisnikID");
             entity.Property(e => e.Poruka)
@@ -165,13 +158,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<ParkingMjesto>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Parking___3214EC270B5819E1");
+            entity.HasKey(e => e.Id).HasName("PK__Parking___3214EC27399AD32B");
 
             entity.ToTable("Parking_mjesto");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Dostupnost)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -187,13 +178,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<Rezervacija>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Rezervac__3214EC275C8EDF78");
+            entity.HasKey(e => e.Id).HasName("PK__Rezervac__3214EC279360B9C1");
 
             entity.ToTable("Rezervacija");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DatumVrijemeOdlaska)
                 .HasColumnType("datetime")
                 .HasColumnName("Datum_vrijeme_odlaska");
@@ -214,13 +203,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<TipKazne>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Tip_kazn__3214EC27A315B167");
+            entity.HasKey(e => e.Id).HasName("PK__Tip_kazn__3214EC2780A62654");
 
             entity.ToTable("Tip_kazne");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Tip)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -228,13 +215,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<TipKorisnika>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Tip_kori__3214EC27B33B1B5B");
+            entity.HasKey(e => e.Id).HasName("PK__Tip_kori__3214EC270C3FC06B");
 
             entity.ToTable("Tip_korisnika");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Tip)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -242,13 +227,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<TipMjestum>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Tip_mjes__3214EC272FF8BD90");
+            entity.HasKey(e => e.Id).HasName("PK__Tip_mjes__3214EC2733FB39F8");
 
             entity.ToTable("Tip_mjesta");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Tip)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -256,13 +239,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<TipNotifikacije>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Tip_noti__3214EC279DF75A70");
+            entity.HasKey(e => e.Id).HasName("PK__Tip_noti__3214EC27477A28D0");
 
             entity.ToTable("Tip_notifikacije");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Tip)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -270,13 +251,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<TipVozila>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Tip_vozi__3214EC2798F84505");
+            entity.HasKey(e => e.Id).HasName("PK__Tip_vozi__3214EC276FC50BAD");
 
             entity.ToTable("Tip_vozila");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Tip)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -284,13 +263,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<TipZahtjeva>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Tip_zaht__3214EC2791B1979C");
+            entity.HasKey(e => e.Id).HasName("PK__Tip_zaht__3214EC274C895181");
 
             entity.ToTable("Tip_zahtjeva");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Tip)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -298,13 +275,11 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<Vozilo>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Vozilo__3214EC27C3F5D7FE");
+            entity.HasKey(e => e.Id).HasName("PK__Vozilo__3214EC27EEC446EE");
 
             entity.ToTable("Vozilo");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Godiste)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -331,17 +306,14 @@ public partial class SpotlyContext : DbContext
 
         modelBuilder.Entity<Zahtjev>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Zahtjev__3214EC275094552C");
+            entity.HasKey(e => e.Id).HasName("PK__Zahtjev__3214EC27AF9E9D83");
 
             entity.ToTable("Zahtjev");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.AdminId).HasColumnName("Admin_ID");
             entity.Property(e => e.DatumVrijeme)
-                .IsRowVersion()
-                .IsConcurrencyToken()
+                .HasColumnType("datetime")
                 .HasColumnName("Datum_vrijeme");
             entity.Property(e => e.KorisnikId).HasColumnName("KorisnikID");
             entity.Property(e => e.Odgovor)
