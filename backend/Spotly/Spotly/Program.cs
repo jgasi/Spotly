@@ -2,6 +2,7 @@ using Spotly.Models;
 using Spotly.Data;
 using Microsoft.EntityFrameworkCore;
 using Spotly.Data.Repositories;
+using Spotly.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<SpotlyContext>(options =>
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+builder.Services.AddScoped<IZahtjevRepository, ZahtjevRepository>();
+builder.Services.AddScoped<IZahtjevService, ZahtjevService>();
 
 var app = builder.Build();
 
