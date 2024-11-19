@@ -3,6 +3,7 @@ using Spotly.Data;
 using Microsoft.EntityFrameworkCore;
 using Spotly.Data.Repositories;
 using Spotly.Services;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +22,11 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IZahtjevRepository, ZahtjevRepository>();
 builder.Services.AddScoped<IKorisnikRepository, KorisnikRepository>();
 builder.Services.AddScoped<IDokumentacijaRepository, DokumentacijaRepository>();
+builder.Services.AddScoped<IKaznaRepository, KaznaRepository>();
 builder.Services.AddScoped<IZahtjevService, ZahtjevService>();
 builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 builder.Services.AddScoped<IDokumentacijaService, DokumentacijaService>();
+builder.Services.AddScoped<IKaznaService, KaznaService>();
 
 var app = builder.Build();
 
