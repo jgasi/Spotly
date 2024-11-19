@@ -20,8 +20,10 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddScoped<IZahtjevRepository, ZahtjevRepository>();
 builder.Services.AddScoped<IKorisnikRepository, KorisnikRepository>();
+builder.Services.AddScoped<IDokumentacijaRepository, DokumentacijaRepository>();
 builder.Services.AddScoped<IZahtjevService, ZahtjevService>();
 builder.Services.AddScoped<IKorisnikService, KorisnikService>();
+builder.Services.AddScoped<IDokumentacijaService, DokumentacijaService>();
 
 var app = builder.Build();
 
