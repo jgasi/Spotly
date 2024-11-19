@@ -77,16 +77,21 @@ namespace Spotly.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Zahtjev>> DeleteZahtjevAsync(int id)
+        public async Task<ActionResult> DeleteZahtjevAsync(int id)
         {
             if (id == null)
             {
                 return BadRequest("Nije poslan ID za brisanje.");
             }
 
-            await _zahtjevService.DeleteZahtjevAsync(id);
+            var forDelete = await _zahtjevService.GetZahtjevByIdAsync(id);
 
-            var deletedZahtjev = _zahtjevService.GetZahtjevByIdAsync(id);
+            if (forDelete == null)
+            {
+                return BadRequest($"Zahtjev s ID {id} ne postoji.");
+            }
+
+            await _zahtjevService.DeleteZahtjevAsync(id);
 
             return Ok();
         }

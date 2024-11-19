@@ -19,7 +19,9 @@ builder.Services.AddDbContext<SpotlyContext>(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddScoped<IZahtjevRepository, ZahtjevRepository>();
+builder.Services.AddScoped<IKorisnikRepository, KorisnikRepository>();
 builder.Services.AddScoped<IZahtjevService, ZahtjevService>();
+builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 
 var app = builder.Build();
 
