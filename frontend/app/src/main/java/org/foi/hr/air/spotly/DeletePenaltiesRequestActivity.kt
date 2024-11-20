@@ -1,5 +1,6 @@
 package org.foi.hr.air.spotly
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.platform.LocalContext
 
-data class Penalty(val name: String, val reason: String, val amount: String, val date: String)
+data class Penalty(val id: String, val name: String, val reason: String, val amount: String, val date: String)
 
 class DeletePenaltiesRequestActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +36,12 @@ fun DeletePenaltiesRequestScreen() {
 
     // Mock lista kazni, dodat cu kasnije da se spoji na bazu podataka
     val penaltiesList = listOf(
-        Penalty("Kazna 1", "Prebrza vožnja", "500 HRK", "2024-11-10 12:00"),
-        Penalty("Kazna 2", "Neregistrirano vozilo", "1000 HRK", "2024-10-22 08:00")
+        Penalty("1","Kazna 1", "Prebrza vožnja", "500 HRK", "2024-11-10 12:00"),
+        Penalty("2","Kazna 2", "Neregistrirano vozilo", "1000 HRK", "2024-10-22 08:00")
     )
+
+    // Dohvati trenutni kontekst
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -90,8 +95,10 @@ fun DeletePenaltiesRequestScreen() {
         // Dalje dugme
         Button(
             onClick = {
-                // Korisnik pritisne "dalje" i onda ga odvede na stranicu
-                // gdje ce moci upisati opravdanje za kaznu naslov itd i poslati zahtjev
+                val penaltyId = selectedPenalty?.id
+                val intent = Intent(context, RequestDetailsActivity::class.java)
+                intent.putExtra("PENALTY_ID", penaltyId)
+                context.startActivity(intent) // Startamo aktivnost
             },
             modifier = Modifier.fillMaxWidth()
         ) {
