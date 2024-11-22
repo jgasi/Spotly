@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Spotly.Models;
 using Spotly.Services;
+using BCrypt.Net;
 
 namespace Spotly.Controllers
 {
@@ -87,5 +88,38 @@ namespace Spotly.Controllers
 
             return Ok();
         }
+
+        [HttpPost("register")]
+        public async Task<ActionResult> RegisterAsync([FromBody] RegisterRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Ime) ||
+                string.IsNullOrWhiteSpace(request.Prezime) ||
+                string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.Lozinka))
+            {
+                return BadRequest("Ime, Prezime, Email i Lozinka su obavezni.");
+            }
+
+            var existingUser = await _korisnikService.GetKorisnikByEmailAsync(request.Email);
+            if (existingUser != null)
+            {
+                return BadRequest("Korisnik s tim emailom već postoji.");
+            }
+
+            var newUser = new Korisnik
+            {
+                Ime = request.Ime,
+                Prezime = request.Prezime,
+                Email = request.Email,
+                Lozinka = BCrypt.Net.BCrypt.HashPassword(request.Lozinka),
+                BrojMobitela = request.BrojMobitela,
+                Status = "Aktivan",
+                TipKorisnikaId = request.TipKorisnikaId
+            };
+
+            await _korisnikService.AddKorisnikaAsync(newUser);
+            return CreatedAtAction(nameof(GetKorisnikaByIdAsync), new { id = newUser.Id }, newUser);
+        }
+
     }
 }

@@ -22,6 +22,11 @@ namespace Spotly.Services
             return await _korisnikRepository.GetByIdAsync(id);
         }
 
+        public async Task<Korisnik> GetKorisnikByEmailAsync(string email)
+        {
+            return await _korisnikRepository.GetByEmailAsync(email);
+        }
+
         public async Task AddKorisnikaAsync(Korisnik korisnik)
         {
             await _korisnikRepository.AddAsync(korisnik);

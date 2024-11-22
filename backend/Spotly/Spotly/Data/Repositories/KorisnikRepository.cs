@@ -8,5 +8,10 @@ namespace Spotly.Data.Repositories
         { 
 
         }
+
+        public async Task<Korisnik> GetByEmailAsync(string email)
+        {
+            return await _dbSet.FirstOrDefaultAsync(k => k.Email == email);
+        }
     }
 }
