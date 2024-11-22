@@ -2,7 +2,6 @@
 using Spotly.Models;
 using Spotly.Services;
 using Spotly.DTOs;
-using BCrypt.Net;
 
 namespace Spotly.Controllers
 {
