@@ -24,6 +24,11 @@ namespace Spotly.Data.Repositories
             return await _dbSet.FindAsync(id);
         }
 
+        public async Task<T> GetByEmailAsync(string email)
+        {
+            return await _dbSet.FindAsync(email);
+        }
+
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);

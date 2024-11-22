@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Spotly.Models;
 using Spotly.Services;
+using Spotly.DTOs;
 using BCrypt.Net;
 
 namespace Spotly.Controllers
@@ -90,7 +91,7 @@ namespace Spotly.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> RegisterAsync([FromBody] RegisterRequest request)
+        public async Task<ActionResult> RegisterAsync([FromBody] RegisterRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Ime) ||
                 string.IsNullOrWhiteSpace(request.Prezime) ||
