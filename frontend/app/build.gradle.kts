@@ -60,6 +60,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("androidx.navigation:navigation-compose:2.7.3")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("androidx.navigation:navigation-compose:2.8.4")
 }
