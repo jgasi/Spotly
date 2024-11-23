@@ -6,6 +6,7 @@ namespace Spotly.Services
     public class KorisnikService : IKorisnikService
     {
         private readonly IKorisnikRepository _korisnikRepository;
+        private readonly ITipKorisnikaRepository _tipKorisnikaRepository;
 
         public KorisnikService(IKorisnikRepository korisnikRepository)
         {
@@ -40,6 +41,12 @@ namespace Spotly.Services
         public async Task DeleteKorisnikaAsync(int id)
         {
             await _korisnikRepository.DeleteAsync(id);
-        }      
+        }
+
+        public async Task<IEnumerable<TipKorisnika>> GetAllTipoviKorisnikaAsync()
+        {
+            return await _tipKorisnikaRepository.GetAllAsync();
+
+        }
     }
 }

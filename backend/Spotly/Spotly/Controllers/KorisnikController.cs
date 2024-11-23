@@ -121,5 +121,58 @@ namespace Spotly.Controllers
             return CreatedAtAction(nameof(GetKorisnikaByIdAsync), new { id = newUser.Id }, newUser);
         }
 
+        [HttpPost("login")]
+        public async Task<ActionResult> LoginAsync([FromBody] LoginRequestDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Lozinka))
+            {
+                return BadRequest("Email i Lozinka su obavezni.");
+            }
+
+            var korisnik = await _korisnikService.GetKorisnikByEmailAsync(request.Email);
+            if (korisnik == null)
+            {
+                return Unauthorized("Neispravni email ili lozinka.");
+            }
+
+            var isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Lozinka, korisnik.Lozinka);
+            if (!isPasswordValid)
+            {
+                return Unauthorized("Neispravni email ili lozinka.");
+            }
+
+            if (korisnik.Status.ToLower() != "aktivan")
+            {
+                return Unauthorized("Račun korisnika nije aktivan.");
+            }
+
+            return Ok(new
+            {
+                Message = "Prijava uspješna.",
+                User = new
+                {
+                    korisnik.Id,
+                    korisnik.Ime,
+                    korisnik.Prezime,
+                    korisnik.Email,
+                    korisnik.TipKorisnikaId
+                }
+            });
+        }
+
+        [HttpGet("user-types")]
+        public async Task<ActionResult<IEnumerable<TipKorisnika>>> GetAllTipoviKorisnikaAsync()
+        {
+            var tipoviKorisnika = await _korisnikService.GetAllTipoviKorisnikaAsync();
+
+            if (tipoviKorisnika == null || !tipoviKorisnika.Any())
+            {
+                return NotFound("Nema dostupnih tipova korisnika.");
+            }
+
+            return Ok(tipoviKorisnika);
+        }
+
+
     }
 }

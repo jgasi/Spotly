@@ -10,5 +10,7 @@ namespace Spotly.Services
         Task UpdateKorisnikaAsync(Korisnik korisnik);
         Task DeleteKorisnikaAsync(int id);
         Task<Korisnik> GetKorisnikByEmailAsync(string email);
+
+        Task<IEnumerable<TipKorisnika>> GetAllTipoviKorisnikaAsync();
     }
 }
