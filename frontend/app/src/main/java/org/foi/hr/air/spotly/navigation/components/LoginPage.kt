@@ -7,16 +7,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+import org.foi.hr.air.spotly.network.UserService.login
 
 
 @Composable
 fun LoginPage(navigateToRequestDetails: () -> Unit) {
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var lozinka by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -48,8 +45,8 @@ fun LoginPage(navigateToRequestDetails: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = lozinka,
+            onValueChange = { lozinka = it },
             label = { Text("Lozinka") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
@@ -59,38 +56,19 @@ fun LoginPage(navigateToRequestDetails: () -> Unit) {
 
         Button(
             onClick = {
-                if (email.isEmpty() || password.isEmpty()) {
+                if (email.isEmpty() || lozinka.isEmpty()) {
                     errorMessage = "Sva polja su obavezna!"
                 } else {
                     errorMessage = ""
                     isLoading = true
                     coroutineScope.launch {
-                        try {
-                            val client = OkHttpClient()
-                            val requestBody = """
-                                {
-                                    "email": "$email",
-                                    "password": "$password"
-                                }
-                            """.trimIndent().toRequestBody("application/json".toMediaTypeOrNull())
-
-                            val request = Request.Builder()
-                                .url("http://localhost:12345/Korisnik/login")
-                                .post(requestBody)
-                                .build()
-
-                            val response = client.newCall(request).execute()
-
-                            if (response.isSuccessful) {
-                                errorMessage = "Uspješna prijava!"
-                                navigateToRequestDetails()
-                            } else {
-                                errorMessage = "Prijava nije uspjela, provjerite podatke i probajte ponovno!"
-                            }
-                        } catch (e: Exception) {
-                            errorMessage = "Error pri spajanju na server: ${e.localizedMessage}"
-                        } finally {
-                            isLoading = false
+                        val result = login(email, lozinka)
+                        isLoading = false
+                        result.onSuccess {
+                            errorMessage = "Uspješna prijava!"
+                            navigateToRequestDetails()
+                        }.onFailure { exception ->
+                            errorMessage = exception.message ?: "Došlo je do pogreške!"
                         }
                     }
                 }
