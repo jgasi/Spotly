@@ -32,6 +32,17 @@
             android:exported="true"
             android:label="@string/title_activity_request_selection"
             android:theme="@style/Theme.Spotly">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity
+            android:name=".ReserveParkingSpaceActivity"
+            android:exported="true"
+            android:label="ReserveParkingSpaceActivity"
+            android:theme="@style/Theme.Spotly">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
