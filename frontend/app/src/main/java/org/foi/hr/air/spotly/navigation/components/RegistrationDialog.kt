@@ -1,5 +1,6 @@
 package org.foi.hr.air.spotly.navigation.components
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
@@ -15,14 +16,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import org.foi.hr.air.spotly.data.User
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import org.foi.hr.air.spotly.network.UserService.registerUser
 
 @Composable
 fun RegistrationDialog(
     userTypes: Map<Int, String>,
     onDismiss: () -> Unit,
-    onSubmit: (User) -> Unit
+    onSubmit: (User) -> Unit,
 ) {
     var ime by remember { mutableStateOf("") }
     var prezime by remember { mutableStateOf("") }
@@ -30,6 +34,10 @@ fun RegistrationDialog(
     var lozinka by remember { mutableStateOf("") }
     var brojMobitela by remember { mutableStateOf("") }
     var izabraniTipKorisnika by remember { mutableStateOf(userTypes.keys.firstOrNull() ?: -1) }
+    var dropdownExpanded by remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -67,15 +75,28 @@ fun RegistrationDialog(
                     label = { Text("Broj mobitela") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                DropdownMenu(
-                    expanded = true,
-                    onDismissRequest = { }
+
+                Button(
+                    onClick = { dropdownExpanded = !dropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    userTypes.forEach { (id, tip) ->
-                        DropdownMenuItem(
-                            text = { Text(text = tip) },
-                            onClick = { izabraniTipKorisnika = id }
-                        )
+                    Text(text = "Izaberite tip korisnika")
+                }
+
+                if (dropdownExpanded) {
+                    DropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false }
+                    ) {
+                        userTypes.forEach { (id, tip) ->
+                            DropdownMenuItem(
+                                text = { Text(text = tip) },
+                                onClick = {
+                                    izabraniTipKorisnika = id
+                                    dropdownExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -83,17 +104,28 @@ fun RegistrationDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    onSubmit(
-                        User(
-                            id = 0, // samo da zadovolji data klasu, id je auto increment
-                            ime = ime,
-                            prezime = prezime,
-                            email = email,
-                            brojMobitela = brojMobitela,
-                            status = "Aktivan",
-                            tipKorisnikaId = izabraniTipKorisnika
-                        )
+                    val user = User(
+                        id = 0, // auto increment
+                        ime = ime,
+                        prezime = prezime,
+                        email = email,
+                        lozinka = lozinka,
+                        brojMobitela = brojMobitela,
+                        status = "Aktivan",
+                        tipKorisnikaId = izabraniTipKorisnika
                     )
+                    coroutineScope.launch {
+                        try {
+                            val success = registerUser(user)
+                            if (success) {
+                                onSubmit(user)
+                            } else {
+                                Toast.makeText(context, "Registracija nije uspjela", Toast.LENGTH_SHORT).show()
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Greška: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             ) {
                 Text("Registriraj korisnika")

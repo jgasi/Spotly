@@ -8,9 +8,10 @@ namespace Spotly.Services
         private readonly IKorisnikRepository _korisnikRepository;
         private readonly ITipKorisnikaRepository _tipKorisnikaRepository;
 
-        public KorisnikService(IKorisnikRepository korisnikRepository)
+        public KorisnikService(IKorisnikRepository korisnikRepository, ITipKorisnikaRepository tipKorisnikaRepository)
         {
             _korisnikRepository = korisnikRepository;
+            _tipKorisnikaRepository = tipKorisnikaRepository;
         }
 
         public async Task<IEnumerable<Korisnik>> GetAllKorisnikeAsync()
