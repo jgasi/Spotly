@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Spotly.Models;
+﻿namespace Spotly.Models;
 
 public partial class Kazna
 {
