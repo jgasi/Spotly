@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet external-system-id="GRADLE" type="android-gradle" name="Android-Gradle">
       <configuration>
-        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" value="8.7.2" />
+        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" />
         <option name="LAST_KNOWN_AGP_VERSION" value="8.7.2" />
       </configuration>
     </facet>
@@ -16,20 +16,6 @@
         <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
       </configuration>
     </facet>
-  </component>
-  <component name="ModuleClassLoaderOverlays">
-    <paths>
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay17784781425571495608" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay555737189197424069" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay17572280094583582671" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay7282415106351678801" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay8506053647562028728" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay13308970498001400249" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay1955936056933077755" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay1797618759383558792" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay10889383884481622866" />
-      <option value="C:\Users\juraj\AppData\Local\Temp\overlay6135086024811466082" />
-    </paths>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
     <exclude-output />

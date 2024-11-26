@@ -22,6 +22,7 @@ object KaznaService {
     private val urlBase = "http://10.0.2.2:5010/api"
     private val client = OkHttpClient()
 
+
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
