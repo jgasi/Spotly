@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
 
-class RequestSelectionActivity : ComponentActivity() {
+class IzborVrsteZahtjevaActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -42,23 +42,11 @@ fun RequestSelectionScreen() {
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Gumb za zahtjev za izmjenu podataka
-        Button(
-            onClick = {
-                // Preusmjerenje na aktivnost za izmjenu podataka
-                val intent = Intent(context, ProfileChangeRequestActivity::class.java)
-                context.startActivity(intent)
-            },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-        ) {
-            Text("Zahtjev za izmjenu podataka profila")
-        }
-
         // Gumb za zahtjev za brisanje kazni
         Button(
             onClick = {
                 // Preusmjerenje na aktivnost za brisanje kazni
-                val intent = Intent(context, DeletePenaltiesRequestActivity::class.java)
+                val intent = Intent(context, ZahtjevZaBrisanjeKazneActivity::class.java)
                 context.startActivity(intent)
             },
             modifier = Modifier.fillMaxWidth()

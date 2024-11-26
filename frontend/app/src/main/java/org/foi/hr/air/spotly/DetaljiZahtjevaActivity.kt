@@ -15,7 +15,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.platform.LocalContext
 
-class RequestDetailsActivity : ComponentActivity() {
+class DetaljiZahtjevaActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -27,7 +27,7 @@ class RequestDetailsActivity : ComponentActivity() {
 @Composable
 fun RequestDetailsScreen() {
     // Dohvati kaznu ID iz Intenta
-    val penaltyId = (LocalContext.current as? RequestDetailsActivity)?.intent?.getStringExtra("PENALTY_ID")
+    val penaltyId = (LocalContext.current as? DetaljiZahtjevaActivity)?.intent?.getStringExtra("PENALTY_ID")
 
     // prema ID-u cu dohvatiti ostale podatke (mock za sada)
     val penaltyDetails = Penalty(

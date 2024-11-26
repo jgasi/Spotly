@@ -13,24 +13,19 @@
         android:theme="@style/Theme.Spotly"
         tools:targetApi="31">
         <activity
-            android:name=".RequestDetailsActivity"
+            android:name=".DetaljiZahtjevaActivity"
             android:exported="false"
-            android:label="@string/title_activity_request_details"
+            android:label="@string/title_activity_detalji_zahtjeva"
             android:theme="@style/Theme.Spotly" />
         <activity
-            android:name=".DeletePenaltiesRequestActivity"
+            android:name=".ZahtjevZaBrisanjeKazneActivity"
             android:exported="false"
-            android:label="@string/title_activity_delete_penalties_request"
+            android:label="@string/title_activity_zahtjev_za_brisanje_kazne"
             android:theme="@style/Theme.Spotly" />
         <activity
-            android:name=".ProfileChangeRequestActivity"
-            android:exported="false"
-            android:label="@string/title_activity_profile_change_request"
-            android:theme="@style/Theme.Spotly" />
-        <activity
-            android:name=".RequestSelectionActivity"
+            android:name=".IzborVrsteZahtjevaActivity"
             android:exported="true"
-            android:label="@string/title_activity_request_selection"
+            android:label="@string/title_activity_izbor_vrste_zahtjeva"
             android:theme="@style/Theme.Spotly">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

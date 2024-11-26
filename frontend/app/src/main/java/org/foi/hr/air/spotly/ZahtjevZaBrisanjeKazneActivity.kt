@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 
 data class Penalty(val id: String, val name: String, val reason: String, val amount: String, val date: String)
 
-class DeletePenaltiesRequestActivity : ComponentActivity() {
+class ZahtjevZaBrisanjeKazneActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -96,7 +96,7 @@ fun DeletePenaltiesRequestScreen() {
         Button(
             onClick = {
                 val penaltyId = selectedPenalty?.id
-                val intent = Intent(context, RequestDetailsActivity::class.java)
+                val intent = Intent(context, DetaljiZahtjevaActivity::class.java)
                 intent.putExtra("PENALTY_ID", penaltyId)
                 context.startActivity(intent) // Startamo aktivnost
             },
