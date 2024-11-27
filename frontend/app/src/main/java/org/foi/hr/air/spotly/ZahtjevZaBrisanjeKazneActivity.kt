@@ -39,14 +39,12 @@ fun ZahtjevZaBrisanjeKazneScreen(kaznaService: KaznaService) {
     var selectedKazna by remember { mutableStateOf<Kazna?>(null) }
     val context = LocalContext.current
 
-    // Dohvat kazni kada se aktivnost pokrene
     LaunchedEffect(Unit) {
         try {
             val korisnikId = 2 // Zamijeniti s pravim korisničkim ID-om
             kazne = kaznaService.fetchKazneForUser(korisnikId)
         } catch (e: Exception) {
-            println("E BO BOEB OEBOE OBE BO EO: " + e.message)
-            Toast.makeText(context, "Greška pri dohvaćanju kazni", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Greška pri dohvaćanju kazni: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -59,10 +57,8 @@ fun ZahtjevZaBrisanjeKazneScreen(kaznaService: KaznaService) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable {
-                            selectedKazna = kazna
-                        },
-                    colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                        .clickable { selectedKazna = kazna },
+                    colors = CardDefaults.cardColors(containerColor = if (kazna == selectedKazna) Color.Green else Color.White)
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         Text("Razlog: ${kazna.razlog}")
@@ -70,18 +66,17 @@ fun ZahtjevZaBrisanjeKazneScreen(kaznaService: KaznaService) {
                         Text("Datum: ${kazna.datumVrijeme}")
                     }
                 }
+                Divider()
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Tipka "Dalje" za prelazak na drugi ekran
         Button(
             onClick = {
                 if (selectedKazna != null) {
-                    // Prosljeđivanje ID-a odabrane kazne prema DetaljiZahtjevaActivity
                     val intent = Intent(context, DetaljiZahtjevaActivity::class.java)
-                    intent.putExtra("kazna_id", selectedKazna!!.id) // Prosljeđivanje ID-a
+                    intent.putExtra("kazna_id", selectedKazna!!.id)
                     context.startActivity(intent)
                 } else {
                     Toast.makeText(context, "Molimo odaberite kaznu!", Toast.LENGTH_SHORT).show()
