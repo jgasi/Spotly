@@ -21,6 +21,8 @@ builder.Services.AddScoped<IZahtjevRepository, ZahtjevRepository>();
 builder.Services.AddScoped<IKorisnikRepository, KorisnikRepository>();
 builder.Services.AddScoped<IDokumentacijaRepository, DokumentacijaRepository>();
 builder.Services.AddScoped<IKaznaRepository, KaznaRepository>();
+builder.Services.AddScoped<ITipKorisnikaRepository, TipKorisnikaRepository>();
+
 builder.Services.AddScoped<IZahtjevService, ZahtjevService>();
 builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 builder.Services.AddScoped<IDokumentacijaService, DokumentacijaService>();
