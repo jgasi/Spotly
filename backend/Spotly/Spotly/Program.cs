@@ -1,9 +1,7 @@
-using Spotly.Models;
-using Spotly.Data;
 using Microsoft.EntityFrameworkCore;
 using Spotly.Data.Repositories;
+using Spotly.Models;
 using Spotly.Services;
-using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 

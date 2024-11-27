@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">Spotly</string>
-    <string name="title_activity_request_selection">RequestSelectionActivity</string>
-    <string name="title_activity_profile_change_request_activity.kt">
-        ProfileChangeRequestActivity.kt
-    </string>
-    <string name="title_activity_delete_penalties_request">DeletePenaltiesRequestActivity</string>
-    <string name="title_activity_profile_change_request">ProfileChangeRequestActivity</string>
-    <string name="title_activity_request_details">RequestDetailsActivity</string>
+    <string name="title_activity_izbor_vrste_zahtjeva">RequestSelectionActivity</string>
+    <string name="title_activity_zahtjev_za_brisanje_kazne">DeletePenaltiesRequestActivity</string>
+    <string name="title_activity_detalji_zahtjeva">DetaljiZahtjevaActivity</string>
+    <string name="title_activity_kazna_view_model">KaznaViewModel</string>
 </resources>
