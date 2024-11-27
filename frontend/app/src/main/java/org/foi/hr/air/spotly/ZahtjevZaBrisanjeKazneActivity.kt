@@ -77,6 +77,7 @@ fun ZahtjevZaBrisanjeKazneScreen(kaznaService: KaznaService) {
                 if (selectedKazna != null) {
                     val intent = Intent(context, DetaljiZahtjevaActivity::class.java)
                     intent.putExtra("kazna_id", selectedKazna!!.id)
+                    intent.putExtra("korisnik_id", 2)  // Treba staviti ID ulogiranog korisnika
                     context.startActivity(intent)
                 } else {
                     Toast.makeText(context, "Molimo odaberite kaznu!", Toast.LENGTH_SHORT).show()
@@ -86,6 +87,7 @@ fun ZahtjevZaBrisanjeKazneScreen(kaznaService: KaznaService) {
         ) {
             Text("Dalje")
         }
+
     }
 }
 

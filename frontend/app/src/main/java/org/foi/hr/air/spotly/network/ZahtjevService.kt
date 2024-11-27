@@ -28,6 +28,7 @@ object ZahtjevService {
         })
     }
 
+
     suspend fun addZahtjev(zahtjev: Zahtjev): Boolean {
         val url = "$urlBase/Zahtjev"
         val requestBody = Json.encodeToString(zahtjev).toRequestBody(jsonMediaType)
