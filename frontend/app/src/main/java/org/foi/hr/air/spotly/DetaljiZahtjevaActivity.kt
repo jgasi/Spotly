@@ -49,7 +49,6 @@ fun DetaljiZahtjevaScreen(korisnikId: Int) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Naslov
         Text("Naslov", style = MaterialTheme.typography.bodyLarge)
         TextField(
             value = naslov,
@@ -74,7 +73,6 @@ fun DetaljiZahtjevaScreen(korisnikId: Int) {
             onClick = {
                 if (naslov.isNotBlank() && poruka.isNotBlank()) {
                     isLoading = true
-                    println("Početak slanja zahtjeva...")  // Logiraš prije slanja
                     val zahtjev = Zahtjev(
                         id = 0,  // auto increment
                         predmet = naslov,
