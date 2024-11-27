@@ -66,7 +66,7 @@ fun ZahtjevZaBrisanjeKazneScreen(kaznaService: KaznaService) {
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         Text("Razlog: ${kazna.razlog}")
-                        Text("Iznos: ${kazna.novcaniIznos} HRK")
+                        Text("Iznos: ${kazna.novcaniIznos} euro")
                         Text("Datum: ${kazna.datumVrijeme}")
                     }
                 }
