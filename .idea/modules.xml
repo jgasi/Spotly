@@ -3,11 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Spotly.iml" filepath="$PROJECT_DIR$/.idea/Spotly.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Spotly.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Spotly.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Spotly.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Spotly.app.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Spotly.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Spotly.app.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Spotly.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Spotly.app.unitTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/frontend.Spotly.iml" filepath="$PROJECT_DIR$/.idea/modules/frontend.Spotly.iml" />
     </modules>
   </component>
 </project>
