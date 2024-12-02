@@ -118,7 +118,7 @@ namespace Spotly.Controllers
             };
 
             await _korisnikService.AddKorisnikaAsync(newUser);
-            return CreatedAtAction(nameof(GetKorisnikaByIdAsync), new { id = newUser.Id }, newUser);
+            return Ok();
         }
 
         [HttpPost("login")]
