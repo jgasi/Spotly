@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
 
@@ -22,6 +23,19 @@ namespace Spotly.Controllers
             var zahtjevi = await _zahtjevService.GetAllZahtjeviAsync();
 
             if(zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
+        [HttpGet("paginated")]
+        public async Task<ActionResult<IEnumerable<ZahtjevDto>>> GetPagedZahtjeviAsync(int pageNumber, int pageSize)
+        {
+            var zahtjevi = await _zahtjevService.GetPagedZahtjeviAsync(pageNumber, pageSize);
+
+            if (zahtjevi == null || !zahtjevi.Any())
             {
                 return NotFound("Nema dostupnih zahtjeva.");
             }

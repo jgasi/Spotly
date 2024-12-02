@@ -1,4 +1,5 @@
 ﻿using Spotly.Data.Repositories;
+using Spotly.DTOs;
 using Spotly.Models;
 
 namespace Spotly.Services
@@ -16,6 +17,17 @@ namespace Spotly.Services
         {
             return await _zahtjevRepository.GetAllAsync();
         }
+
+        public async Task<IEnumerable<ZahtjevDto>> GetPagedZahtjeviAsync(int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                throw new ArgumentException("Neispravni parametri za stranicu ili broj zahtjeva.");
+            }
+
+            return await _zahtjevRepository.GetPagedAsync(pageNumber, pageSize);
+        }
+
 
         public async Task<Zahtjev> GetZahtjevByIdAsync(int id)
         {
