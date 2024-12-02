@@ -24,11 +24,14 @@ builder.Services.AddScoped<IKorisnikRepository, KorisnikRepository>();
 builder.Services.AddScoped<IDokumentacijaRepository, DokumentacijaRepository>();
 builder.Services.AddScoped<IKaznaRepository, KaznaRepository>();
 builder.Services.AddScoped<ITipKorisnikaRepository, TipKorisnikaRepository>();
+builder.Services.AddScoped<IVoziloRepository, VoziloRepository>();
+
 
 builder.Services.AddScoped<IZahtjevService, ZahtjevService>();
 builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 builder.Services.AddScoped<IDokumentacijaService, DokumentacijaService>();
 builder.Services.AddScoped<IKaznaService, KaznaService>();
+builder.Services.AddScoped<IVoziloService, VoziloService>();
 
 var app = builder.Build();
 
