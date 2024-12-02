@@ -28,6 +28,63 @@ object ZahtjevService {
         })
     }
 
+    suspend fun getPagedZahtjevi(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/paginated?pageNumber=$pageNumber&pageSize=$pageSize"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null // Inicijaliziraj varijablu odgovora izvan try-catch
+
+        return try {
+            response = executeRequest(request) // Dodaj odgovor u varijablu
+
+            if (response?.isSuccessful == true) {
+                // Čitamo tijelo odgovora samo jednom
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            // Obavezno zatvoriti tijelo odgovora ako je potrebno
+            response?.body?.close() // Koristi varijablu odgovora izvan try-catch
+        }
+    }
+
+
+
+
+    suspend fun getAllZahtjevi(): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            if (response.isSuccessful) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+
 
     suspend fun addZahtjev(zahtjev: Zahtjev): Boolean {
         val url = "$urlBase/Zahtjev"
