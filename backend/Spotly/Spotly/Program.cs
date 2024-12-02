@@ -25,6 +25,7 @@ builder.Services.AddScoped<IDokumentacijaRepository, DokumentacijaRepository>();
 builder.Services.AddScoped<IKaznaRepository, KaznaRepository>();
 builder.Services.AddScoped<ITipKorisnikaRepository, TipKorisnikaRepository>();
 builder.Services.AddScoped<IVoziloRepository, VoziloRepository>();
+builder.Services.AddScoped<ITipVozilaRepository, TipVozilaRepository>();
 
 
 builder.Services.AddScoped<IZahtjevService, ZahtjevService>();
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 builder.Services.AddScoped<IDokumentacijaService, DokumentacijaService>();
 builder.Services.AddScoped<IKaznaService, KaznaService>();
 builder.Services.AddScoped<IVoziloService, VoziloService>();
+builder.Services.AddScoped<ITipVozilaService, TipVozilaService>();
 
 var app = builder.Build();
 

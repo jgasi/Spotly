@@ -9,10 +9,12 @@ namespace Spotly.Controllers
     public class VoziloController : ControllerBase
     {
         private readonly IVoziloService _voziloService;
+        private readonly ITipVozilaService _tipVozilaService;
 
-        public VoziloController(IVoziloService voziloService)
+        public VoziloController(IVoziloService voziloService, ITipVozilaService tipVozilaService)
         {
             _voziloService = voziloService;
+            _tipVozilaService = tipVozilaService;
         }
 
         [HttpGet]
@@ -55,7 +57,7 @@ namespace Spotly.Controllers
 
 
         [HttpPut]
-        public async Task<ActionResult> UpdateKorisnikaAsync(Vozilo vozilo)
+        public async Task<ActionResult> UpdateVoziloAsync(Vozilo vozilo)
         {
         if (vozilo == null)
             {
@@ -69,7 +71,7 @@ namespace Spotly.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteKorisnikaAsync(int id)
+        public async Task<ActionResult> DeleteVoziloAsync(int id)
         {
             if (id == null)
             {

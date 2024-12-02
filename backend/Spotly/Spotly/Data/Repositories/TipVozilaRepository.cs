@@ -2,10 +2,10 @@
 
 namespace Spotly.Data.Repositories
 {
-	public class VoziloRepository : Repository<Vozilo>, IVoziloRepository
-	{
+    public class TipVozilaRepository : Repository<TipVozila>, ITipVozilaRepository
+    {
         private readonly SpotlyContext _context;
-        public VoziloRepository(SpotlyContext context) : base(context)
+        public TipVozilaRepository(SpotlyContext context) : base(context)
         {
             _context = context;
         }
