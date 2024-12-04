@@ -160,6 +160,7 @@ fun UserTableRow(user: User, userType: String) {
 fun RowScope.TableRowCell(
     text: String,
     weight: Float,
+    isEmail: Boolean = false
 ) {
     Text(
         text = text,
