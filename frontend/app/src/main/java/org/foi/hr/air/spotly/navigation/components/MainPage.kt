@@ -37,7 +37,7 @@ fun MainPage() {
                         IconButton(onClick = {
                             scope.launch { drawerState.open() }
                         }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Izbornik")
+                            Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     }
                 )
@@ -54,7 +54,7 @@ fun MainPage() {
 fun DrawerContent(navController: NavController, onClose: () -> Unit) {
     ModalDrawerSheet {
         Text(
-            text = "Menu",
+            text = "Izbornik",
             modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.titleLarge
         )
