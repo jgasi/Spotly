@@ -7,10 +7,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.data.Zahtjev
 
 @Composable
-fun QueueScreen(queue: List<Zahtjev>) {
+fun QueueScreen(viewModel: QueueViewModel) {
+    val queue = viewModel.requests.value
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Zahtjevi u redu čekanja", style = MaterialTheme.typography.headlineMedium)
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
