@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.navigation.components.LoginPage
 import org.foi.hr.air.spotly.navigation.components.UsersPage
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
@@ -29,7 +31,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("usersPage") {
-                        UsersPage()
+                        UsersPage(navController)
+                    }
+                    composable("queueScreen") {
+                        val queueViewModel: QueueViewModel = viewModel()
+                        QueueScreen(viewModel = queueViewModel)
                     }
                 }
             }
