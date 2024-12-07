@@ -21,6 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Spotly"
 include(":app")
-include(":vehicle_lookup")
 include(":core")
 include(":lookup_manual")
+include(":ws")

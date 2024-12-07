@@ -70,4 +70,5 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":lookup_manual"))
+    implementation(project(":ws"))
 }

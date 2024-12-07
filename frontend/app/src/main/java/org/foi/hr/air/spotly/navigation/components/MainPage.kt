@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -11,8 +12,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.lookup_manual.ManualLookupHandler
 import kotlinx.coroutines.launch
-import org.foi.hr.air.spotly.navigation.components.LicensePlatePage
+import org.foi.hr.air.spotly.data.Vehicle
+import org.foi.hr.air.spotly.navigation.components.HomePage
 import org.foi.hr.air.spotly.navigation.components.UsersPage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +64,7 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
         )
         HorizontalDivider()
         DrawerItem("Početni zaslon", onClick = {
-            navController.navigate("licensePlate")
+            navController.navigate("homePage")
             onClose()
         })
         DrawerItem("Korisnici", onClick = {
@@ -90,8 +93,16 @@ fun DrawerItem(label: String, onClick: () -> Unit) {
 
 @Composable
 fun NavigationHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "users") {
-        composable("licensePlate") { LicensePlatePage() }
+    NavHost(navController = navController, startDestination = "homePage") {
+        composable("homePage") { HomePage(
+            lookupHandler = ManualLookupHandler(),
+            onVehicleFetched = { vehicle ->
+                Log.d("MainPage", "Vozilo: $vehicle")
+            },
+            onError = { errorMessage ->
+                Log.e("MainPage", "Error: $errorMessage")
+            }
+        ) }
         composable("users") { UsersPage() }
         composable("page2") { PageContent("Page 2") }
         composable("page3") { PageContent("Page 3") }

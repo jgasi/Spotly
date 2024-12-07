@@ -3,29 +3,41 @@ package com.example.lookup_manual
 import com.example.core.vehicle_lookup.LookupHandler
 import com.example.core.vehicle_lookup.LookupOutcomeListener
 import com.example.core.vehicle_lookup.VehicleData
+import com.example.core.vehicle_lookup.network.*
+import com.example.core.vehicle_lookup.network.models.*
+import com.example.ws.network.models.responses.Vehicle
+import com.example.ws.request_handlers.*
 
 class ManualLookupHandler : LookupHandler {
     override fun handleLookup(licensePlate: String, lookupListner: LookupOutcomeListener) {
-        if (licensePlate !is String) {
-            throw IllegalArgumentException("Must receive String instance for 'licensePlate'!")
-        }
+        require(licensePlate is String) { "Must receive String instance for 'licensePlate'!" }
 
-        if (licensePlate == "ZG1234AB") {
-            val sampleData = VehicleData(
-                id = 1,
-                marka = "Toyota",
-                model = "Corolla",
-                godiste = "2020",
-                registracija = "ZG1234AB",
-                status = "Active",
-                tipVozilaId = 1,
-                korisnikId = 1
-            )
-            lookupListner.onSuccessfulLookup(sampleData)
-        } else {
-            lookupListner.onFailedLookup(
-                "Wrong mock credentials entered. The correct licensePlate is 'ZG1234AB'!"
-            )
-        }
+        val requestHandler = GetVehicleByLicensePlateRequestHandler(licensePlate)
+        requestHandler.sendRequest(object : ResponseListener<Vehicle> {
+            override fun onSuccessfulResponse(response: SuccessfulResponseBody<Vehicle>) {
+                val vehicle = response.data.firstOrNull()
+                vehicle?.let {
+                    val vehicleData = VehicleData(
+                        id = it.id,
+                        marka = it.marka,
+                        model = it.model,
+                        godiste = it.godiste,
+                        registracija = it.registracija,
+                        status = it.status,
+                        tipVozilaId = it.tipVozilaId,
+                        korisnikId = it.korisnikId
+                    )
+                    lookupListner.onSuccessfulLookup(vehicleData)
+                }
+            }
+
+            override fun onErrorResponse(error: ErrorResponseBody) {
+                lookupListner.onFailedLookup(error.message)
+            }
+
+            override fun onNetworkFailiure(t: Throwable) {
+                lookupListner.onFailedLookup("Network error: ${t.message}")
+            }
+        })
     }
 }

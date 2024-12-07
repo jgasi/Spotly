@@ -17,7 +17,7 @@ namespace Spotly.DTOs
         public string Registracija { get; set; } = null!;
 
         [JsonPropertyName("tipVozilaId")]
-        public string? TipVozilaId { get; set; }
+        public int TipVozilaId { get; set; }
 
         [JsonPropertyName("korisnikId")]
         public int KorisnikId { get; set; }
