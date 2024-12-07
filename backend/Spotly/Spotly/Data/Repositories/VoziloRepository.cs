@@ -1,4 +1,5 @@
-﻿using Spotly.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Spotly.Models;
 
 namespace Spotly.Data.Repositories
 {
@@ -8,6 +9,14 @@ namespace Spotly.Data.Repositories
         public VoziloRepository(SpotlyContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<Vozilo> GetByLicensePlateAsync(string licensePlate)
+        {
+            if (string.IsNullOrEmpty(licensePlate))
+                return null;
+
+            return await _context.Vozilos.FirstOrDefaultAsync(v => v.Registracija == licensePlate);
         }
     }
 }

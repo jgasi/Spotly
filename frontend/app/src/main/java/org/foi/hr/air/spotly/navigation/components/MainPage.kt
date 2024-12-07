@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+import org.foi.hr.air.spotly.navigation.components.LicensePlatePage
 import org.foi.hr.air.spotly.navigation.components.UsersPage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +60,10 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             style = MaterialTheme.typography.titleLarge
         )
         HorizontalDivider()
+        DrawerItem("Početni zaslon", onClick = {
+            navController.navigate("licensePlate")
+            onClose()
+        })
         DrawerItem("Korisnici", onClick = {
             navController.navigate("users")
             onClose()
@@ -86,6 +91,7 @@ fun DrawerItem(label: String, onClick: () -> Unit) {
 @Composable
 fun NavigationHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "users") {
+        composable("licensePlate") { LicensePlatePage() }
         composable("users") { UsersPage() }
         composable("page2") { PageContent("Page 2") }
         composable("page3") { PageContent("Page 3") }

@@ -1,8 +1,6 @@
 package org.foi.hr.air.spotly.network
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,7 +15,6 @@ import kotlin.coroutines.suspendCoroutine
 import org.foi.hr.air.spotly.data.User
 import org.foi.hr.air.spotly.data.UserType
 import java.io.IOException
-import java.util.logging.Logger
 
 object UserService {
     private val urlBase = "http://10.0.2.2:5010/api"

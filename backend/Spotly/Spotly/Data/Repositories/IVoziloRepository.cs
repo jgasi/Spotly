@@ -4,6 +4,7 @@ namespace Spotly.Data.Repositories
 {
 	public interface IVoziloRepository : IRepository<Vozilo>
     {
-	}
+        Task<Vozilo> GetByLicensePlateAsync(string licensePlate);
+    }
 }
 
