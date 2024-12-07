@@ -17,12 +17,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".OdgovaranjeNaZahtjev"
+            android:exported="false"
+            android:label="@string/title_activity_odgovaranje_na_zahtjev"
+            android:theme="@style/Theme.Spotly" />
+        <activity
             android:name=".UpravljanjeZahtjevimaActivity"
             android:exported="true"
             android:label="@string/title_activity_upravljanje_zahtjevima"
             android:theme="@style/Theme.Spotly">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

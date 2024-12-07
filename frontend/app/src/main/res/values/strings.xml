@@ -5,4 +5,5 @@
     <string name="title_activity_detalji_zahtjeva">DetaljiZahtjevaActivity</string>
     <string name="title_activity_kazna_view_model">KaznaViewModel</string>
     <string name="title_activity_upravljanje_zahtjevima">UpravljanjeZahtjevimaActivity</string>
+    <string name="title_activity_odgovaranje_na_zahtjev">OdgovaranjeNaZahtjev</string>
 </resources>
