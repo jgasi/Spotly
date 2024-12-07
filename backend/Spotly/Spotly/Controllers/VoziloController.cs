@@ -9,12 +9,10 @@ namespace Spotly.Controllers
     public class VoziloController : ControllerBase
     {
         private readonly IVoziloService _voziloService;
-        private readonly ITipVozilaService _tipVozilaService;
 
-        public VoziloController(IVoziloService voziloService, ITipVozilaService tipVozilaService)
+        public VoziloController(IVoziloService voziloService)
         {
             _voziloService = voziloService;
-            _tipVozilaService = tipVozilaService;
         }
 
         [HttpGet]
@@ -53,18 +51,34 @@ namespace Spotly.Controllers
                 return NotFound($"Vozilo s registracijom {licensePlate} ne postoji.");
             }
 
-            return Ok(vozilo);
+            return Ok(new
+            {
+                success = true,
+                message = "Pronađeno vozilo",
+                data = new[] { vozilo }
+            });
+
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddVoziloAsync(Vozilo vozilo)
+        public async Task<ActionResult> AddVoziloAsync(Spotly.DTOs.AddVoziloDto vozilo)
         {
             if (vozilo == null)
             {
                 return BadRequest("Podaci za vozilo nisu valjani");
             }
 
-            await _voziloService.AddVoziloAsync(vozilo);
+            var newVozilo = new Vozilo
+            {
+                Godiste = vozilo.Godiste,
+                Marka = vozilo.Marka,
+                Registracija = vozilo.Registracija,
+                Model = vozilo.Model,
+                KorisnikId = vozilo.KorisnikId,
+                TipVozilaId = vozilo.TipVozilaId
+            };
+
+            await _voziloService.AddVoziloAsync(newVozilo);
             return Ok();
         }
 

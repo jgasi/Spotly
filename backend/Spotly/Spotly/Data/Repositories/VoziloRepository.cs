@@ -16,7 +16,7 @@ namespace Spotly.Data.Repositories
             if (string.IsNullOrEmpty(licensePlate))
                 return null;
 
-            return await _context.Vozilos.FirstOrDefaultAsync(v => v.Registracija == licensePlate);
+            return await _context.Vozilos.FirstOrDefaultAsync(v => v.Registracija.ToLower() == licensePlate.ToLower());
         }
     }
 }
