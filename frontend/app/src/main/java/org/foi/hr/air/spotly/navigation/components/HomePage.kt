@@ -1,35 +1,21 @@
 package org.foi.hr.air.spotly.navigation.components
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import com.example.core.vehicle_lookup.LookupHandler
-import com.example.core.vehicle_lookup.LookupOutcomeListener
-import com.example.core.vehicle_lookup.VehicleData
-import com.example.core.vehicle_lookup.network.ResponseListener
-import com.example.core.vehicle_lookup.network.models.ErrorResponseBody
-import com.example.core.vehicle_lookup.network.models.SuccessfulResponseBody
-import com.example.ws.request_handlers.GetVehicleByLicensePlateRequestHandler
-import org.foi.hr.air.spotly.data.Vehicle
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.unit.dp
+import com.example.core.vehicle_lookup.*
 
 @Composable
 fun HomePage(
     lookupHandler: LookupHandler,
     onVehicleFetched: (VehicleData) -> Unit,
-    onError: (String) -> Unit
+    onError: (String) -> Unit,
+    onImageSelected: () -> Unit
 ) {
     var licensePlate by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -71,6 +57,17 @@ fun HomePage(
             enabled = !isLoading
         ) {
             Text(if (isLoading) "Učitavanje..." else "Dohvati podatke o vozilu")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                onImageSelected()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Slikaj tablice")
         }
     }
 }

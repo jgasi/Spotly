@@ -48,7 +48,12 @@ namespace Spotly.Controllers
 
             if (vozilo == null)
             {
-                return NotFound($"Vozilo s registracijom {licensePlate} ne postoji.");
+                return NotFound(new
+                {
+                    success = false,
+                    message = $"Vozilo s registarskom oznakom {licensePlate} ne postoji",
+                    data = new[] { "" }
+                });
             }
 
             return Ok(new

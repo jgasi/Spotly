@@ -1,4 +1,7 @@
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -25,6 +28,12 @@ fun MainPage() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
+    val selectImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+        uri: Uri? ->
+        selectedImageUri.value = uri
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -48,7 +57,11 @@ fun MainPage() {
             }
         ) { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
-                NavigationHost(navController)
+                NavigationHost(
+                    navController,
+                    selectImageLauncher = {selectImageLauncher.launch("image/*")},
+                    selectedImageUri = selectedImageUri.value
+                )
             }
         }
     }
@@ -92,7 +105,7 @@ fun DrawerItem(label: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun NavigationHost(navController: NavHostController) {
+fun NavigationHost(navController: NavHostController, selectImageLauncher: () -> Unit, selectedImageUri: Uri?) {
     NavHost(navController = navController, startDestination = "homePage") {
         composable("homePage") { HomePage(
             lookupHandler = ManualLookupHandler(),
@@ -101,6 +114,9 @@ fun NavigationHost(navController: NavHostController) {
             },
             onError = { errorMessage ->
                 Log.e("MainPage", "Error: $errorMessage")
+            },
+            onImageSelected = {
+                selectImageLauncher()
             }
         ) }
         composable("users") { UsersPage() }
