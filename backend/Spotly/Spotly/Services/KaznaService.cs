@@ -1,4 +1,5 @@
 ﻿using Spotly.Data.Repositories;
+using Spotly.DTOs;
 using Spotly.Models;
 
 namespace Spotly.Services
@@ -22,6 +23,11 @@ namespace Spotly.Services
             return await _kaznaRepository.GetByIdAsync(id);
         }
 
+        public async Task<IEnumerable<KaznaDto>> GetKazneByUserIdAsync(int userId)
+        {
+            return await _kaznaRepository.GetByKorisnikId(userId);
+        }
+
         public async Task AddKaznuAsync(Kazna kazna)
         {
             await _kaznaRepository.AddAsync(kazna);
@@ -36,6 +42,6 @@ namespace Spotly.Services
         public async Task DeleteKaznuAsync(int id)
         {
             await _kaznaRepository.DeleteAsync(id);
-        }        
+        }
     }
 }
