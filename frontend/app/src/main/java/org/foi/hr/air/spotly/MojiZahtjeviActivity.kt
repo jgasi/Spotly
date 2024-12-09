@@ -44,7 +44,7 @@ class MojiZahtjeviActivity : ComponentActivity() {
 fun MojiZahtjeviScreen(userId: Int, modifier: Modifier = Modifier) {
     var zahtjevi by remember { mutableStateOf<List<Zahtjev>?>(null) }
     var filteredZahtjevi by remember { mutableStateOf<List<Zahtjev>?>(null) }
-    var searchText by remember { mutableStateOf(TextFieldValue("")) }
+    var searchText by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
     val context = LocalContext.current
@@ -59,23 +59,20 @@ fun MojiZahtjeviScreen(userId: Int, modifier: Modifier = Modifier) {
     }
 
     Column(modifier = modifier.padding(16.dp)) {
-        // Search Bar
-        BasicTextField(
+        OutlinedTextField(
             value = searchText,
-            onValueChange = {
-                searchText = it
+            onValueChange = { query ->
+                searchText = query
                 filteredZahtjevi = zahtjevi?.filter { zahtjev ->
-                    zahtjev.predmet.contains(it.text, ignoreCase = true) ||
-                            zahtjev.poruka.contains(it.text, ignoreCase = true)
+                    zahtjev.predmet.contains(query, ignoreCase = true)
                 }
             },
+            label = { Text("Pretraži po predmetu") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
-                .height(50.dp)
+                .padding(bottom = 8.dp),
+            singleLine = true
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn {
             items(filteredZahtjevi ?: emptyList()) { zahtjev ->
@@ -100,6 +97,7 @@ fun MojiZahtjeviScreen(userId: Int, modifier: Modifier = Modifier) {
         }
     }
 }
+
 
 @Composable
 fun ZahtjevItem(zahtjev: Zahtjev, onDelete: () -> Unit) {
