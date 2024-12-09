@@ -44,7 +44,7 @@ namespace Spotly.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Zahtjev>> GetZahtjevByIdAsync(int id)
+        public async Task<ActionResult<ZahtjevDto>> GetZahtjevByIdAsync(int id)
         {
             var zahtjev = await _zahtjevService.GetZahtjevByIdAsync(id);
 
@@ -73,7 +73,7 @@ namespace Spotly.Controllers
 
 
         [HttpPut]
-        public async Task<ActionResult> UpdateZahtjevAsync(Zahtjev zahtjev)
+        public async Task<ActionResult> UpdateZahtjevAsync(ZahtjevDto zahtjev)
         {
             if (zahtjev == null)
             {
@@ -81,7 +81,7 @@ namespace Spotly.Controllers
             }
 
             // Hardkodirani datum jer trenutno nesto ne prihvaca datume json??
-            zahtjev.DatumVrijeme = new DateTime(2024, 11, 19, 12, 0, 0);
+            //zahtjev.DatumVrijeme = new DateTime(2024, 11, 19, 12, 0, 0);
 
             await _zahtjevService.UpdateZahtjevAsync(zahtjev);
 

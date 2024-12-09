@@ -29,9 +29,9 @@ namespace Spotly.Services
         }
 
 
-        public async Task<Zahtjev> GetZahtjevByIdAsync(int id)
+        public async Task<ZahtjevDto> GetZahtjevByIdAsync(int id)
         {
-            return await _zahtjevRepository.GetByIdAsync(id);
+            return await _zahtjevRepository.GetZahtjevByIdAsync(id);
         }
 
         public async Task AddZahtjevAsync(Zahtjev zahtjev)
@@ -39,7 +39,7 @@ namespace Spotly.Services
             await _zahtjevRepository.AddAsync(zahtjev);
         }
 
-        public async Task UpdateZahtjevAsync(Zahtjev zahtjev)
+        public async Task UpdateZahtjevAsync(ZahtjevDto zahtjev)
         {
             await _zahtjevRepository.UpdateAsync(zahtjev);
         }
