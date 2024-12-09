@@ -17,7 +17,7 @@ fun HomePage(
     manualLookupHandler: ManualLookupHandler,
     ocrLookupHandler: OcrLookupHandler,
     onVehicleFetched: (VehicleData) -> Unit,
-    onError: (String) -> Unit,
+    onError: (String, Int?) -> Unit,
     onImageSelected: () -> Unit,
     selectedImageBitmap: ImageBitmap?,
 ) {
@@ -35,14 +35,14 @@ fun HomePage(
                             onVehicleFetched(vehicleData)
                         }
 
-                        override fun onFailedLookup(reason: String) {
+                        override fun onFailedLookup(reason: String, statusCode: Int?) {
                             isLoading = false
-                            onError(reason)
+                            onError(reason, statusCode)
                         }
                     })
                 } else {
                     isLoading = false
-                    onError("Nije pronađena registracija na slici")
+                    onError("Nije pronađena registracija na slici", 0)
                 }
             }
         }
@@ -75,14 +75,14 @@ fun HomePage(
                         onVehicleFetched(vehicleData)
                     }
 
-                    override fun onFailedLookup(errorMessage: String) {
+                    override fun onFailedLookup(errorMessage: String, statusCode: Int?) {
                         isLoading = false
-                        onError(errorMessage)
+                        onError(errorMessage, statusCode)
                     }
                 })
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !isLoading && licensePlate != ""
         ) {
             Text(if (isLoading) "Učitavanje..." else "Dohvati podatke o vozilu")
         }

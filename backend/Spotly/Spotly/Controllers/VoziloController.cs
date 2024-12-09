@@ -51,6 +51,7 @@ namespace Spotly.Controllers
                 return NotFound(new
                 {
                     success = false,
+                    status = 404,
                     message = $"Vozilo s registarskom oznakom {licensePlate} ne postoji",
                     data = new[] { "" }
                 });
@@ -59,6 +60,7 @@ namespace Spotly.Controllers
             return Ok(new
             {
                 success = true,
+                status = 200,
                 message = "Pronađeno vozilo",
                 data = new[] { vozilo }
             });

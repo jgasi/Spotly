@@ -1,30 +1,25 @@
 import android.graphics.ImageDecoder
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.lookup_manual.ManualLookupHandler
-import com.example.lookup_ocr.OcrLookupHandler
+import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.*
+import androidx.navigation.compose.*
+import com.example.lookup_manual.*
+import com.example.lookup_ocr.*
 import kotlinx.coroutines.launch
-import org.foi.hr.air.spotly.data.Vehicle
-import org.foi.hr.air.spotly.navigation.components.HomePage
-import org.foi.hr.air.spotly.navigation.components.UsersPage
+import org.foi.hr.air.spotly.navigation.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +33,9 @@ fun MainPage() {
         uri: Uri? ->
         selectedImageUri.value = uri
     }
+
+    val showDialog = remember { mutableStateOf(false) }
+    val dialogMessage = remember { mutableStateOf("") }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -65,8 +63,52 @@ fun MainPage() {
                 NavigationHost(
                     navController,
                     selectImageLauncher = {selectImageLauncher.launch("image/*")},
-                    selectedImageUri = selectedImageUri.value
+                    selectedImageUri = selectedImageUri.value,
+                    onFailedLookup = { reason, statusCode ->
+                        if (statusCode == 404) {
+                            dialogMessage.value = reason
+                            showDialog.value = true
+                        }
+                    }
                 )
+            }
+
+            if (showDialog.value) {
+                BasicAlertDialog(
+                    onDismissRequest = { showDialog.value = false },
+                    properties = DialogProperties(
+                        dismissOnClickOutside = true,
+                        usePlatformDefaultWidth = false
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .background(Color.White)
+                    ) {
+                        Text(
+                            text = "Greška",
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = dialogMessage.value,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(
+                                onClick = { showDialog.value = false}
+                            ) {
+                                Text("Ok")
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -110,7 +152,12 @@ fun DrawerItem(label: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun NavigationHost(navController: NavHostController, selectImageLauncher: () -> Unit, selectedImageUri: Uri?) {
+fun NavigationHost(
+    navController: NavHostController,
+    selectImageLauncher: () -> Unit,
+    selectedImageUri: Uri?,
+    onFailedLookup: (String, Int?) -> Unit
+) {
     NavHost(navController = navController, startDestination = "homePage") {
         composable("homePage") {
             val context = LocalContext.current
@@ -127,8 +174,9 @@ fun NavigationHost(navController: NavHostController, selectImageLauncher: () -> 
                 onVehicleFetched = { vehicle ->
                     Log.d("MainPage", "Vozilo: $vehicle")
                 },
-                onError = { errorMessage ->
-                    Log.e("MainPage", "Error: $errorMessage")
+                onError = { errorMessage, errorStatus ->
+                    Log.e("MainPage", "Error: $errorMessage, $errorStatus")
+                    onFailedLookup(errorMessage, errorStatus)
                 },
                 onImageSelected = {
                     selectImageLauncher()

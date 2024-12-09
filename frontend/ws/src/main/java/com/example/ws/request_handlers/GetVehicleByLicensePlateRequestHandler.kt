@@ -46,28 +46,29 @@ class GetVehicleByLicensePlateRequestHandler(private val licensePlate: String): 
                                     )
                                 } else {
                                     responseListener.onErrorResponse(
-                                        ErrorResponseBody(false, "Nije pronađeno nijedno vozilo za zadanu tablicu", 404, "Not Found")
+                                        ErrorResponseBody(false, "Nije pronađeno nijedno vozilo za zadanu tablicu", 404)
                                     )
                                 }
                             } catch (e: Exception) {
                                 Log.e("Response", "Parsing single vehicle failed", e)
                                 responseListener.onErrorResponse(
-                                    ErrorResponseBody(false, "Greška prilikom parsiranja odgovora", 500, "Internal Server Error")
+                                    ErrorResponseBody(false, "Greška prilikom parsiranja odgovora", 500)
                                 )
                             }
                         }
                     } else {
                         responseListener.onErrorResponse(
-                            ErrorResponseBody(false, "Prazan odgovor servera", 500, "Internal Server Error")
+                            ErrorResponseBody(false, "Prazan odgovor servera", 500)
                         )
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
+
                     val errorResponse = try {
                         Gson().fromJson(errorBody, ErrorResponseBody::class.java)
-                            ?: ErrorResponseBody(false, response.message(), response.code(), "Error")
+                            ?: ErrorResponseBody(success = false, message = response.message(), status = response.code())
                     } catch (e: Exception) {
-                        ErrorResponseBody(false, errorBody ?: "Parsing error", response.code(), "Error")
+                        ErrorResponseBody(false, errorBody ?: "Parsing error", response.code())
                     }
                     responseListener.onErrorResponse(errorResponse)
                 }

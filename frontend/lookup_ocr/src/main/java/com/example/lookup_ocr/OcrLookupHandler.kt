@@ -36,7 +36,7 @@ class OcrLookupHandler : LookupHandler {
             }
 
             override fun onErrorResponse(error: ErrorResponseBody) {
-                lookupListner.onFailedLookup(error.message)
+                lookupListner.onFailedLookup(error.message, error.status)
             }
 
             override fun onNetworkFailiure(t: Throwable) {
