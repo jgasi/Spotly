@@ -57,8 +57,6 @@ object ZahtjevService {
     }
 
 
-
-
     suspend fun getAllZahtjevi(): List<Zahtjev>? {
         val url = "$urlBase/Zahtjev"
 
@@ -142,5 +140,46 @@ object ZahtjevService {
             null
         }
     }
+
+    suspend fun getZahtjeviByKorisnikId(idkor: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/korid/$idkor"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            if (response.isSuccessful) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    suspend fun deleteZahtjev(id: Int): Boolean {
+        val url = "$urlBase/Zahtjev/$id"
+
+        val request = Request.Builder()
+            .url(url)
+            .delete()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            response.isSuccessful
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
 
 }
