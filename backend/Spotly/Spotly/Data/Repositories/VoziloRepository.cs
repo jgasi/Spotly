@@ -18,6 +18,7 @@ namespace Spotly.Data.Repositories
 
             return await _context.Vozilos
                 .Include(v => v.Korisnik)
+                .Include(v => v.TipVozila)
                 .FirstOrDefaultAsync(v => v.Registracija.ToLower() == licensePlate.ToLower());
         }
     }

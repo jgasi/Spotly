@@ -4,6 +4,7 @@ import com.example.core.vehicle_lookup.*
 import com.example.core.vehicle_lookup.network.*
 import com.example.core.vehicle_lookup.network.models.*
 import com.example.ws.models.responses.User
+import com.example.ws.models.responses.VehicleType
 import com.example.ws.network.models.responses.Vehicle
 import com.example.ws.request_handlers.*
 
@@ -25,7 +26,8 @@ class ManualLookupHandler : LookupHandler {
                         status = it.status,
                         tipVozilaId = it.tipVozilaId,
                         korisnikId = it.korisnikId,
-                        korisnik = it.korisnik?.toUserData()
+                        korisnik = it.korisnik?.toUserData(),
+                        tipVozila = it.tipVozila?.toVehicleTypeData()
                     )
                     lookupListner.onSuccessfulLookup(vehicleData)
                 }
@@ -47,6 +49,13 @@ class ManualLookupHandler : LookupHandler {
                     email = this.email,
                     brojMobitela = this.brojMobitela,
                     status = this.status
+                )
+            }
+
+            fun VehicleType.toVehicleTypeData(): VehicleTypeData {
+                return VehicleTypeData(
+                    id = this.id,
+                    tip = this.tip
                 )
             }
         })

@@ -1,6 +1,5 @@
 package org.foi.hr.air.spotly.navigation.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

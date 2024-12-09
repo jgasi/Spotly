@@ -16,10 +16,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.*
 import androidx.navigation.compose.*
+import com.example.core.vehicle_lookup.VehicleData
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
 import kotlinx.coroutines.launch
 import org.foi.hr.air.spotly.navigation.components.*
+import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +38,9 @@ fun MainPage() {
 
     val showErrorDialog = remember { mutableStateOf(false) }
     val errorDialogmessage = remember { mutableStateOf("") }
+
+    val showSuccessDialog = remember { mutableStateOf(true) }
+    val vehicleData = remember { mutableStateOf<VehicleData?>(null) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -69,6 +74,10 @@ fun MainPage() {
                             errorDialogmessage.value = reason
                             showErrorDialog.value = true
                         }
+                    },
+                    onSuccessfulLookup = { vehicle ->
+                        vehicleData.value = vehicle
+                        showSuccessDialog.value = true
                     }
                 )
             }
@@ -109,6 +118,13 @@ fun MainPage() {
                         }
                     }
                 }
+            }
+
+            if (showSuccessDialog.value && vehicleData.value != null) {
+                VehicleSuccessDialog(
+                    onDismissRequest = { showSuccessDialog.value = false },
+                    vehicleData = vehicleData.value!!
+                )
             }
         }
     }
@@ -156,7 +172,8 @@ fun NavigationHost(
     navController: NavHostController,
     selectImageLauncher: () -> Unit,
     selectedImageUri: Uri?,
-    onFailedLookup: (String, Int?) -> Unit
+    onFailedLookup: (String, Int?) -> Unit,
+    onSuccessfulLookup: (VehicleData) -> Unit
 ) {
     NavHost(navController = navController, startDestination = "homePage") {
         composable("homePage") {
@@ -173,7 +190,7 @@ fun NavigationHost(
                 ocrLookupHandler = OcrLookupHandler(),
                 onVehicleFetched = { vehicle ->
                     if (vehicle != null) {
-                        Log.d("MainPage", "Vozilo: $vehicle")
+                        onSuccessfulLookup(vehicle)
                     }
                 },
                 onError = { errorMessage, errorStatus ->

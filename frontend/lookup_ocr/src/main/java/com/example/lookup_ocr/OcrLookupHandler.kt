@@ -7,6 +7,7 @@ import com.example.core.vehicle_lookup.network.ResponseListener
 import com.example.core.vehicle_lookup.network.models.ErrorResponseBody
 import com.example.core.vehicle_lookup.network.models.SuccessfulResponseBody
 import com.example.ws.models.responses.User
+import com.example.ws.models.responses.VehicleType
 import com.example.ws.network.models.responses.Vehicle
 import com.example.ws.request_handlers.*
 import com.google.mlkit.vision.common.InputImage
@@ -31,7 +32,8 @@ class OcrLookupHandler : LookupHandler {
                         status = it.status,
                         tipVozilaId = it.tipVozilaId,
                         korisnikId = it.korisnikId,
-                        korisnik = it.korisnik?.toUserData()
+                        korisnik = it.korisnik?.toUserData(),
+                        tipVozila = it.tipVozila?.toVehicleTypeData()
                     )
                     lookupListner.onSuccessfulLookup(vehicleData)
                 }
@@ -91,6 +93,13 @@ class OcrLookupHandler : LookupHandler {
             email = this.email,
             brojMobitela = this.brojMobitela,
             status = this.status
+        )
+    }
+
+    fun VehicleType.toVehicleTypeData(): VehicleTypeData {
+        return VehicleTypeData(
+            id = this.id,
+            tip = this.tip
         )
     }
 }
