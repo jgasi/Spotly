@@ -1,22 +1,52 @@
 package org.foi.hr.air.spotly.navigation.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.dp
 import com.example.core.vehicle_lookup.*
+import com.example.lookup_manual.*
+import com.example.lookup_ocr.*
 
 @Composable
 fun HomePage(
-    lookupHandler: LookupHandler,
+    manualLookupHandler: ManualLookupHandler,
+    ocrLookupHandler: OcrLookupHandler,
     onVehicleFetched: (VehicleData) -> Unit,
     onError: (String) -> Unit,
-    onImageSelected: () -> Unit
+    onImageSelected: () -> Unit,
+    selectedImageBitmap: ImageBitmap?,
 ) {
     var licensePlate by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedImageBitmap) {
+        selectedImageBitmap?.let { bitmap ->
+            isLoading = true
+            ocrLookupHandler.extractLicensePlateFromImage(bitmap.asAndroidBitmap()) {extractedPlate ->
+                if (extractedPlate != null) {
+                    ocrLookupHandler.handleLookup(extractedPlate, object : LookupOutcomeListener {
+                        override fun onSuccessfulLookup(vehicleData: VehicleData) {
+                            isLoading = false
+                            onVehicleFetched(vehicleData)
+                        }
+
+                        override fun onFailedLookup(reason: String) {
+                            isLoading = false
+                            onError(reason)
+                        }
+                    })
+                } else {
+                    isLoading = false
+                    onError("Nije pronađena registracija na slici")
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -39,7 +69,7 @@ fun HomePage(
         Button(
             onClick = {
                 isLoading = true
-                lookupHandler.handleLookup(licensePlate, object : LookupOutcomeListener {
+                manualLookupHandler.handleLookup(licensePlate, object : LookupOutcomeListener {
                     override fun onSuccessfulLookup(vehicleData: VehicleData) {
                         isLoading = false
                         onVehicleFetched(vehicleData)

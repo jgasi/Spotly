@@ -1,6 +1,7 @@
 package com.example.lookup_ocr
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.example.core.vehicle_lookup.*
 import com.example.core.vehicle_lookup.network.ResponseListener
 import com.example.core.vehicle_lookup.network.models.ErrorResponseBody
@@ -50,17 +51,33 @@ class OcrLookupHandler : LookupHandler {
 
         textRecognizer.process(inputImage)
             .addOnSuccessListener { result ->
-                val licensePlate = result.textBlocks
-                    .map { it.text }
-                    .firstOrNull { it.matches(LICENSE_PLATE_REGEX) }
+                val recognizedText = result.textBlocks.map {it.text}
+                Log.d("OCR", "Recognized text: $recognizedText")
+
+                val cleanedText = recognizedText.map { it.trim().replace("[^A-Z0-9 ]".toRegex(), "") }
+                Log.d("OCR", "Cleaned text: $cleanedText")
+
+                val licensePlate = cleanedText
+                    .flatMap { text ->
+                        LICENSE_PLATE_REGEX.findAll(text).map { match ->
+                            val cityCode = match.groups[1]?.value ?: ""
+                            val numbers = match.groups[2]?.value ?: ""
+                            val letters = match.groups[3]?.value ?: ""
+                            "$cityCode$numbers$letters"
+                        }.toList()
+                    }
+                    .firstOrNull()
+
+                Log.d("OCR", "Formatted license plate: $licensePlate")
                 onResult(licensePlate)
             }
-            .addOnFailureListener {
+            .addOnFailureListener { e ->
+                Log.e("OCR", "OCR failed: ${e.message}")
                 onResult(null)
             }
     }
 
     companion object {
-        private val LICENSE_PLATE_REGEX = Regex("[A-Z]{2}\\d{3,4}[A-Z]{2}")
+        private val LICENSE_PLATE_REGEX = Regex("([A-Z]{2})[\\s-]*(\\d{3,4})[\\s-]*([A-Z]{0,2})")
     }
 }

@@ -1,4 +1,6 @@
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -16,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lookup_manual.ManualLookupHandler
+import com.example.lookup_ocr.OcrLookupHandler
 import kotlinx.coroutines.launch
 import org.foi.hr.air.spotly.data.Vehicle
 import org.foi.hr.air.spotly.navigation.components.HomePage
@@ -107,18 +112,30 @@ fun DrawerItem(label: String, onClick: () -> Unit) {
 @Composable
 fun NavigationHost(navController: NavHostController, selectImageLauncher: () -> Unit, selectedImageUri: Uri?) {
     NavHost(navController = navController, startDestination = "homePage") {
-        composable("homePage") { HomePage(
-            lookupHandler = ManualLookupHandler(),
-            onVehicleFetched = { vehicle ->
-                Log.d("MainPage", "Vozilo: $vehicle")
-            },
-            onError = { errorMessage ->
-                Log.e("MainPage", "Error: $errorMessage")
-            },
-            onImageSelected = {
-                selectImageLauncher()
+        composable("homePage") {
+            val context = LocalContext.current
+            val bitmap = remember(selectedImageUri) {
+                selectedImageUri?.let { uri ->
+                    val androidBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
+                    androidBitmap.asImageBitmap()
+                }
             }
-        ) }
+
+            HomePage(
+                manualLookupHandler = ManualLookupHandler(),
+                ocrLookupHandler = OcrLookupHandler(),
+                onVehicleFetched = { vehicle ->
+                    Log.d("MainPage", "Vozilo: $vehicle")
+                },
+                onError = { errorMessage ->
+                    Log.e("MainPage", "Error: $errorMessage")
+                },
+                onImageSelected = {
+                    selectImageLauncher()
+                },
+                selectedImageBitmap = bitmap,
+            )
+        }
         composable("users") { UsersPage() }
         composable("page2") { PageContent("Page 2") }
         composable("page3") { PageContent("Page 3") }
