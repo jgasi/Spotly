@@ -59,6 +59,7 @@ fun HomePage(
             value = licensePlate,
             onValueChange = { licensePlate = it },
             label = { Text("Unesi registarsku oznaku") },
+            placeholder = { Text("ZG0000AB") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )

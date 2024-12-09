@@ -67,13 +67,14 @@ fun MainPage() {
             Box(modifier = Modifier.padding(paddingValues)) {
                 NavigationHost(
                     navController,
-                    selectImageLauncher = {selectImageLauncher.launch("image/*")},
+                    selectImageLauncher = {
+                        selectedImageUri.value = null
+                        selectImageLauncher.launch("image/*")
+                    },
                     selectedImageUri = selectedImageUri.value,
                     onFailedLookup = { reason, statusCode ->
-                        if (statusCode == 404) {
-                            errorDialogmessage.value = reason
-                            showErrorDialog.value = true
-                        }
+                        errorDialogmessage.value = reason
+                        showErrorDialog.value = true
                     },
                     onSuccessfulLookup = { vehicle ->
                         vehicleData.value = vehicle
@@ -194,6 +195,7 @@ fun NavigationHost(
                     }
                 },
                 onError = { errorMessage, errorStatus ->
+                    Log.d("MainPage", "$errorMessage, $errorStatus")
                     onFailedLookup(errorMessage, errorStatus)
                 },
                 onImageSelected = {
