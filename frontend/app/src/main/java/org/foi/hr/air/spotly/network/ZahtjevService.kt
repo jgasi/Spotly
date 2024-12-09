@@ -36,13 +36,12 @@ object ZahtjevService {
             .get()
             .build()
 
-        var response: Response? = null // Inicijaliziraj varijablu odgovora izvan try-catch
+        var response: Response? = null
 
         return try {
-            response = executeRequest(request) // Dodaj odgovor u varijablu
+            response = executeRequest(request)
 
             if (response?.isSuccessful == true) {
-                // Čitamo tijelo odgovora samo jednom
                 response.body?.string()?.let { responseBody ->
                     Json.decodeFromString<List<Zahtjev>>(responseBody)
                 }
@@ -53,8 +52,7 @@ object ZahtjevService {
             e.printStackTrace()
             null
         } finally {
-            // Obavezno zatvoriti tijelo odgovora ako je potrebno
-            response?.body?.close() // Koristi varijablu odgovora izvan try-catch
+            response?.body?.close()
         }
     }
 
@@ -85,7 +83,6 @@ object ZahtjevService {
     }
 
 
-
     suspend fun addZahtjev(zahtjev: Zahtjev): Boolean {
         val url = "$urlBase/Zahtjev"
         val requestBody = Json.encodeToString(zahtjev).toRequestBody(jsonMediaType)
@@ -103,4 +100,47 @@ object ZahtjevService {
             false
         }
     }
+
+    suspend fun updateZahtjev(zahtjev: Zahtjev): Boolean {
+        val url = "$urlBase/Zahtjev"
+        val requestBody = Json.encodeToString(zahtjev).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url(url)
+            .put(requestBody)
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            response.isSuccessful
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+
+    suspend fun getZahtjevById(id: Int): Zahtjev? {
+        val url = "$urlBase/Zahtjev/$id"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            if (response.isSuccessful) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<Zahtjev>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 }

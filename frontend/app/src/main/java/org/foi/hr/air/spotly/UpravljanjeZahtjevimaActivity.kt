@@ -21,10 +21,10 @@ import org.foi.hr.air.spotly.network.ZahtjevService
 
 class UpravljanjeZahtjevimaActivity : ComponentActivity() {
 
-    private var currentPage by mutableStateOf(1)   // Trenutna stranica
-    private val pageSize = 4                      // Veličina stranice (koliko zahtjeva na stranici)
+    private var currentPage by mutableStateOf(1)
+    private val pageSize = 4
     private var zahtjevi by mutableStateOf<List<Zahtjev>>(emptyList())
-    private var isLoading by mutableStateOf(false) // Stanje učitavanja
+    private var isLoading by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +56,6 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Glavni dio za prikaz zahtjeva
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -78,14 +77,13 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Navigacija između stranica
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
                     onClick = { previousPage() },
-                    enabled = currentPage > 1 // Onemogućeno ako je na prvoj stranici
+                    enabled = currentPage > 1
                 ) {
                     Text("Previous")
                 }
@@ -113,7 +111,6 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
-                        // Pokretanje aktivnosti OdgovaranjeNaZahtjev s prosljeđivanjem ID-a
                         val intent = Intent(context, OdgovaranjeNaZahtjev::class.java).apply {
                             putExtra("ZAHTJEV_ID", zahtjev.id)
                         }
@@ -126,7 +123,6 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
         }
     }
 
-    // Funkcija za dohvat zahtjeva na temelju trenutne stranice
     private fun fetchZahtjevi() {
         isLoading = true
         lifecycleScope.launch {
@@ -150,14 +146,12 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
         }
     }
 
-    // Funkcija za navigaciju na prethodnu stranicu
     private fun previousPage() {
         if (currentPage > 1) {
             currentPage--
         }
     }
 
-    // Funkcija za navigaciju na sljedeću stranicu
     private fun nextPage() {
         currentPage++
     }
