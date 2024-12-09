@@ -34,6 +34,11 @@ namespace Spotly.Services
             return await _zahtjevRepository.GetZahtjevByIdAsync(id);
         }
 
+        public async Task<IEnumerable<ZahtjevDto>> GetZahtjevByKorisnikIdAsync(int id)
+        {
+            return await _zahtjevRepository.GetZahtjevByKorisnikIdAsync(id);
+        }
+
         public async Task AddZahtjevAsync(Zahtjev zahtjev)
         {
             await _zahtjevRepository.AddAsync(zahtjev);

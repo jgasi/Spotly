@@ -56,6 +56,19 @@ namespace Spotly.Controllers
             return Ok(zahtjev);
         }
 
+        [HttpGet("korid/{idkor}")]
+        public async Task<ActionResult<ZahtjevDto>> GetZahtjevByKorisnikIdAsync(int idkor)
+        {
+            var zahtjev = await _zahtjevService.GetZahtjevByKorisnikIdAsync(idkor);
+
+            if (zahtjev == null)
+            {
+                return NotFound($"Zahtjev s korisnik ID {idkor} ne postoji.");
+            }
+
+            return Ok(zahtjev);
+        }
+
         [HttpPost]
         public async Task<ActionResult> AddZahtjevAsync(Zahtjev zahtjev)
         {

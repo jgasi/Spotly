@@ -8,6 +8,8 @@ namespace Spotly.Services
         Task<IEnumerable<Zahtjev>> GetAllZahtjeviAsync();
         Task<IEnumerable<ZahtjevDto>> GetPagedZahtjeviAsync(int pageNumber, int pageSize);
         Task<ZahtjevDto> GetZahtjevByIdAsync(int id);
+        Task<IEnumerable<ZahtjevDto>> GetZahtjevByKorisnikIdAsync(int id);
+
         Task AddZahtjevAsync(Zahtjev zahtjev);
         Task UpdateZahtjevAsync(ZahtjevDto zahtjev);
         Task DeleteZahtjevAsync(int id);
