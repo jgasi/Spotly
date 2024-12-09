@@ -1,5 +1,6 @@
 package org.foi.hr.air.spotly.network
 
+import android.util.Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.*
@@ -30,6 +31,11 @@ object ZahtjevService {
 
 
     suspend fun addZahtjev(zahtjev: Zahtjev): Boolean {
+        if (!QueueService.hasInternet()) {
+            QueueService.addToQueue(zahtjev)
+            Log.d("ZahtjevService", "Internet nije dostupan. Zahtjev dodan u red čekanja.")
+            return false
+        }
         val url = "$urlBase/Zahtjev"
         val requestBody = Json.encodeToString(zahtjev).toRequestBody(jsonMediaType)
 
@@ -42,7 +48,8 @@ object ZahtjevService {
             val response = executeRequest(request)
             response.isSuccessful
         } catch (e: Exception) {
-            e.printStackTrace()
+            QueueService.addToQueue(zahtjev)
+            Log.e("ZahtjevService", "Greška prilikom slanja zahtjeva: ${e.message}")
             false
         }
     }
