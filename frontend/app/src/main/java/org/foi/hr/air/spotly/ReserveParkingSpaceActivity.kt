@@ -1,46 +1,79 @@
 package org.foi.hr.air.spotly
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.zIndex
+import androidx.core.content.res.ResourcesCompat
 import kotlinx.serialization.json.Json
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 import org.foi.hr.air.spotly.data.ParkingSpaceData
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlin.io.path.Path
 
 class ReserveParkingSpaceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        val assetFiles = assets.list("")?.joinToString(", ")
-//        Log.d("Assets", "Files in assets: $assetFiles")
 
         val parkingSpaceData = loadParkingSpaceData(this)
         setContent {
@@ -53,28 +86,34 @@ class ReserveParkingSpaceActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun ReserveParkingSpaceScreen(parkingSpaceData: ParkingSpaceData?) {
-    if (parkingSpaceData != null) {
-//        for (zone in parkingSpaceData.zones) {
-//            Log.d("parkingSpaceData", "Zone number: "+zone.key)
-//        }
-    }
-
 
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
-
     val imageWidth = 1448f
     val imageHeight = 2048f
 
-    Log.d("Zoom", "Scale: $scale, Offset: ${offset.x}, ${offset.y}")
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    val screenHeight = configuration.screenHeightDp
+
+    Log.d("ScreenSize", "Screen width: $screenWidth dp, Screen height: $screenHeight dp")
+
+    val scaleRatioCanvas = (screenWidth) / imageWidth
+    Log.d("PolygonZone", "Scale Ratio Canvas: $scaleRatioCanvas")
+    Log.d("PolygonZone", "Screen width: $screenWidth dp, Screen height: $screenHeight dp")
+
+
+    val bitmap = getBitmapFromPainter().asImageBitmap()
+
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .verticalScroll(rememberScrollState())
+            .padding(0.dp, 0.dp),
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
         Text(
@@ -85,12 +124,12 @@ fun ReserveParkingSpaceScreen(parkingSpaceData: ParkingSpaceData?) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(0.dp, 0.dp)
                 .background(Color.Gray)
                 .pointerInput(Unit) {
                     try {
                         detectTransformGestures { _, pan, zoom, _ ->
                             val newScale = (scale * zoom).coerceIn(1f, 3f)
-
                             scale = newScale
 
                             val newOffsetX = offset.x + pan.x
@@ -111,33 +150,161 @@ fun ReserveParkingSpaceScreen(parkingSpaceData: ParkingSpaceData?) {
                                 )
                             }
                         }
-                    }catch (e: Exception)
-                    {
-                        Log.e("Zoom", "Error occured during zoom/pan ${e.message}", e)
+                    } catch (e: Exception) {
+                        Log.e("Zoom", "Error occurred during zoom/pan ${e.message}", e)
                     }
                 }
+                .onGloballyPositioned { coordinates ->
+                    val boxWidth = coordinates.size.width
+                    val boxHeight = coordinates.size.height
+                    Log.d("PolygonZone", "Box width: $boxWidth, Box height: $boxHeight")
+                }
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    translationX = offset.x,
+                    translationY = offset.y
+                )
+                .clipToBounds()
         ) {
+            val painter = painterResource(id = R.drawable.garaza_parking_v1)
             Image(
-                painter = painterResource(id = R.drawable.garaza_parking_v1),
-                contentDescription = "Parking Image",
+                painter = painter,
+                contentDescription = "Zoomable image",
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RectangleShape)
-                    .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        translationX = offset.x,
-                        translationY = offset.y
-                    )
+                    .padding(0.dp)
+                    .pointerInput(true) {
+                        detectTapGestures {
+
+                        }
+                    }
+                    .zIndex(0f)
             )
+
+            parkingSpaceData?.zones?.forEach { (zoneName, zone) ->
+                Log.d("Zone", "Zone is ${zoneName}")
+                val zoneLocation = zone.location
+                val scaleFactor = 0.74609375f
+
+                if (zoneLocation.shape == "rect") {
+                    zoneLocation.size?.let {
+                        val width = it.width.toFloat() * scaleFactor
+                        val height = it.height.toFloat() * scaleFactor
+                        val position = zoneLocation.position
+
+                        position?.let {
+                            val x = it.x.toFloat() * scaleFactor
+                            val y = it.y.toFloat() * scaleFactor
+
+                            val density = LocalDensity.current.density
+                            val widthDp = (width / density).dp
+                            val heightDp = (height / density).dp
+                            val xDp = (x / density).dp
+                            val yDp = (y / density).dp
+
+                            Canvas(modifier = Modifier
+                                .size(widthDp, heightDp)
+                                .offset(xDp, yDp)
+                                .pointerInput(true) {
+                                    detectTapGestures(onTap = { tapOffset ->
+                                        Log.d("RectangleClick", "Clicked inside rectangle $zoneName!")
+                                        if (tapOffset.x >= x && tapOffset.x <= (x + width) && tapOffset.y >= y && tapOffset.y <= (y + height)) {
+                                            Log.d("RectangleClick", "Clicked inside rectangle $zoneName!")
+
+                                        }
+                                    })
+                                }
+                                .zIndex(1f)) {
+                                drawRect(
+                                    color = Color.Red.copy(alpha = 0.5f),
+                                    topLeft = Offset(0f, 0f),
+                                    size = androidx.compose.ui.geometry.Size(width, height)
+                                )
+                            }
+                        }
+                    }
+                } else if (zoneLocation.shape == "polygon") {
+                    zoneLocation.points?.let { points ->
+                        val polygonPoints = points.split(" ").map {
+                            val point = it.split(",")
+                            val x = point[0].toFloat() * scaleFactor
+                            val y = point[1].toFloat() * scaleFactor
+                            Pair(x, y)
+                        }
+                        Log.d("PolygonZone", "Polygon points: $polygonPoints")
+
+                        Canvas(modifier = Modifier
+                            .pointerInput(Unit) {
+                                detectTapGestures(onTap = { tapOffset ->
+                                    val path = Path().apply {
+                                        polygonPoints.forEachIndexed { index, point ->
+                                            if (index == 0) moveTo(point.first, point.second)
+                                            else lineTo(point.first, point.second)
+                                        }
+                                        close()
+                                    }
+                                    if (isPointInPolygon(tapOffset, polygonPoints)) {
+                                        //TODO: Canvas size, layout offset, polygons not clickable because of canvases overlaying
+                                        Log.d("PolygonClick", "Clicked inside polygon!")
+                                    }
+                                })
+                            }) {
+                            val path = Path().apply {
+                                polygonPoints.forEachIndexed { index, point ->
+                                    if (index == 0) moveTo(point.first, point.second)
+                                    else lineTo(point.first, point.second)
+                                }
+                                close()
+                            }
+                            drawPath(path, Color.Red.copy(alpha = 0.3f))
+                        }
+                    }
+                }
+            }
         }
 
     }
 }
 
+fun isPointInPolygon(point: Offset, polygon: List<Pair<Float, Float>>): Boolean {
+    var isInside = false
+    var j = polygon.size - 1
+    for (i in polygon.indices) {
+        val pi = polygon[i]
+        val pj = polygon[j]
+        if ((pi.second > point.y) != (pj.second > point.y) &&
+            (point.x < (pj.first - pi.first) * (point.y - pi.second) / (pj.second - pi.second) + pi.first)
+        ) {
+            isInside = !isInside
+        }
+        j = i
+    }
+    return isInside
+}
+
+@Composable
+fun getBitmapFromPainter(): Bitmap {
+    val context = LocalContext.current
+    val resources = context.resources
+    val drawable = ResourcesCompat.getDrawable(resources, R.drawable.garaza_parking_v1, context.theme)
+        ?: throw IllegalArgumentException("Drawable not found")
+
+    val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 1
+    val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 1
+
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = android.graphics.Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+
+    return bitmap
+}
+
 private fun loadParkingSpaceData(context: Context): ParkingSpaceData? {
     return try {
-        val inputStream = context.assets.open("parking_spots.json")
+        val inputStream = context.assets.open("parking_spots_backup.json")
         val json = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
         Json.decodeFromString<ParkingSpaceData>(json)
     } catch (e: Exception) {
