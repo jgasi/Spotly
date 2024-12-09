@@ -8,5 +8,6 @@ data class VehicleData(
     val registracija: String?,
     val status: String?,
     val tipVozilaId: Int?,
-    val korisnikId: Int?
+    val korisnikId: Int?,
+    val korisnik: UserData?
 )

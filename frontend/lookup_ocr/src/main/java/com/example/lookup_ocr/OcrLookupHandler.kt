@@ -6,6 +6,7 @@ import com.example.core.vehicle_lookup.*
 import com.example.core.vehicle_lookup.network.ResponseListener
 import com.example.core.vehicle_lookup.network.models.ErrorResponseBody
 import com.example.core.vehicle_lookup.network.models.SuccessfulResponseBody
+import com.example.ws.models.responses.User
 import com.example.ws.network.models.responses.Vehicle
 import com.example.ws.request_handlers.*
 import com.google.mlkit.vision.common.InputImage
@@ -29,7 +30,8 @@ class OcrLookupHandler : LookupHandler {
                         registracija = it.registracija,
                         status = it.status,
                         tipVozilaId = it.tipVozilaId,
-                        korisnikId = it.korisnikId
+                        korisnikId = it.korisnikId,
+                        korisnik = it.korisnik?.toUserData()
                     )
                     lookupListner.onSuccessfulLookup(vehicleData)
                 }
@@ -79,5 +81,16 @@ class OcrLookupHandler : LookupHandler {
 
     companion object {
         private val LICENSE_PLATE_REGEX = Regex("([A-Z]{2})[\\s-]*(\\d{3,4})[\\s-]*([A-Z]{0,2})")
+    }
+
+    fun User.toUserData(): UserData {
+        return UserData(
+            id = this.id,
+            ime = this.ime,
+            prezime = this.prezime,
+            email = this.email,
+            brojMobitela = this.brojMobitela,
+            status = this.status
+        )
     }
 }

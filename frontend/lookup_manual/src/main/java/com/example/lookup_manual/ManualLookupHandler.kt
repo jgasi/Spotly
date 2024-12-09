@@ -3,6 +3,7 @@ package com.example.lookup_manual
 import com.example.core.vehicle_lookup.*
 import com.example.core.vehicle_lookup.network.*
 import com.example.core.vehicle_lookup.network.models.*
+import com.example.ws.models.responses.User
 import com.example.ws.network.models.responses.Vehicle
 import com.example.ws.request_handlers.*
 
@@ -23,7 +24,8 @@ class ManualLookupHandler : LookupHandler {
                         registracija = it.registracija,
                         status = it.status,
                         tipVozilaId = it.tipVozilaId,
-                        korisnikId = it.korisnikId
+                        korisnikId = it.korisnikId,
+                        korisnik = it.korisnik?.toUserData()
                     )
                     lookupListner.onSuccessfulLookup(vehicleData)
                 }
@@ -35,6 +37,17 @@ class ManualLookupHandler : LookupHandler {
 
             override fun onNetworkFailiure(t: Throwable) {
                 lookupListner.onFailedLookup("Network error: ${t.message}")
+            }
+
+            fun User.toUserData(): UserData {
+                return UserData(
+                    id = this.id,
+                    ime = this.ime,
+                    prezime = this.prezime,
+                    email = this.email,
+                    brojMobitela = this.brojMobitela,
+                    status = this.status
+                )
             }
         })
     }

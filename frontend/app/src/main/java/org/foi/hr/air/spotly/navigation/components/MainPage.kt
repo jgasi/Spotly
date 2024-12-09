@@ -34,8 +34,8 @@ fun MainPage() {
         selectedImageUri.value = uri
     }
 
-    val showDialog = remember { mutableStateOf(false) }
-    val dialogMessage = remember { mutableStateOf("") }
+    val showErrorDialog = remember { mutableStateOf(false) }
+    val errorDialogmessage = remember { mutableStateOf("") }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -66,16 +66,16 @@ fun MainPage() {
                     selectedImageUri = selectedImageUri.value,
                     onFailedLookup = { reason, statusCode ->
                         if (statusCode == 404) {
-                            dialogMessage.value = reason
-                            showDialog.value = true
+                            errorDialogmessage.value = reason
+                            showErrorDialog.value = true
                         }
                     }
                 )
             }
 
-            if (showDialog.value) {
+            if (showErrorDialog.value) {
                 BasicAlertDialog(
-                    onDismissRequest = { showDialog.value = false },
+                    onDismissRequest = { showErrorDialog.value = false },
                     properties = DialogProperties(
                         dismissOnClickOutside = true,
                         usePlatformDefaultWidth = false
@@ -93,7 +93,7 @@ fun MainPage() {
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
-                            text = dialogMessage.value,
+                            text = errorDialogmessage.value,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
@@ -102,7 +102,7 @@ fun MainPage() {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Button(
-                                onClick = { showDialog.value = false}
+                                onClick = { showErrorDialog.value = false}
                             ) {
                                 Text("Ok")
                             }
@@ -172,10 +172,11 @@ fun NavigationHost(
                 manualLookupHandler = ManualLookupHandler(),
                 ocrLookupHandler = OcrLookupHandler(),
                 onVehicleFetched = { vehicle ->
-                    Log.d("MainPage", "Vozilo: $vehicle")
+                    if (vehicle != null) {
+                        Log.d("MainPage", "Vozilo: $vehicle")
+                    }
                 },
                 onError = { errorMessage, errorStatus ->
-                    Log.e("MainPage", "Error: $errorMessage, $errorStatus")
                     onFailedLookup(errorMessage, errorStatus)
                 },
                 onImageSelected = {

@@ -1,5 +1,6 @@
 package com.example.ws.network.models.responses
 
+import com.example.ws.models.responses.User
 import com.google.gson.annotations.SerializedName
 
 data class Vehicle(
@@ -10,5 +11,6 @@ data class Vehicle(
     @SerializedName("registracija") val registracija: String? = null,
     @SerializedName("status") val status: String? = null,
     @SerializedName("tipVozilaId") val tipVozilaId: Int? = null,
-    @SerializedName("korisnikId") val korisnikId: Int? = null
+    @SerializedName("korisnikId") val korisnikId: Int? = null,
+    @SerializedName("korisnik") val korisnik: User? = null,
 )
