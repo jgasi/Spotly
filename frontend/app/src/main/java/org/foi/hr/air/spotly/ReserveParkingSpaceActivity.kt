@@ -14,11 +14,15 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -264,6 +268,25 @@ fun ReserveParkingSpaceScreen(parkingSpaceData: ParkingSpaceData?) {
                             drawPath(path, Color.Gray.copy(alpha = 0.3f))
                         }
                     }
+                }
+            }
+        }
+        Box(
+            modifier = Modifier.fillMaxSize().height(500.dp).zIndex(-2f).background(color = Color.Gray.copy(alpha = 0.4f))
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(20.dp)
+            ) {
+
+                Button(
+                    onClick = {
+
+                    },
+                    Modifier.size(140.dp, 50.dp).padding(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.8f))
+                ) {
+
+                    Text(text = "Rezerviraj")
                 }
             }
         }
