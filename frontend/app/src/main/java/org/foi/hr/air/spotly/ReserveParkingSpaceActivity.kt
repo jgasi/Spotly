@@ -312,7 +312,7 @@ fun isPointInPolygon(point: Offset, polygon: List<Pair<Float, Float>>): Boolean 
 
 private fun loadParkingSpaceData(context: Context): ParkingSpaceData? {
     return try {
-        val inputStream = context.assets.open("parking_spots_backup.json")
+        val inputStream = context.assets.open("parking_spots.json")
         val json = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
         Json.decodeFromString<ParkingSpaceData>(json)
     } catch (e: Exception) {
