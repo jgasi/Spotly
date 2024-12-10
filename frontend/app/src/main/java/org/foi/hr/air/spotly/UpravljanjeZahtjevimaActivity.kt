@@ -127,7 +127,7 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
         isLoading = true
         lifecycleScope.launch {
             try {
-                val result = ZahtjevService.getPagedZahtjevi(currentPage, pageSize)
+                val result = ZahtjevService.getPagedZahtjeviNaCekanju(currentPage, pageSize)
                 if (result != null) {
                     zahtjevi = result
                 } else {

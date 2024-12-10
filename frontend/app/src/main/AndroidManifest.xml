@@ -21,11 +21,6 @@
             android:exported="true"
             android:label="@string/title_activity_moji_zahtjevi"
             android:theme="@style/Theme.Spotly" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
         </activity>
         <activity
             android:name=".OdgovaranjeNaZahtjev"
@@ -34,9 +29,14 @@
             android:theme="@style/Theme.Spotly" />
         <activity
             android:name=".UpravljanjeZahtjevimaActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_upravljanje_zahtjevima"
             android:theme="@style/Theme.Spotly">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".DetaljiZahtjevaActivity"
