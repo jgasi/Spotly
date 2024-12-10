@@ -43,6 +43,19 @@ namespace Spotly.Controllers
             return Ok(zahtjevi);
         }
 
+        [HttpGet("paginated_na_cekanju")]
+        public async Task<ActionResult<IEnumerable<ZahtjevDto>>> GetPagedZahtjeviNaCekanjuAsync(int pageNumber, int pageSize)
+        {
+            var zahtjevi = await _zahtjevService.GetPagedZahtjeviNaCekanjuAsync(pageNumber, pageSize);
+
+            if (zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva na čekanju.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ZahtjevDto>> GetZahtjevByIdAsync(int id)
         {
