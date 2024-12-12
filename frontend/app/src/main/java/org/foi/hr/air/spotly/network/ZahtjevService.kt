@@ -28,6 +28,86 @@ object ZahtjevService {
         })
     }
 
+    suspend fun getPagedZahtjevi(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/paginated?pageNumber=$pageNumber&pageSize=$pageSize"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
+    suspend fun getPagedZahtjeviNaCekanju(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/paginated_na_cekanju?pageNumber=$pageNumber&pageSize=$pageSize"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
+
+    suspend fun getAllZahtjevi(): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            if (response.isSuccessful) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 
     suspend fun addZahtjev(zahtjev: Zahtjev): Boolean {
         val url = "$urlBase/Zahtjev"
@@ -46,4 +126,88 @@ object ZahtjevService {
             false
         }
     }
+
+    suspend fun updateZahtjev(zahtjev: Zahtjev): Boolean {
+        val url = "$urlBase/Zahtjev"
+        val requestBody = Json.encodeToString(zahtjev).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url(url)
+            .put(requestBody)
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            response.isSuccessful
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+
+    suspend fun getZahtjevById(id: Int): Zahtjev? {
+        val url = "$urlBase/Zahtjev/$id"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            if (response.isSuccessful) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<Zahtjev>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    suspend fun getZahtjeviByKorisnikId(idkor: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/korid/$idkor"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            if (response.isSuccessful) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    suspend fun deleteZahtjev(id: Int): Boolean {
+        val url = "$urlBase/Zahtjev/$id"
+
+        val request = Request.Builder()
+            .url(url)
+            .delete()
+            .build()
+
+        return try {
+            val response = executeRequest(request)
+            response.isSuccessful
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+
 }
