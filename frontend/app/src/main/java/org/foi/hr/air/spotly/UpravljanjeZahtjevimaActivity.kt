@@ -25,6 +25,7 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
     private val pageSize = 4
     private var zahtjevi by mutableStateOf<List<Zahtjev>>(emptyList())
     private var isLoading by mutableStateOf(false)
+    private var hasMoreData by mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +38,6 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
     fun UpravljanjeZahtjevimaScreen() {
         val context = LocalContext.current
 
-        // Poziv za dohvat zahtjeva kada se stranica promijeni
         LaunchedEffect(currentPage) {
             if (!isLoading) {
                 fetchZahtjevi()
@@ -67,7 +67,7 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f) // Dodano kako bi lista zauzela sav preostali prostor
+                        .weight(1f)
                 ) {
                     items(zahtjevi) { zahtjev ->
                         ZahtjevItem(zahtjev)
@@ -92,13 +92,15 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
-                Button(onClick = { nextPage() }) {
+                Button(
+                    onClick = { nextPage() },
+                    enabled = hasMoreData
+                ) {
                     Text("Next")
                 }
             }
         }
     }
-
 
     @Composable
     fun ZahtjevItem(zahtjev: Zahtjev) {
@@ -130,16 +132,20 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
                 val result = ZahtjevService.getPagedZahtjeviNaCekanju(currentPage, pageSize)
                 if (result != null) {
                     zahtjevi = result
+
+                    hasMoreData = result.size == pageSize
                 } else {
                     Toast.makeText(
                         this@UpravljanjeZahtjevimaActivity,
                         "Greška pri dohvaćanju zahtjeva",
                         Toast.LENGTH_SHORT
                     ).show()
+                    hasMoreData = false
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@UpravljanjeZahtjevimaActivity, "Došlo je do greške", Toast.LENGTH_SHORT).show()
+                hasMoreData = false
             } finally {
                 isLoading = false
             }
@@ -153,6 +159,8 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
     }
 
     private fun nextPage() {
-        currentPage++
+        if (hasMoreData) {
+            currentPage++
+        }
     }
 }

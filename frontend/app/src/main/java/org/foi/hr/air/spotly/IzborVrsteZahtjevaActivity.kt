@@ -27,7 +27,6 @@ class IzborVrsteZahtjevaActivity : ComponentActivity() {
 
 @Composable
 fun RequestSelectionScreen() {
-    // Koristimo LocalContext za dohvat konteksta
     val context = LocalContext.current
 
     Column(

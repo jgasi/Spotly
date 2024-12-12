@@ -21,17 +21,14 @@
             android:exported="true"
             android:label="@string/title_activity_brisanje_kazni_korisnika"
             android:theme="@style/Theme.Spotly" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MojiZahtjeviActivity"
             android:exported="true"
             android:label="@string/title_activity_moji_zahtjevi"
-            android:theme="@style/Theme.Spotly"></activity>
+            android:theme="@style/Theme.Spotly">
+        </activity>
         <activity
             android:name=".OdgovaranjeNaZahtjev"
             android:exported="false"
@@ -42,6 +39,11 @@
             android:exported="true"
             android:label="@string/title_activity_upravljanje_zahtjevima"
             android:theme="@style/Theme.Spotly">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".DetaljiZahtjevaActivity"
@@ -57,7 +59,8 @@
             android:name=".IzborVrsteZahtjevaActivity"
             android:exported="true"
             android:label="@string/title_activity_izbor_vrste_zahtjeva"
-            android:theme="@style/Theme.Spotly" />
+            android:theme="@style/Theme.Spotly" >
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
