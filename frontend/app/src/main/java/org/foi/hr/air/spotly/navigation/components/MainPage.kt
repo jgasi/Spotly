@@ -21,6 +21,7 @@ import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
 import kotlinx.coroutines.launch
 import org.foi.hr.air.spotly.ProfilePage
+import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
 
@@ -153,6 +154,10 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("userProfile")
             onClose()
         })
+        DrawerItem("Slanje dokumenta", onClick = {
+            navController.navigate("slanjeDokumenta")
+            onClose()
+        })
         DrawerItem("Page 2", onClick = {
             navController.navigate("page2")
             onClose()
@@ -211,6 +216,7 @@ fun NavigationHost(
         }
         composable("userProfile") { ProfilePage() }
         composable("users") { UsersPage() }
+        composable("slanjeDokumenta") { SendingDocumentsScreen() }
         composable("page2") { PageContent("Page 2") }
         composable("page3") { PageContent("Page 3") }
     }
