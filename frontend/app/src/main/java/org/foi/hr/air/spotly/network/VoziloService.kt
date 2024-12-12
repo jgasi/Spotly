@@ -7,7 +7,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import org.foi.hr.air.spotly.data.UserType
 import org.foi.hr.air.spotly.data.Vehicle
 import java.io.IOException
 import kotlin.coroutines.resume

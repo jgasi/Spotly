@@ -50,7 +50,7 @@ fun ProfilePage() {
                 val fetchedUser = UserService.fetchUserId(3) // dohvati prijavljenog korisnika
                 user.value = fetchedUser
 
-                fetchedUser?.let {
+                fetchedUser.let {
                     val fetchedUserType = UserService.fetchUserTypeId(it.tipKorisnikaId!!)
                     userType.value = fetchedUserType
 
