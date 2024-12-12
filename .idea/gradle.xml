@@ -11,6 +11,10 @@
           <set>
             <option value="$PROJECT_DIR$/frontend" />
             <option value="$PROJECT_DIR$/frontend/app" />
+            <option value="$PROJECT_DIR$/frontend/core" />
+            <option value="$PROJECT_DIR$/frontend/lookup_manual" />
+            <option value="$PROJECT_DIR$/frontend/lookup_ocr" />
+            <option value="$PROJECT_DIR$/frontend/ws" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

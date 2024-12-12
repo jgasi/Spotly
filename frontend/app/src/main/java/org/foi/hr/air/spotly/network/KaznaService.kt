@@ -40,4 +40,49 @@ object KaznaService {
             return json.decodeFromString(responseBody)
         }
     }
+
+    suspend fun fetchKazneForUserr(korisnikId: Int): List<Kazna>? {
+        val url = "$urlBase/Kazna/user/$korisnikId"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    val json = Json { ignoreUnknownKeys = true }
+                    json.decodeFromString<List<Kazna>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
+
+
+    suspend fun deleteKazna(kaznaId: Int): Boolean {
+        val request = Request.Builder()
+            .url("$urlBase/kazna/$kaznaId")
+            .delete()
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+            return response.isSuccessful
+        }
+    }
+
 }

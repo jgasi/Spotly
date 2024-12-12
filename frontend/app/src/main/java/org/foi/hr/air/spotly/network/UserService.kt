@@ -1,8 +1,6 @@
 package org.foi.hr.air.spotly.network
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,7 +15,6 @@ import kotlin.coroutines.suspendCoroutine
 import org.foi.hr.air.spotly.data.User
 import org.foi.hr.air.spotly.data.UserType
 import java.io.IOException
-import java.util.logging.Logger
 
 object UserService {
     private val urlBase = "http://10.0.2.2:5010/api"
@@ -50,6 +47,21 @@ object UserService {
         }
     }
 
+    suspend fun fetchUserId(Id: Int): User {
+        val request = Request.Builder()
+            .url("$urlBase/Korisnik/$Id")
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+
+            val json = Json { ignoreUnknownKeys = true }
+            val responseBody = response.body!!.string()
+            return json.decodeFromString(responseBody)
+        }
+    }
+
     suspend fun fetchUserTypes(): Map<Int, String> {
         val request = Request.Builder()
             .url("$urlBase/Korisnik/user-types")
@@ -63,6 +75,22 @@ object UserService {
             val responseBody = response.body!!.string()
             val types = json.decodeFromString<List<UserType>>(responseBody)
             return types.associateBy({ it.id }, { it.tip })
+        }
+    }
+
+    suspend fun fetchUserTypeId(id: Int): UserType {
+        val request = Request.Builder()
+            .url("$urlBase/Korisnik/user-types/$id")
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+
+            val json = Json { ignoreUnknownKeys = true }
+            val responseBody = response.body!!.string()
+            val types = json.decodeFromString<UserType>(responseBody)
+            return types
         }
     }
 
