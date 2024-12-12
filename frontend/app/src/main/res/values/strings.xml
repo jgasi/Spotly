@@ -12,4 +12,8 @@
     <string name="title_activity_zahtjev_za_brisanje_kazne">DeletePenaltiesRequestActivity</string>
     <string name="title_activity_detalji_zahtjeva">DetaljiZahtjevaActivity</string>
     <string name="title_activity_kazna_view_model">KaznaViewModel</string>
+    <string name="title_activity_upravljanje_zahtjevima">UpravljanjeZahtjevimaActivity</string>
+    <string name="title_activity_odgovaranje_na_zahtjev">OdgovaranjeNaZahtjev</string>
+    <string name="title_activity_moji_zahtjevi">MojiZahtjeviActivity</string>
+    <string name="title_activity_brisanje_kazni_korisnika">BrisanjeKazniKorisnikaActivity</string>
 </resources>
