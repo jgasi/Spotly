@@ -49,5 +49,10 @@ namespace Spotly.Services
             return await _tipKorisnikaRepository.GetAllAsync();
 
         }
+
+        public async Task<TipKorisnika> GetTipKorisnikaAsync(int id)
+        {
+            return await _tipKorisnikaRepository.GetByIdAsync(id);
+        }
     }
 }

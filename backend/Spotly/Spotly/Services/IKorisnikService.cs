@@ -12,5 +12,6 @@ namespace Spotly.Services
         Task<Korisnik> GetKorisnikByEmailAsync(string email);
 
         Task<IEnumerable<TipKorisnika>> GetAllTipoviKorisnikaAsync();
+        Task<TipKorisnika> GetTipKorisnikaAsync(int id); 
     }
 }
