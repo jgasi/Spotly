@@ -1,6 +1,5 @@
 package org.foi.hr.air.spotly
 
-import MainPage
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.foi.hr.air.spotly.navigation.components.LoginPage
+import org.foi.hr.air.spotly.navigation.components.UsersPage
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,11 +25,11 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
                         LoginPage(
-                            navigateToRequestDetails = { navController.navigate("mainPage") }
+                            navigateToRequestDetails = { navController.navigate("usersPage") }
                         )
                     }
-                    composable("mainPage") {
-                        MainPage()
+                    composable("usersPage") {
+                        UsersPage()
                     }
                 }
             }
