@@ -21,6 +21,14 @@ namespace Spotly.Data.Repositories
                 .Include(v => v.TipVozila)
                 .FirstOrDefaultAsync(v => v.Registracija.ToLower() == licensePlate.ToLower());
         }
+
+        public async Task<Vozilo> GetVoziloByKorisnikIdAsync(int id)
+        {
+            return await _context.Vozilos
+                .Include(v => v.Korisnik)
+                .Include(v => v.TipVozila)
+                .FirstOrDefaultAsync(v => v.KorisnikId == id);
+        }
     }
 }
 

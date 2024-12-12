@@ -41,6 +41,19 @@ namespace Spotly.Controllers
             return Ok(vozilo);
         }
 
+        [HttpGet("korisnik/{id}")]
+        public async Task<ActionResult<Vozilo>> GetVoziloByKorisnikIdAsync(int id)
+        {
+            var vozilo = await _voziloService.GetVoziloByKorisnikIdAsync(id);
+
+            if (vozilo == null)
+            {
+                return NotFound($"Korisnik {id} nema niti jednone vozilo u bazi.");
+            }
+
+            return Ok(vozilo);
+        }
+
         [HttpGet("vehicles/lookup")]
         public async Task<ActionResult> LookupVehiclesByLicensePlateAsync(string licensePlate)
         {

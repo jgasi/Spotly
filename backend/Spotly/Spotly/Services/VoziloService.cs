@@ -32,6 +32,11 @@ namespace Spotly.Services
             return await _voziloRepository.GetByIdAsync(id);
         }
 
+        public async Task<Vozilo> GetVoziloByKorisnikIdAsync(int id)
+        {
+            return await _voziloRepository.GetVoziloByKorisnikIdAsync(id);
+        }
+
         public async Task<Vozilo> GetVoziloByLicensePlateAsync(string licensePlate)
         {
             return await _voziloRepository.GetByLicensePlateAsync(licensePlate);

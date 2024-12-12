@@ -9,7 +9,6 @@ data class Vehicle(
     @SerialName("model") val model: String?,
     @SerialName("godiste") val godiste: String?,
     @SerialName("registracija") val registracija: String?,
-    @SerialName("status") val status: String?,
     @SerialName("tipVozilaId") val tipVozilaId: Int?,
     @SerialName("korisnikId") val korisnikId: Int?
 )

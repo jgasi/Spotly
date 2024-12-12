@@ -172,7 +172,18 @@ namespace Spotly.Controllers
 
             return Ok(tipoviKorisnika);
         }
+        [HttpGet("user-types/{id}")]
+        public async Task<ActionResult<IEnumerable<TipKorisnika>>> GetTipKorisnikaAsync(int id)
+        {
+            var tipKorisnika = await _korisnikService.GetTipKorisnikaAsync(id);
 
+            if (tipKorisnika == null)
+            {
+                return NotFound("Nema dostupnog tipa korisnika.");
+            }
+
+            return Ok(tipKorisnika);
+        }
 
     }
 }
