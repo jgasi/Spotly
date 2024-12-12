@@ -78,9 +78,9 @@ object UserService {
         }
     }
 
-    suspend fun fetchUserTypeId(Id: Int): UserType {
+    suspend fun fetchUserTypeId(id: Int): UserType {
         val request = Request.Builder()
-            .url("$urlBase/Korisnik/user-types/$Id")
+            .url("$urlBase/Korisnik/user-types/$id")
             .build()
 
         val response = executeRequest(request)
