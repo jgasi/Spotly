@@ -20,7 +20,12 @@ import com.example.core.vehicle_lookup.VehicleData
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
 import kotlinx.coroutines.launch
+import org.foi.hr.air.spotly.KazneScreen
+import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
+import org.foi.hr.air.spotly.RequestSelectionScreen
+import org.foi.hr.air.spotly.UpravljanjeZahtjevimaActivity
+import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
@@ -158,6 +163,22 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("slanjeDokumenta")
             onClose()
         })
+        DrawerItem("Brisanje kazni korisnika", onClick = {
+            navController.navigate("brisanjeKazniKorisnika")
+            onClose()
+        })
+        DrawerItem("Kreiraj zahtjev", onClick = {
+            navController.navigate("izborVrsteZahtjeva")
+            onClose()
+        })
+        DrawerItem("Moji zahtjevi", onClick = {
+            navController.navigate("mojiZahtjevi")
+            onClose()
+        })
+        DrawerItem("Upravljanje zahtjevima", onClick = {
+            navController.navigate("upravljanjeZahtjevima")
+            onClose()
+        })
         DrawerItem("Page 2", onClick = {
             navController.navigate("page2")
             onClose()
@@ -219,6 +240,10 @@ fun NavigationHost(
         composable("slanjeDokumenta") { SendingDocumentsScreen() }
         composable("page2") { PageContent("Page 2") }
         composable("page3") { PageContent("Page 3") }
+        composable("brisanjeKazniKorisnika") { KazneScreen() }
+        composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
+        composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
+        composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
     }
 }
 
