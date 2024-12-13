@@ -1,12 +1,8 @@
-package org.foi.hr.air.spotly
+package org.foi.hr.air.spotly.navigation.components
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +33,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -49,41 +43,19 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import org.foi.hr.air.spotly.data.Kazna
+import org.foi.hr.air.spotly.R
 import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.ParkingSpaceData
-import org.foi.hr.air.spotly.data.User
 import org.foi.hr.air.spotly.data.ZoneList
-import org.foi.hr.air.spotly.network.KaznaService.fetchKazneForUser
 import org.foi.hr.air.spotly.network.ParkingMjestoService.fetchParkingSpaces
-import org.foi.hr.air.spotly.network.UserService.fetchUserTypes
-import org.foi.hr.air.spotly.network.UserService.fetchUsers
-import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
-class ReserveParkingSpaceActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val parkingSpaceData = loadParkingSpaceData(this)
-        setContent {
-            SpotlyTheme {
-                if (parkingSpaceData != null) {
-                    ReserveParkingSpaceScreen(parkingSpaceData)
-                }
-            }
-        }
-    }
-}
 
 @Composable
-fun ReserveParkingSpaceScreen(parkingSpaceData: ParkingSpaceData?) {
+fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
 
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -102,6 +74,7 @@ fun ReserveParkingSpaceScreen(parkingSpaceData: ParkingSpaceData?) {
     val imageHeight = 2048f
 
     val configuration = LocalConfiguration.current
+    val context = LocalContext.current
     val screenWidth = configuration.screenWidthDp
     val screenHeight = configuration.screenHeightDp
 
@@ -327,7 +300,9 @@ fun ReserveParkingSpaceScreen(parkingSpaceData: ParkingSpaceData?) {
 
                 Button(
                     onClick = {
-
+                        (context as? ComponentActivity)?.lifecycleScope?.launch {
+                            Toast.makeText(context, "Work in progress!", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     Modifier.size(140.dp, 50.dp).padding(0.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.8f))
@@ -355,15 +330,4 @@ fun isPointInPolygon(point: Offset, polygon: List<Pair<Float, Float>>): Boolean 
         j = i
     }
     return isInside
-}
-
-private fun loadParkingSpaceData(context: Context): ParkingSpaceData? {
-    return try {
-        val inputStream = context.assets.open("parking_spots.json")
-        val json = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
-        Json.decodeFromString<ParkingSpaceData>(json)
-    } catch (e: Exception) {
-        Log.e("LoadParkingSpaceData", "Error loading or parsing JSON", e)
-        null
-    }
 }
