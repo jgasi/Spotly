@@ -1,3 +1,4 @@
+import android.content.Context
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.util.Log
@@ -20,6 +21,10 @@ import com.example.core.vehicle_lookup.VehicleData
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import org.foi.hr.air.spotly.ReserveParkingSpaceActivity
+import org.foi.hr.air.spotly.data.ParkingSpace
+import org.foi.hr.air.spotly.data.ParkingSpaceData
 import org.foi.hr.air.spotly.KazneScreen
 import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
@@ -29,6 +34,8 @@ import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -179,8 +186,8 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("upravljanjeZahtjevima")
             onClose()
         })
-        DrawerItem("Page 2", onClick = {
-            navController.navigate("page2")
+        DrawerItem("Parking", onClick = {
+            navController.navigate("parking")
             onClose()
         })
         DrawerItem("Page 3", onClick = {
@@ -238,7 +245,21 @@ fun NavigationHost(
         composable("userProfile") { ProfilePage() }
         composable("users") { UsersPage() }
         composable("slanjeDokumenta") { SendingDocumentsScreen() }
-        composable("page2") { PageContent("Page 2") }
+        composable("parking") {
+
+            val context = LocalContext.current
+            val parkingSpace = try {
+                val inputStream = context.assets.open("parking_spots.json")
+                val json = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
+                Json.decodeFromString<ParkingSpaceData>(json)
+            } catch (e: Exception) {
+                Log.e("LoadParkingSpaceData", "Error loading or parsing JSON", e)
+                null
+            }
+
+            ParkingSpacePage(parkingSpace)
+
+        }
         composable("page3") { PageContent("Page 3") }
         composable("brisanjeKazniKorisnika") { KazneScreen() }
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
