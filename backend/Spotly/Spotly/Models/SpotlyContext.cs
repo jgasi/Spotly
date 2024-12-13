@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,9 +43,11 @@ public partial class SpotlyContext : DbContext
 
     public virtual DbSet<Zahtjev> Zahtjevs { get; set; }
 
+    string dbPath = Path.Combine("/Users/toniivanovic/Desktop/air/Spotly/db", "spotly.db");
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-QAJPGCA\\SQLEXPRESS;Database=Spotly;Trusted_Connection=True;TrustServerCertificate=True");
+     //=> optionsBuilder.UseSqlite($"Data Source={dbPath}");
+     //=> optionsBuilder.UseSqlServer("Server=DESKTOP-T03I3I5;Database=Spotly;Trusted_Connection=True;TrustServerCertificate=True");
+     => optionsBuilder.UseSqlServer("Server=tcp:air-spotly.database.windows.net,1433;Initial Catalog=spotly;Persist Security Info=False;User ID=spotlyadmin;Password=6Jj6+3+jr0)6;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Spotly.Models;
 
@@ -27,6 +28,7 @@ public partial class Korisnik
 
     public virtual TipKorisnika? TipKorisnika { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<Vozilo> Vozilos { get; set; } = new List<Vozilo>();
 
     public virtual ICollection<Zahtjev> Zahtjevs { get; set; } = new List<Zahtjev>();

@@ -2,8 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -13,16 +18,57 @@
         android:theme="@style/Theme.Spotly"
         tools:targetApi="31">
         <activity
+            android:name=".BrisanjeKazniKorisnikaActivity"
+            android:exported="true"
+            android:label="@string/title_activity_brisanje_kazni_korisnika"
+            android:theme="@style/Theme.Spotly" >
+        </activity>
+        <activity
+            android:name=".MojiZahtjeviActivity"
+            android:exported="true"
+            android:label="@string/title_activity_moji_zahtjevi"
+            android:theme="@style/Theme.Spotly">
+        </activity>
+        <activity
+            android:name=".OdgovaranjeNaZahtjev"
+            android:exported="false"
+            android:label="@string/title_activity_odgovaranje_na_zahtjev"
+            android:theme="@style/Theme.Spotly" />
+        <activity
+            android:name=".UpravljanjeZahtjevimaActivity"
+            android:exported="true"
+            android:label="@string/title_activity_upravljanje_zahtjevima"
+            android:theme="@style/Theme.Spotly">
+        </activity>
+        <activity
+            android:name=".DetaljiZahtjevaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_detalji_zahtjeva"
+            android:theme="@style/Theme.Spotly" />
+        <activity
+            android:name=".ZahtjevZaBrisanjeKazneActivity"
+            android:exported="false"
+            android:label="@string/title_activity_zahtjev_za_brisanje_kazne"
+            android:theme="@style/Theme.Spotly" />
+        <activity
+            android:name=".IzborVrsteZahtjevaActivity"
+            android:exported="true"
+            android:label="@string/title_activity_izbor_vrste_zahtjeva"
+            android:theme="@style/Theme.Spotly"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Spotly">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".navigation.components.SendingDocumentsActivity"
+            android:exported="true"
+            android:label="@string/title_activity_sending_documents"
+            android:theme="@style/Theme.Spotly">
+        </activity>
     </application>
-
 </manifest>
