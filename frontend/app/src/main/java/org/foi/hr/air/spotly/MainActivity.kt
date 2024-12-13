@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.foi.hr.air.spotly.navigation.components.LoginPage
+import org.foi.hr.air.spotly.navigation.components.UsersPage
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
 
 class MainActivity : ComponentActivity() {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
 
@@ -29,14 +30,53 @@ namespace Spotly.Controllers
             return Ok(zahtjevi);
         }
 
+        [HttpGet("paginated")]
+        public async Task<ActionResult<IEnumerable<ZahtjevDto>>> GetPagedZahtjeviAsync(int pageNumber, int pageSize)
+        {
+            var zahtjevi = await _zahtjevService.GetPagedZahtjeviAsync(pageNumber, pageSize);
+
+            if (zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
+        [HttpGet("paginated_na_cekanju")]
+        public async Task<ActionResult<IEnumerable<ZahtjevDto>>> GetPagedZahtjeviNaCekanjuAsync(int pageNumber, int pageSize)
+        {
+            var zahtjevi = await _zahtjevService.GetPagedZahtjeviNaCekanjuAsync(pageNumber, pageSize);
+
+            if (zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva na čekanju.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<Zahtjev>> GetZahtjevByIdAsync(int id)
+        public async Task<ActionResult<ZahtjevDto>> GetZahtjevByIdAsync(int id)
         {
             var zahtjev = await _zahtjevService.GetZahtjevByIdAsync(id);
 
             if(zahtjev == null)
             {
                 return NotFound($"Zahtjev s ID {id} ne postoji.");
+            }
+
+            return Ok(zahtjev);
+        }
+
+        [HttpGet("korid/{idkor}")]
+        public async Task<ActionResult<ZahtjevDto>> GetZahtjevByKorisnikIdAsync(int idkor)
+        {
+            var zahtjev = await _zahtjevService.GetZahtjevByKorisnikIdAsync(idkor);
+
+            if (zahtjev == null)
+            {
+                return NotFound($"Zahtjev s korisnik ID {idkor} ne postoji.");
             }
 
             return Ok(zahtjev);
@@ -59,7 +99,7 @@ namespace Spotly.Controllers
 
 
         [HttpPut]
-        public async Task<ActionResult> UpdateZahtjevAsync(Zahtjev zahtjev)
+        public async Task<ActionResult> UpdateZahtjevAsync(ZahtjevDto zahtjev)
         {
             if (zahtjev == null)
             {
@@ -67,7 +107,7 @@ namespace Spotly.Controllers
             }
 
             // Hardkodirani datum jer trenutno nesto ne prihvaca datume json??
-            zahtjev.DatumVrijeme = new DateTime(2024, 11, 19, 12, 0, 0);
+            //zahtjev.DatumVrijeme = new DateTime(2024, 11, 19, 12, 0, 0);
 
             await _zahtjevService.UpdateZahtjevAsync(zahtjev);
 

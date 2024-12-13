@@ -68,6 +68,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.navigation:navigation-compose:2.8.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation(project(":core"))
     implementation(project(":lookup_manual"))

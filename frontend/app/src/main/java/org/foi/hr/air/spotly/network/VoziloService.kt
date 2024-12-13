@@ -44,6 +44,22 @@ object VoziloService {
         }
     }
 
+    suspend fun fetchVehicleByUserId(id: Int): Vehicle {
+        val request = Request.Builder()
+            .url("$urlBase/Vozilo/korisnik/$id")
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Error: $response")
+
+            val json = Json { ignoreUnknownKeys = true }
+            val responseBody = response.body!!.string()
+            val types = json.decodeFromString<Vehicle>(responseBody)
+            return types
+        }
+    }
+
     suspend fun registerVehicle(vehicleData: Vehicle): Boolean {
         val jsonBody = Json.encodeToString(vehicleData)
         val requestBody = jsonBody.toRequestBody("application/json".toMediaType())

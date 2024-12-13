@@ -1,4 +1,4 @@
-package org.foi.hr.air.spotly
+package org.foi.hr.air.spotly.navigation.components
 
 import android.content.Context
 import android.graphics.Bitmap

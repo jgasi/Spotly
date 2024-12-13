@@ -25,6 +25,13 @@ import kotlinx.serialization.json.Json
 import org.foi.hr.air.spotly.ReserveParkingSpaceActivity
 import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.ParkingSpaceData
+import org.foi.hr.air.spotly.KazneScreen
+import org.foi.hr.air.spotly.MojiZahtjeviScreen
+import org.foi.hr.air.spotly.ProfilePage
+import org.foi.hr.air.spotly.RequestSelectionScreen
+import org.foi.hr.air.spotly.UpravljanjeZahtjevimaActivity
+import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
+import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
 import java.io.BufferedReader
@@ -155,6 +162,30 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("users")
             onClose()
         })
+        DrawerItem("Profil korisnika", onClick = {
+            navController.navigate("userProfile")
+            onClose()
+        })
+        DrawerItem("Slanje dokumenta", onClick = {
+            navController.navigate("slanjeDokumenta")
+            onClose()
+        })
+        DrawerItem("Brisanje kazni korisnika", onClick = {
+            navController.navigate("brisanjeKazniKorisnika")
+            onClose()
+        })
+        DrawerItem("Kreiraj zahtjev", onClick = {
+            navController.navigate("izborVrsteZahtjeva")
+            onClose()
+        })
+        DrawerItem("Moji zahtjevi", onClick = {
+            navController.navigate("mojiZahtjevi")
+            onClose()
+        })
+        DrawerItem("Upravljanje zahtjevima", onClick = {
+            navController.navigate("upravljanjeZahtjevima")
+            onClose()
+        })
         DrawerItem("Parking", onClick = {
             navController.navigate("parking")
             onClose()
@@ -211,7 +242,9 @@ fun NavigationHost(
                 selectedImageBitmap = bitmap,
             )
         }
+        composable("userProfile") { ProfilePage() }
         composable("users") { UsersPage() }
+        composable("slanjeDokumenta") { SendingDocumentsScreen() }
         composable("parking") {
 
             val context = LocalContext.current
@@ -228,6 +261,10 @@ fun NavigationHost(
 
         }
         composable("page3") { PageContent("Page 3") }
+        composable("brisanjeKazniKorisnika") { KazneScreen() }
+        composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
+        composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
+        composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
     }
 }
 

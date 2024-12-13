@@ -12,7 +12,7 @@
 
         public string? Status { get; set; }
 
-        public DateTime DatumVrijeme { get; set; }
+        public string? DatumVrijeme { get; set; }
 
         public int? AdminId { get; set; }
 
