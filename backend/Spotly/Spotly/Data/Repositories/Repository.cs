@@ -5,8 +5,8 @@ namespace Spotly.Data.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly SpotlyContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly SpotlyContext _context;
+        protected readonly DbSet<T> _dbSet;
 
         public Repository(SpotlyContext context)
         {

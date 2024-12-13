@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
 
@@ -39,6 +40,19 @@ namespace Spotly.Controllers
             }
 
             return Ok(kazna);
+        }
+
+        [HttpGet("user/{korisnikId}")]
+        public async Task<ActionResult<IEnumerable<KaznaDto>>> GetKazneByUserIdAsync(int korisnikId)
+        {
+            var kazne = await _kaznaService.GetKazneByUserIdAsync(korisnikId);
+
+            if (kazne == null)
+            {
+                return NotFound($"Korisnik s ID {korisnikId} nema kazne.");
+            }
+
+            return Ok(kazne);
         }
 
         [HttpPost]
