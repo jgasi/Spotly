@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
 
     kotlin("plugin.serialization") version "2.0.20"
 }
@@ -63,6 +64,10 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.navigation:navigation-compose:2.7.4")
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    annotationProcessor(libs.room.compiler)
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.navigation:navigation-compose:2.8.4")
