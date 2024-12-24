@@ -1,24 +1,20 @@
 package org.foi.hr.air.spotly.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.example.core.vehicle_lookup.VehicleData
+import org.foi.hr.air.spotly.data.Reservation
+import org.foi.hr.air.spotly.network.ReservationService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,6 +22,13 @@ fun VehicleSuccessDialog(
     onDismissRequest: () -> Unit,
     vehicleData: VehicleData
 ) {
+    var reservation by remember { mutableStateOf<Reservation?>(null) }
+
+    // Fetch reservation data using the vehicle ID
+    LaunchedEffect(vehicleData.id) {
+        reservation = ReservationService.fetchReservationByVehicleId(vehicleData.id)
+    }
+
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(
@@ -88,8 +91,28 @@ fun VehicleSuccessDialog(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Display reservation details if available
+            reservation?.let {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Podaci o rezervaciji",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(text = "Datum rezervacije: ${it.datumVrijemeRezervacije}", style = MaterialTheme.typography.bodyMedium)
+                it.datumVrijemeOdlaska?.let {
+                    Text(text = "Datum odlaska: $it", style = MaterialTheme.typography.bodyMedium)
+                }
+                it.parkingMjestoId?.let {
+                    Text(text = "Parking mjesto: $it", style = MaterialTheme.typography.bodyMedium)
+                }
+            } ?: run {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Nema podataka o rezervaciji", style = MaterialTheme.typography.bodyMedium)
+            }
 
+            // Button to close the dialog
+            Spacer(modifier = Modifier.height(16.dp))
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
