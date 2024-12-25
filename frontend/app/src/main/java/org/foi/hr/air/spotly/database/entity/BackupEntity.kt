@@ -2,27 +2,24 @@ package org.foi.hr.air.spotly.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Entity(tableName = "backups")
-data class BackupEntity(
-    @PrimaryKey
-    val timestamp: Long,
-    val version: String = "",
-    val description: String = ""
-)
-
-@Entity(tableName = "korisnik")
+@Entity(tableName = "Korisnik")
+@Serializable
 data class Korisnik(
     @PrimaryKey(autoGenerate = true)
-    val ID: Int = 0,
-    val Ime: String,
-    val Prezime: String,
-    val Email: String,
-    val Lozinka: String,
-    val Datum_registracije: String
+    @SerialName("id") val ID: Int = 0,
+    @SerialName("ime") val Ime: String,
+    @SerialName("prezime") val Prezime: String,
+    @SerialName("email") val Email: String,
+    @SerialName("lozinka") val Lozinka: String,
+    @SerialName("brojMobitela") val BrojMobitela: String,
+    @SerialName("status") val Status: String,
+    @SerialName("tipKorisnikaId") val TipKorisnikaId: Int
 )
 
-@Entity(tableName = "korisnik_tip")
+@Entity(tableName = "Tip_korisnika")
 data class KorisnikTip(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
@@ -30,7 +27,7 @@ data class KorisnikTip(
     val Opis: String?
 )
 
-@Entity(tableName = "vozilo")
+@Entity(tableName = "Vozilo")
 data class Vozilo(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
@@ -42,7 +39,7 @@ data class Vozilo(
 )
 
 
-@Entity(tableName = "dokumentacija")
+@Entity(tableName = "Dokumentacija")
 data class Dokumentacija(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
@@ -52,7 +49,7 @@ data class Dokumentacija(
     val KorisnikID: Int
 )
 
-@Entity(tableName = "kazna")
+@Entity(tableName = "Kazna")
 data class Kazna(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
@@ -64,7 +61,7 @@ data class Kazna(
 )
 
 
-@Entity(tableName = "notifikacija")
+@Entity(tableName = "Notifikacija")
 data class Notifikacija(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
@@ -74,7 +71,7 @@ data class Notifikacija(
     val KorisnikID: Int?
 )
 
-@Entity(tableName = "parking_mjesto")
+@Entity(tableName = "Parking_mjesto")
 data class ParkingMjesto(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
@@ -83,7 +80,7 @@ data class ParkingMjesto(
     val Tip_mjestaID: Int?
 )
 
-@Entity(tableName = "rezervacija")
+@Entity(tableName = "Rezervacija")
 data class Rezervacija(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
@@ -93,28 +90,28 @@ data class Rezervacija(
     val Parking_mjestoID: Int?
 )
 
-@Entity(tableName = "tip_notifikacije")
+@Entity(tableName = "Tip_notifikacije")
 data class TipNotifikacije(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
     val Tip: String
 )
 
-@Entity(tableName = "tip_mjesta")
+@Entity(tableName = "Tip_mjesta")
 data class TipMjesta(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
     val Tip: String
 )
 
-@Entity(tableName = "tip_vozila")
+@Entity(tableName = "Tip_vozila")
 data class TipVozila(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,
     val Tip: String
 )
 
-@Entity(tableName = "zahtjev")
+@Entity(tableName = "Zahtjev")
 data class Zahtjev(
     @PrimaryKey(autoGenerate = true)
     val ID: Int = 0,

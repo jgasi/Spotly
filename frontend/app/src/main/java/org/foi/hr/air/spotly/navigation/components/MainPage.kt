@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.*
 import androidx.navigation.compose.*
+import androidx.room.Room
 import com.example.core.vehicle_lookup.VehicleData
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
@@ -24,10 +25,12 @@ import org.foi.hr.air.spotly.KazneScreen
 import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
 import org.foi.hr.air.spotly.RequestSelectionScreen
-import org.foi.hr.air.spotly.UpravljanjeZahtjevimaActivity
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
+import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
+import org.foi.hr.air.spotly.network.ApiService
+import org.foi.hr.air.spotly.repository.OfflineRepository
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,12 +182,8 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("upravljanjeZahtjevima")
             onClose()
         })
-        DrawerItem("Page 2", onClick = {
-            navController.navigate("page2")
-            onClose()
-        })
-        DrawerItem("Page 3", onClick = {
-            navController.navigate("page3")
+        DrawerItem("Lokalna baza podataka", onClick = {
+            navController.navigate("offlineDatabase")
             onClose()
         })
     }
@@ -244,6 +243,13 @@ fun NavigationHost(
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
         composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
+        composable("offlineDatabase") {
+            val context = LocalContext.current
+            val api = ApiService()
+            val db = AppDatabase.getDatabase(context)
+            val repository = OfflineRepository(api, db, context)
+            OfflineDatabasePage(repository)
+        }
     }
 }
 
