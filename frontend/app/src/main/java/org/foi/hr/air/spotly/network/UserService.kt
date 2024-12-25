@@ -94,6 +94,22 @@ object UserService {
         }
     }
 
+    suspend fun fetchUserTypeByKorisnikId(id: Int): UserType {
+        val request = Request.Builder()
+            .url("$urlBase/Korisnik/user-types-by-userid/$id")
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+
+            val json = Json { ignoreUnknownKeys = true }
+            val responseBody = response.body!!.string()
+            val types = json.decodeFromString<UserType>(responseBody)
+            return types
+        }
+    }
+
     suspend fun registerUser(user: User): Boolean {
         val jsonBody = Json.encodeToString(user)
         val requestBody = jsonBody.toRequestBody("application/json".toMediaType())

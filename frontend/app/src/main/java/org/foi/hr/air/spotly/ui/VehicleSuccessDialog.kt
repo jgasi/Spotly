@@ -16,8 +16,10 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.core.vehicle_lookup.VehicleData
 import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.Reservation
+import org.foi.hr.air.spotly.data.UserType
 import org.foi.hr.air.spotly.network.ParkingMjestoService
 import org.foi.hr.air.spotly.network.ReservationService
+import org.foi.hr.air.spotly.network.UserService
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -31,6 +33,8 @@ fun VehicleSuccessDialog(
 ) {
     var reservation by remember { mutableStateOf<Reservation?>(null) }
     var parkingSpace by remember { mutableStateOf<ParkingSpace?>(null) }
+    var userTypee by remember { mutableStateOf<UserType?>(null) }
+    val korisnikId: Int = vehicleData.korisnik?.id ?: 0
 
     // Fetch reservation data using the vehicle ID
     LaunchedEffect(vehicleData.id) {
@@ -42,6 +46,11 @@ fun VehicleSuccessDialog(
         reservation?.parkingMjestoId?.let { parkingMjestoId ->
             parkingSpace = ParkingMjestoService.fetchParkingSpaceById(parkingMjestoId)
         }
+    }
+
+    // Fetch user type data when user data is available
+    LaunchedEffect(korisnikId) {
+            userTypee = UserService.fetchUserTypeByKorisnikId(korisnikId)
     }
 
     // Function to get the name of the parking space type based on tipMjestaId
@@ -116,6 +125,9 @@ fun VehicleSuccessDialog(
                 }
                 user.prezime?.let {
                     Text(text = "Prezime: $it", style = MaterialTheme.typography.bodyMedium)
+                }
+                userTypee?.tip?.let {
+                    Text(text = "Uloga: $it", style = MaterialTheme.typography.bodyMedium)
                 }
                 user.email?.let {
                     Text(text = "Email: $it", style = MaterialTheme.typography.bodyMedium)
