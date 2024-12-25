@@ -1,4 +1,5 @@
 ﻿using Spotly.Data.Repositories;
+using Spotly.DTOs;
 using Spotly.Models;
 
 namespace Spotly.Services
@@ -53,6 +54,11 @@ namespace Spotly.Services
         public async Task<TipKorisnika> GetTipKorisnikaAsync(int id)
         {
             return await _tipKorisnikaRepository.GetByIdAsync(id);
+        }
+
+        public async Task<TipKorisnikaDto> GetTipKorisnikaByKorisnikIdAsync(int id)
+        {
+            return await _tipKorisnikaRepository.GetByKorisnikIdAsync(id);
         }
     }
 }
