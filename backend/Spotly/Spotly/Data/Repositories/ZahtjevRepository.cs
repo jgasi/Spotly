@@ -37,7 +37,7 @@ namespace Spotly.Data.Repositories
         public async Task<IEnumerable<ZahtjevDto>> GetPagedNaCekanjuAsync(int pageNumber, int pageSize)
         {
             var zahtjevi = await _context.Zahtjevs
-                .Where(z => z.Status == "Na cekanju")
+                .Where(z => z.Status == "Na čekanju")
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
