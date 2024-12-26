@@ -24,17 +24,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.foi.hr.air.spotly.database.entity.Korisnik
+import org.foi.hr.air.spotly.database.entity.Tip_korisnika
 import org.foi.hr.air.spotly.repository.OfflineRepository
 
 @Composable
 fun OfflineDatabasePage(repository: OfflineRepository) {
     var isOffline by remember { mutableStateOf(false) }
     var korisnici by remember { mutableStateOf<List<Korisnik>>(emptyList()) }
+    var tipovi_korisnika by remember { mutableStateOf<List<Tip_korisnika>>(emptyList()) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         isOffline = repository.isOfflineMode()
         korisnici = repository.getKorisnici()
+        tipovi_korisnika = repository.getTipKorisnika()
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -49,6 +52,7 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
                             repository.setOfflineMode(enabled)
                             isOffline = enabled
                             korisnici = repository.getKorisnici()
+                            tipovi_korisnika = repository.getTipKorisnika()
                         } catch (e: Exception) {
                             Log.e("OfflineDatabasePage", "Error toggling offline mode", e)
                         }
@@ -65,6 +69,12 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
                 items(korisnici) { korisnik ->
                     Text(
                         text = "ID: ${korisnik.ID}, Name: ${korisnik.Ime} ${korisnik.Prezime}, Email: ${korisnik.Email}",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                items(tipovi_korisnika) { tip ->
+                    Text(
+                        text = "ID: ${tip.ID}, Tip: ${tip.Tip}",
                         modifier = Modifier.padding(8.dp)
                     )
                 }

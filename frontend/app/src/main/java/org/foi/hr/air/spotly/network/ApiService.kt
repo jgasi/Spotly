@@ -27,7 +27,13 @@ class ApiService() {
     }
 
     suspend inline fun <reified T> getAll(): List<T> {
-        val className = T::class.simpleName!!.lowercase()
+        val rawClassName = T::class.simpleName!!
+        var className = rawClassName.filter { it.isLetter() }.lowercase()
+
+        if (className == "tipkorisnika") {
+            className = "korisnik/user-types"
+        }
+
         val request = Request.Builder()
             .url("$urlBase/$className")
             .build()

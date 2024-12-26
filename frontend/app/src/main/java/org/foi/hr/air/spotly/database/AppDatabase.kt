@@ -11,7 +11,7 @@ import org.foi.hr.air.spotly.database.entity.*
     entities = [
         Dokumentacija::class,
         Kazna::class,
-        KorisnikTip::class,
+        Tip_korisnika::class,
         Korisnik::class,
         Vozilo::class,
         Zahtjev::class,
@@ -22,10 +22,11 @@ import org.foi.hr.air.spotly.database.entity.*
         TipMjesta::class,
         TipVozila::class
     ],
-    version = 1
+    version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun korisnikDao(): KorisnikDao
+    abstract fun tipKorisnikaDao(): TipKorisnikaDao
 
     companion object {
         @Volatile
@@ -37,7 +38,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "spotly-db"
-                ).build().also {INSTANCE = it}
+                )
+                    .fallbackToDestructiveMigration()
+                    .build().also {INSTANCE = it}
             }
         }
     }

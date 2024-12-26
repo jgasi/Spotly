@@ -20,11 +20,11 @@ data class Korisnik(
 )
 
 @Entity(tableName = "Tip_korisnika")
-data class KorisnikTip(
+@Serializable
+data class Tip_korisnika(
     @PrimaryKey(autoGenerate = true)
-    val ID: Int = 0,
-    val Naziv: String,
-    val Opis: String?
+    @SerialName("id") val ID: Int = 0,
+    @SerialName("tip") val Tip: String,
 )
 
 @Entity(tableName = "Vozilo")

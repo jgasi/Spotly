@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
 import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.database.entity.Korisnik
+import org.foi.hr.air.spotly.database.entity.Tip_korisnika
 import org.foi.hr.air.spotly.datastore.OfflinePreferences.IS_OFFLINE
 import org.foi.hr.air.spotly.datastore.OfflinePreferences.dataStore
 import org.foi.hr.air.spotly.network.ApiService
@@ -24,7 +25,15 @@ class OfflineRepository(
         context.dataStore.edit { it[IS_OFFLINE] = enabled }
         if (enabled) {
             val korisnici = api.getAll<Korisnik>()
-            db.korisnikDao().insertAll(korisnici)
+            val tipovi_korisnika = api.getAll<Tip_korisnika>()
+            db.korisnikDao().apply {
+                deleteAll()
+                insertAll(korisnici)
+            }
+            db.tipKorisnikaDao().apply {
+                deleteAll()
+                insertAll(tipovi_korisnika)
+            }
         }
     }
 
@@ -33,6 +42,14 @@ class OfflineRepository(
             db.korisnikDao().getAll()
         } else {
             api.getAll<Korisnik>()
+        }
+    }
+
+    suspend fun getTipKorisnika(): List<Tip_korisnika> {
+        return if (isOfflineMode()) {
+            db.tipKorisnikaDao().getAll()
+        } else {
+            api.getAll<Tip_korisnika>()
         }
     }
 }
