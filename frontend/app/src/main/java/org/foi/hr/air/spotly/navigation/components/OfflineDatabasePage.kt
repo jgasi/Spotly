@@ -14,7 +14,7 @@ import org.foi.hr.air.spotly.ui.Base64Image
 @Composable
 fun OfflineDatabasePage(repository: OfflineRepository) {
     var isOffline by remember { mutableStateOf(false) }
-    var allData by remember { mutableStateOf(AllData(emptyList(), emptyList(), emptyList())) }
+    var allData by remember { mutableStateOf(AllData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())) }
     val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -24,15 +24,16 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
             Switch(
                 checked = isOffline,
                 onCheckedChange = { enabled ->
+                    Log.d("OfflineDatabasePage", "enabled: ${enabled}")
                     scope.launch {
                         if (enabled) {
                             repository.setOfflineMode(true)
-
                             allData = repository.getAll()
+                            Log.d("OfflineDatabasePage", "allData: ${allData}")
                         } else {
                             repository.setOfflineMode(false)
                             repository.deleteAll()
-                            allData = AllData(emptyList(), emptyList(), emptyList())
+                            allData = AllData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 
                             if (repository.isDbEmpty()) {
                                 Log.d("OfflineDatabasePage", "Prazno!")
@@ -67,6 +68,18 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
                 items(allData.dokumentacija) { dok ->
                     Text(
                         text = "ID: ${dok.ID}, Slika: ${dok.Slika?.let { Base64Image(it) }}, KorisnikId: ${dok.KorisnikID ?: null}, ZahtjevId: ${dok.ZahtjevId ?: null}",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                items(allData.vozila) { voz ->
+                    Text(
+                        text = "ID: ${voz.ID}, rega: ${voz.RegistracijskaOznaka}, marka: ${voz.Marka}, godiste: ${voz.GodinaProizvodnje}, model: ${voz.Model}, korisnikId: ${voz.KorisnikID}, tipvozilaId: ${voz.TipVozilaId}",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                items(allData.tipovi_vozila) {tip ->
+                    Text(
+                        text = "ID: ${tip.ID}, Tip: ${tip.Tip}",
                         modifier = Modifier.padding(8.dp)
                     )
                 }

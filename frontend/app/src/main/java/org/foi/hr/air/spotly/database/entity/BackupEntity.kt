@@ -28,14 +28,16 @@ data class Tip_korisnika(
 )
 
 @Entity(tableName = "Vozilo")
+@Serializable
 data class Vozilo(
     @PrimaryKey(autoGenerate = true)
-    val ID: Int = 0,
-    val RegistracijskaOznaka: String,
-    val Marka: String,
-    val Model: String,
-    val GodinaProizvodnje: Int,
-    val KorisnikID: Int
+    @SerialName("id") val ID: Int = 0,
+    @SerialName("registracija") val RegistracijskaOznaka: String,
+    @SerialName("marka") val Marka: String,
+    @SerialName("model") val Model: String,
+    @SerialName("godiste") val GodinaProizvodnje: String,
+    @SerialName("korisnikId") val KorisnikID: Int,
+    @SerialName("tipVozilaId") val TipVozilaId: Int
 )
 
 
@@ -105,10 +107,11 @@ data class TipMjesta(
 )
 
 @Entity(tableName = "Tip_vozila")
-data class TipVozila(
+@Serializable
+data class Tip_vozila(
     @PrimaryKey(autoGenerate = true)
-    val ID: Int = 0,
-    val Tip: String
+    @SerialName("id") val ID: Int = 0,
+    @SerialName("tip") val Tip: String,
 )
 
 @Entity(tableName = "Zahtjev")

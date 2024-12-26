@@ -12,7 +12,9 @@ import org.foi.hr.air.spotly.network.ApiService
 data class AllData(
     val korisnici: List<Korisnik>,
     val tipovi_korisnika: List<Tip_korisnika>,
-    val dokumentacija: List<Dokumentacija>
+    val dokumentacija: List<Dokumentacija>,
+    val vozila: List<Vozilo>,
+    val tipovi_vozila: List<Tip_vozila>
 )
 
 class OfflineRepository(
@@ -28,24 +30,6 @@ class OfflineRepository(
 
     suspend fun setOfflineMode(enabled: Boolean) {
         context.dataStore.edit { it[IS_OFFLINE] = enabled }
-        if (enabled) {
-            val korisnici = api.getAll<Korisnik>()
-            val tipovi_korisnika = api.getAll<Tip_korisnika>()
-            val dokumentacija = api.getAll<Dokumentacija>()
-
-            db.korisnikDao().apply {
-                deleteAll()
-                insertAll(korisnici)
-            }
-            db.tipKorisnikaDao().apply {
-                deleteAll()
-                insertAll(tipovi_korisnika)
-            }
-            db.dokumentacijaDao().apply {
-                deleteAll()
-                insertAll(dokumentacija)
-            }
-        }
     }
 
     suspend fun isDbEmpty(): Boolean {
@@ -60,44 +44,28 @@ class OfflineRepository(
             db.korisnikDao().deleteAll()
             db.tipKorisnikaDao().deleteAll()
             db.dokumentacijaDao().deleteAll()
+            db.voziloDao().deleteAll()
+            db.tipVozilaDao().deleteAll()
         }
     }
 
     suspend fun getAll(): AllData {
-        return if (isOfflineMode()) {
+        return if (!isOfflineMode()) {
             val korisnici = db.korisnikDao().getAll()
             val tipoviKorisnika = db.tipKorisnikaDao().getAll()
             val dokumentacija = db.dokumentacijaDao().getAll()
-            AllData(korisnici, tipoviKorisnika, dokumentacija)
+            val vozilo = db.voziloDao().getAll()
+            val tipoviVozila = db.tipVozilaDao().getAll()
+
+            AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila)
         } else {
             val korisnici = api.getAll<Korisnik>()
             val tipoviKorisnika = api.getAll<Tip_korisnika>()
             val dokumentacija = api.getAll<Dokumentacija>()
-            AllData(korisnici, tipoviKorisnika, dokumentacija)
-        }
-    }
+            val vozilo = api.getAll<Vozilo>()
+            val tipoviVozila = api.getAll<Tip_vozila>()
 
-    suspend fun getKorisnici(): List<Korisnik> {
-        return if (isOfflineMode()) {
-            db.korisnikDao().getAll()
-        } else {
-            api.getAll<Korisnik>()
-        }
-    }
-
-    suspend fun getTipKorisnika(): List<Tip_korisnika> {
-        return if (isOfflineMode()) {
-            db.tipKorisnikaDao().getAll()
-        } else {
-            api.getAll<Tip_korisnika>()
-        }
-    }
-
-    suspend fun getDokumentacija(): List<Dokumentacija> {
-        return if (isOfflineMode()) {
-            db.dokumentacijaDao().getAll()
-        } else {
-            api.getAll<Dokumentacija>()
+            AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila)
         }
     }
 }
