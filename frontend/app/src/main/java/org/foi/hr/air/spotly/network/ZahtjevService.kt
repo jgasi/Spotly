@@ -111,11 +111,11 @@ object ZahtjevService {
 
 
     suspend fun addZahtjev(zahtjev: Zahtjev): Boolean {
-        if (!QueueService.hasInternet()) {
-            QueueService.addToQueue(zahtjev)
-            Log.d("ZahtjevService", "Internet nije dostupan. Zahtjev dodan u red čekanja.")
-            return false
-        }
+        //if (!QueueService.hasInternet()) {
+        //    QueueService.addToQueue(zahtjev)
+        //    Log.d("ZahtjevService", "Internet nije dostupan. Zahtjev dodan u red čekanja.")
+         //   return false
+        //}
         val url = "$urlBase/Zahtjev"
         val requestBody = Json.encodeToString(zahtjev).toRequestBody(jsonMediaType)
 
