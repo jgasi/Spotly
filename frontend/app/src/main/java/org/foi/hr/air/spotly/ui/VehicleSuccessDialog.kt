@@ -25,6 +25,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VehicleSuccessDialog(
@@ -50,7 +51,7 @@ fun VehicleSuccessDialog(
 
     // Fetch user type data when user data is available
     LaunchedEffect(korisnikId) {
-            userTypee = UserService.fetchUserTypeByKorisnikId(korisnikId)
+        userTypee = UserService.fetchUserTypeByKorisnikId(korisnikId)
     }
 
     // Function to get the name of the parking space type based on tipMjestaId
@@ -74,6 +75,49 @@ fun VehicleSuccessDialog(
             "Nepoznato"
         }
     }
+
+    fun validateParking(): Pair<Boolean, String> {
+        val now = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val currentDateTime = formatter.format(now)
+
+        val errorMessages = mutableListOf<String>()
+
+        // Check if reservation has expired
+        reservation?.let {
+            if (it.datumVrijemeOdlaska != null && it.datumVrijemeOdlaska < currentDateTime) {
+                errorMessages.add("Rezervacija je istekla.")
+            }
+        }
+
+        val userType = userTypee?.tip
+        val vehicleType = vehicleData.tipVozila?.tip
+        val parkingType = parkingSpace?.tipMjestaId?.let { getParkingSpaceTypeName(it) }
+
+        // Validate based on user type and parking type
+        when (userType) {
+            "obican" -> {
+                if (!(parkingType == "Obično" || (parkingType == "Električna vozila" && vehicleType == "Električni automobil"))) {
+                    errorMessages.add("Korisnik s ulogom '$userType' ne može parkirati na ovom mjestu.")
+                }
+            }
+            "zaposlenik", "admin" -> {
+                if (!(parkingType == "Obično" || parkingType == "Zaposlenici" || (parkingType == "Električna vozila" && vehicleType == "Električni automobil"))) {
+                    errorMessages.add("Korisnik s ulogom '$userType' ne može parkirati na ovom mjestu.")
+                }
+            }
+            else -> errorMessages.add("Nepoznata uloga korisnika.")
+        }
+
+        // Return the final result
+        return if (errorMessages.isEmpty()) {
+            Pair(true, "Pravilno parkiran.")
+        } else {
+            Pair(false, errorMessages.joinToString("\n"))
+        }
+    }
+
+    val (isValid, message) = validateParking()
 
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
@@ -177,16 +221,27 @@ fun VehicleSuccessDialog(
                 } ?: run {
                     Text(text = "Tip mjesta: Nepoznato", style = MaterialTheme.typography.bodyMedium)
                 }
-            } ?: run {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Nema podataka o parking mjestu", style = MaterialTheme.typography.bodyMedium)
             }
 
-            // Close button
+            // Ispisivanje poruke
             Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isValid) Color.Green else Color.Red,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
             Button(
                 onClick = onDismissRequest,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text(text = "Kreiraj kaznu")
+            }
+
+            Button(
+                onClick = onDismissRequest,
+                modifier = Modifier.align(Alignment.End)
             ) {
                 Text(text = "Zatvori")
             }
