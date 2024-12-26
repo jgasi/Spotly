@@ -15,6 +15,7 @@ import org.foi.hr.air.spotly.ui.Base64Image
 fun OfflineDatabasePage(repository: OfflineRepository) {
     var isOffline by remember { mutableStateOf(false) }
     var allData by remember { mutableStateOf(repository.ReturnEmptyData()) }
+    var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -24,8 +25,8 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
             Switch(
                 checked = isOffline,
                 onCheckedChange = { enabled ->
-                    Log.d("OfflineDatabasePage", "enabled: ${enabled}")
                     scope.launch {
+                        isLoading = true
                         if (enabled) {
                             repository.setOfflineMode(true)
                             allData = repository.getAll()
@@ -42,6 +43,7 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
                             }
 
                         }
+                        isLoading = false
                         isOffline = enabled
                     }
                 }
@@ -49,6 +51,10 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        }
 
         Text("Podaci u offline bazi:", style = MaterialTheme.typography.titleLarge)
         if (allData.korisnici.isNotEmpty()) {
