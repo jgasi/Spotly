@@ -40,13 +40,13 @@ data class Vozilo(
 
 
 @Entity(tableName = "Dokumentacija")
+@Serializable
 data class Dokumentacija(
     @PrimaryKey(autoGenerate = true)
-    val ID: Int = 0,
-    val Naziv: String,
-    val Sadrzaj: String,
-    val DatumKreiranja: String,
-    val KorisnikID: Int
+    @SerialName("id") val ID: Int = 0,
+    @SerialName("slika") val Slika: String,
+    @SerialName("korisnikId") val KorisnikID: Int? = null,
+    @SerialName("zahtjevId") val ZahtjevId: Int? = null,
 )
 
 @Entity(tableName = "Kazna")

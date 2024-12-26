@@ -8,6 +8,8 @@ import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ApiService() {
     val urlBase: String = "http://10.0.2.2:5010/api"
@@ -26,7 +28,7 @@ class ApiService() {
         })
     }
 
-    suspend inline fun <reified T> getAll(): List<T> {
+    suspend inline fun <reified T> getAll(): List<T> = withContext(Dispatchers.IO) {
         val rawClassName = T::class.simpleName!!
         var className = rawClassName.filter { it.isLetter() }.lowercase()
 
@@ -38,10 +40,10 @@ class ApiService() {
             .url("$urlBase/$className")
             .build()
 
-        val response = this.executeRequest(request)
+        val response = executeRequest(request)
         response.use {
             if (!response.isSuccessful) throw IOException("Error: $response")
-            return json.decodeFromString(response.body!!.string())
+            return@withContext json.decodeFromString(response.body!!.string())
         }
     }
 }
