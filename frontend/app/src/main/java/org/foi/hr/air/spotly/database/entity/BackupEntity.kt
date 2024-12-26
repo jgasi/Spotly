@@ -52,14 +52,16 @@ data class Dokumentacija(
 )
 
 @Entity(tableName = "Kazna")
+@Serializable
 data class Kazna(
     @PrimaryKey(autoGenerate = true)
-    val ID: Int = 0,
-    val Iznos: Double,
-    val Opis: String?,
-    val Datum: String,
-    val KorisnikID: Int,
-    val VoziloID: Int?
+    @SerialName("id") val ID: Int = 0,
+    @SerialName("razlog") val Razlog: Double,
+    @SerialName("novcaniIznos") val NovcaniIznos: String? = null,
+    @SerialName("datumVrije,e") val DatumVrijeme: String,
+    @SerialName("korisnikId") val KorisnikID: Int? = null,
+    @SerialName("tipKazneId") val TipKazneId: Int? = null,
+    @SerialName("adminId") val AdminId: Int? = null
 )
 
 
@@ -115,12 +117,16 @@ data class Tip_vozila(
 )
 
 @Entity(tableName = "Zahtjev")
+@Serializable
 data class Zahtjev(
     @PrimaryKey(autoGenerate = true)
-    val ID: Int = 0,
-    val TipZahtjeva: String,
-    val Opis: String?,
-    val Datum: String,
-    val KorisnikID: Int,
-    val Status: String
+    @SerialName("id") val ID: Int = 0,
+    @SerialName("predmet") val Predmet: String,
+    @SerialName("poruka") val Poruka: String,
+    @SerialName("odgovor") val Odgovor: String? = null,
+    @SerialName("status") val Status: String? = null,
+    @SerialName("datumVrijeme") val DatumVrijeme: String,
+    @SerialName("adminId") val AdminId: Int? = null,
+    @SerialName("korisnikId") val KorisnikId: Int? = null,
+    @SerialName("tipZahtjevaId") val TipZahtjevaId: Int? = null
 )

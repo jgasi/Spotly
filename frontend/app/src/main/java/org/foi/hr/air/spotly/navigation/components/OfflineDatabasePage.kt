@@ -14,7 +14,7 @@ import org.foi.hr.air.spotly.ui.Base64Image
 @Composable
 fun OfflineDatabasePage(repository: OfflineRepository) {
     var isOffline by remember { mutableStateOf(false) }
-    var allData by remember { mutableStateOf(AllData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())) }
+    var allData by remember { mutableStateOf(repository.ReturnEmptyData()) }
     val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -33,7 +33,7 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
                         } else {
                             repository.setOfflineMode(false)
                             repository.deleteAll()
-                            allData = AllData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+                            allData = repository.ReturnEmptyData()
 
                             if (repository.isDbEmpty()) {
                                 Log.d("OfflineDatabasePage", "Prazno!")
@@ -82,6 +82,22 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
                         text = "ID: ${tip.ID}, Tip: ${tip.Tip}",
                         modifier = Modifier.padding(8.dp)
                     )
+                }
+                if (allData.zahtjevi.isNotEmpty()) {
+                    items(allData.zahtjevi) {zah ->
+                        Text(
+                            text = "ID: ${zah.ID}, Poruka: ${zah.Poruka}",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+                if (allData.kazne.isNotEmpty()) {
+                    items(allData.kazne) {kaz ->
+                        Text(
+                            text = "ID: ${kaz.ID}, iznos: ${kaz.NovcaniIznos}, razlog: ${kaz.Razlog}",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
                 }
             }
         } else {

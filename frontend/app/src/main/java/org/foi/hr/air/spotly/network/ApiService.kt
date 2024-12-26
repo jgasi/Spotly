@@ -1,5 +1,6 @@
 package org.foi.hr.air.spotly.network
 
+import android.util.Log
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -42,8 +43,12 @@ class ApiService() {
 
         val response = executeRequest(request)
         response.use {
-            if (!response.isSuccessful) throw IOException("Error: $response")
-            return@withContext json.decodeFromString(response.body!!.string())
+            Log.d("ApiService", "response: ${response}")
+            when (response.code) {
+                404 -> return@withContext emptyList<T>()
+                200 -> return@withContext json.decodeFromString(response.body!!.string())
+                else -> throw IOException("Error fetching data: ${response.code} - ${response.message}")
+            }
         }
     }
 }

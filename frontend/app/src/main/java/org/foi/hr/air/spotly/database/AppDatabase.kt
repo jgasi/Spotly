@@ -28,6 +28,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun korisnikDao(): KorisnikDao
     abstract fun dokumentacijaDao(): DokumentacijaDao
     abstract fun voziloDao(): VoziloDao
+    abstract fun zahtjevDao(): ZahtjevDao
+    abstract fun kaznaDao(): KaznaDao
     abstract fun tipVozilaDao(): TipVozilaDao
     abstract fun tipKorisnikaDao(): TipKorisnikaDao
 

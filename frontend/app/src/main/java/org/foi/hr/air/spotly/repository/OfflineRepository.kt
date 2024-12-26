@@ -8,13 +8,16 @@ import org.foi.hr.air.spotly.database.entity.*
 import org.foi.hr.air.spotly.datastore.OfflinePreferences.IS_OFFLINE
 import org.foi.hr.air.spotly.datastore.OfflinePreferences.dataStore
 import org.foi.hr.air.spotly.network.ApiService
+import java.io.IOException
 
 data class AllData(
     val korisnici: List<Korisnik>,
     val tipovi_korisnika: List<Tip_korisnika>,
     val dokumentacija: List<Dokumentacija>,
     val vozila: List<Vozilo>,
-    val tipovi_vozila: List<Tip_vozila>
+    val tipovi_vozila: List<Tip_vozila>,
+    val zahtjevi: List<Zahtjev>,
+    val kazne: List<Kazna>
 )
 
 class OfflineRepository(
@@ -23,6 +26,10 @@ class OfflineRepository(
     private val context: Context
 ) {
     private val dataStore = context.dataStore
+
+    fun ReturnEmptyData(): AllData {
+        return AllData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+    }
 
     suspend fun isOfflineMode(): Boolean {
         return context.dataStore.data.first()[IS_OFFLINE] ?: false
@@ -33,10 +40,15 @@ class OfflineRepository(
     }
 
     suspend fun isDbEmpty(): Boolean {
-        val korisniciEmpty = db.korisnikDao().getAll().isEmpty()
-        val tipovi = db.tipKorisnikaDao().getAll().isEmpty()
-        val dok = db.dokumentacijaDao().getAll().isEmpty()
-        return korisniciEmpty && tipovi && dok
+        return db.korisnikDao().getAll().isEmpty() &&
+                db.tipKorisnikaDao().getAll().isEmpty() &&
+                db.dokumentacijaDao().getAll().isEmpty() &&
+                db.zahtjevDao().getAll().isEmpty() &&
+                db.kaznaDao().getAll().isEmpty() &&
+                db.tipVozilaDao().getAll().isEmpty() &&
+                db.voziloDao().getAll().isEmpty() &&
+                db.kaznaDao().getAll().isEmpty() &&
+                db.zahtjevDao().getAll().isEmpty()
     }
 
     suspend fun deleteAll(){
@@ -46,6 +58,8 @@ class OfflineRepository(
             db.dokumentacijaDao().deleteAll()
             db.voziloDao().deleteAll()
             db.tipVozilaDao().deleteAll()
+            db.zahtjevDao().deleteAll()
+            db.kaznaDao().deleteAll()
         }
     }
 
@@ -56,16 +70,24 @@ class OfflineRepository(
             val dokumentacija = db.dokumentacijaDao().getAll()
             val vozilo = db.voziloDao().getAll()
             val tipoviVozila = db.tipVozilaDao().getAll()
+            val zahtjevi = db.zahtjevDao().getAll()
+            val kazne = db.kaznaDao().getAll()
 
-            AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila)
+            AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila, zahtjevi, kazne)
         } else {
-            val korisnici = api.getAll<Korisnik>()
-            val tipoviKorisnika = api.getAll<Tip_korisnika>()
-            val dokumentacija = api.getAll<Dokumentacija>()
-            val vozilo = api.getAll<Vozilo>()
-            val tipoviVozila = api.getAll<Tip_vozila>()
+            try {
+                val korisnici = api.getAll<Korisnik>()
+                val tipoviKorisnika = api.getAll<Tip_korisnika>()
+                val dokumentacija = api.getAll<Dokumentacija>()
+                val vozilo = api.getAll<Vozilo>()
+                val tipoviVozila = api.getAll<Tip_vozila>()
+                val zahtjevi = api.getAll<Zahtjev>()
+                val kazne = api.getAll<Kazna>()
 
-            AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila)
+                return AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila, zahtjevi, kazne)
+            } catch (ex: IOException) {
+                return ReturnEmptyData()
+            }
         }
     }
 }
