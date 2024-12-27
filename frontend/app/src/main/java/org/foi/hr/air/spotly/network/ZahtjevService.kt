@@ -85,6 +85,34 @@ object ZahtjevService {
         }
     }
 
+    suspend fun getPagedZahtjeviOdgovoreni(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/paginated_odgovoreni?pageNumber=$pageNumber&pageSize=$pageSize"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
 
     suspend fun getAllZahtjevi(): List<Zahtjev>? {
         val url = "$urlBase/Zahtjev"

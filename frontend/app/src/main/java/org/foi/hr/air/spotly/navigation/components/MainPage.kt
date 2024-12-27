@@ -29,6 +29,7 @@ import org.foi.hr.air.spotly.KazneScreen
 import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
 import org.foi.hr.air.spotly.RequestSelectionScreen
+import org.foi.hr.air.spotly.UpravljajOdgovorenimZahtjevimaScreen
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaActivity
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
@@ -186,6 +187,10 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("upravljanjeZahtjevima")
             onClose()
         })
+        DrawerItem("Odgovoreni zahtjevi", onClick = {
+            navController.navigate("odgovoreniZahtjevi")
+            onClose()
+        })
         DrawerItem("Parking", onClick = {
             navController.navigate("parking")
             onClose()
@@ -265,6 +270,7 @@ fun NavigationHost(
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
         composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
+        composable("odgovoreniZahtjevi") { UpravljajOdgovorenimZahtjevimaScreen() }
     }
 }
 
