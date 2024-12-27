@@ -113,6 +113,8 @@ namespace Spotly.Data.Repositories
                 throw new KeyNotFoundException($"Zahtjev s ID-om {zahtjev.Id} nije pronađen.");
             }
 
+            existingZahtjev.Poruka = zahtjev.Poruka;
+            existingZahtjev.Predmet = zahtjev.Predmet;
             existingZahtjev.Odgovor = zahtjev.Odgovor;
             existingZahtjev.Status = zahtjev.Status;
 
