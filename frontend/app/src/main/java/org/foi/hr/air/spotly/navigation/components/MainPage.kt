@@ -220,7 +220,7 @@ fun NavigationHost(
 
             HomePage(
                 manualLookupHandler = ManualLookupHandler(context, RoomVehicleLookupDataSource(db)),
-                ocrLookupHandler = OcrLookupHandler(),
+                ocrLookupHandler = OcrLookupHandler(context, RoomVehicleLookupDataSource(db)),
                 onVehicleFetched = { vehicle ->
                     if (vehicle != null) {
                         onSuccessfulLookup(vehicle)
