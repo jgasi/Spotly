@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import com.example.core.vehicle_lookup.VehicleData
@@ -28,9 +29,11 @@ import org.foi.hr.air.spotly.data.ParkingSpaceData
 import org.foi.hr.air.spotly.KazneScreen
 import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
+import org.foi.hr.air.spotly.QueueScreen
 import org.foi.hr.air.spotly.RequestSelectionScreen
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaActivity
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
+import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
@@ -182,6 +185,10 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("mojiZahtjevi")
             onClose()
         })
+        DrawerItem("Red čekanja poruka", onClick = {
+            navController.navigate("queueScreen")
+            onClose()
+        })
         DrawerItem("Upravljanje zahtjevima", onClick = {
             navController.navigate("upravljanjeZahtjevima")
             onClose()
@@ -244,6 +251,10 @@ fun NavigationHost(
         }
         composable("userProfile") { ProfilePage() }
         composable("users") { UsersPage() }
+        composable("queueScreen") {
+            val viewModel: QueueViewModel = viewModel()
+            QueueScreen(viewModel)
+        }
         composable("slanjeDokumenta") { SendingDocumentsScreen() }
         composable("parking") {
 
