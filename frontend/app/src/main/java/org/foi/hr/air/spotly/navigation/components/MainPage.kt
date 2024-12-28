@@ -237,7 +237,7 @@ fun NavigationHost(
             )
         }
         composable("userProfile") { ProfilePage() }
-        composable("users") { UsersPage() }
+        composable("users") { UsersPage(LocalContext.current) }
         composable("slanjeDokumenta") { SendingDocumentsScreen() }
         composable("page2") { PageContent("Page 2") }
         composable("page3") { PageContent("Page 3") }
