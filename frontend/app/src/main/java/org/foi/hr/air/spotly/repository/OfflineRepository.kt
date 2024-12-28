@@ -1,7 +1,9 @@
 package org.foi.hr.air.spotly.repository
 
 import android.content.Context
+import android.net.Network
 import androidx.datastore.preferences.core.edit
+import com.example.core.vehicle_lookup.network.NetworkManager
 import kotlinx.coroutines.flow.first
 import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.database.entity.*
@@ -26,6 +28,7 @@ class OfflineRepository(
     private val context: Context
 ) {
     private val dataStore = context.dataStore
+    private val networkManager = NetworkManager(context)
 
     fun ReturnEmptyData(): AllData {
         return AllData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
@@ -64,30 +67,43 @@ class OfflineRepository(
     }
 
     suspend fun getAll(): AllData {
-        return if (!isOfflineMode()) {
-            val korisnici = db.korisnikDao().getAll()
-            val tipoviKorisnika = db.tipKorisnikaDao().getAll()
-            val dokumentacija = db.dokumentacijaDao().getAll()
-            val vozilo = db.voziloDao().getAll()
-            val tipoviVozila = db.tipVozilaDao().getAll()
-            val zahtjevi = db.zahtjevDao().getAll()
-            val kazne = db.kaznaDao().getAll()
-
-            AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila, zahtjevi, kazne)
-        } else {
+        return if (networkManager.isNetworkAvailable()) {
             try {
                 val korisnici = api.getAll<Korisnik>()
                 val tipoviKorisnika = api.getAll<Tip_korisnika>()
                 val dokumentacija = api.getAll<Dokumentacija>()
-                val vozilo = api.getAll<Vozilo>()
+                val vozila = api.getAll<Vozilo>()
                 val tipoviVozila = api.getAll<Tip_vozila>()
                 val zahtjevi = api.getAll<Zahtjev>()
                 val kazne = api.getAll<Kazna>()
 
-                return AllData(korisnici, tipoviKorisnika, dokumentacija, vozilo, tipoviVozila, zahtjevi, kazne)
-            } catch (ex: IOException) {
-                return ReturnEmptyData()
+                db.korisnikDao().insertAll(korisnici)
+                db.tipKorisnikaDao().insertAll(tipoviKorisnika)
+                db.dokumentacijaDao().insertAll(dokumentacija)
+                db.voziloDao().insertAll(vozila)
+                db.tipVozilaDao().insertAll(tipoviVozila)
+                db.zahtjevDao().insertAll(zahtjevi)
+                db.kaznaDao().insertAll(kazne)
+
+                AllData(korisnici, tipoviKorisnika, dokumentacija, vozila,
+                    tipoviVozila, zahtjevi, kazne)
+            } catch (e: IOException) {
+                getFromLocalDatabase()
             }
+        } else {
+            getFromLocalDatabase()
         }
+    }
+
+    private suspend fun getFromLocalDatabase(): AllData {
+        return AllData(
+            korisnici = db.korisnikDao().getAll(),
+            tipovi_korisnika = db.tipKorisnikaDao().getAll(),
+            dokumentacija = db.dokumentacijaDao().getAll(),
+            vozila = db.voziloDao().getAll(),
+            tipovi_vozila = db.tipVozilaDao().getAll(),
+            zahtjevi = db.zahtjevDao().getAll(),
+            kazne = db.kaznaDao().getAll()
+        )
     }
 }

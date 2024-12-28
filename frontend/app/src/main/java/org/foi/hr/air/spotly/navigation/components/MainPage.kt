@@ -27,6 +27,7 @@ import org.foi.hr.air.spotly.ProfilePage
 import org.foi.hr.air.spotly.RequestSelectionScreen
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.database.AppDatabase
+import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
 import org.foi.hr.air.spotly.network.ApiService
@@ -209,6 +210,7 @@ fun NavigationHost(
     NavHost(navController = navController, startDestination = "homePage") {
         composable("homePage") {
             val context = LocalContext.current
+            val db = AppDatabase.getDatabase(context)
             val bitmap = remember(selectedImageUri) {
                 selectedImageUri?.let { uri ->
                     val androidBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
@@ -217,7 +219,7 @@ fun NavigationHost(
             }
 
             HomePage(
-                manualLookupHandler = ManualLookupHandler(),
+                manualLookupHandler = ManualLookupHandler(context, RoomVehicleLookupDataSource(db)),
                 ocrLookupHandler = OcrLookupHandler(),
                 onVehicleFetched = { vehicle ->
                     if (vehicle != null) {

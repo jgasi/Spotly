@@ -13,4 +13,10 @@ interface VoziloDao {
 
     @Query("DELETE FROM Vozilo")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM Vozilo WHERE RegistracijskaOznaka = :licensePlate")
+    suspend fun getByLicensePlate(licensePlate: String): List<Vozilo>
+
+    @Query("SELECT * FROM Vozilo WHERE ID = :id")
+    suspend fun getById(id: Int): Vozilo?
 }

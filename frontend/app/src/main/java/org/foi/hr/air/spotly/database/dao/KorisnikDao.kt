@@ -13,4 +13,7 @@ interface KorisnikDao {
 
     @Query("DELETE FROM Korisnik")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM Korisnik WHERE ID = :id")
+    suspend fun getById(id: Int): Korisnik?
 }

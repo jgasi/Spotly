@@ -13,4 +13,7 @@ interface TipVozilaDao {
 
     @Query("DELETE FROM Tip_vozila")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM Tip_vozila WHERE ID = :id")
+    suspend fun getById(id: Int): Tip_vozila?
 }

@@ -22,7 +22,7 @@ import org.foi.hr.air.spotly.database.entity.*
         TipMjesta::class,
         Tip_vozila::class
     ],
-    version = 5
+    version = 6
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun korisnikDao(): KorisnikDao

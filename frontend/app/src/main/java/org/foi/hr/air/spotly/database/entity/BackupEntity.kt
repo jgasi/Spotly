@@ -56,9 +56,9 @@ data class Dokumentacija(
 data class Kazna(
     @PrimaryKey(autoGenerate = true)
     @SerialName("id") val ID: Int = 0,
-    @SerialName("razlog") val Razlog: Double,
+    @SerialName("razlog") val Razlog: String,
     @SerialName("novcaniIznos") val NovcaniIznos: String? = null,
-    @SerialName("datumVrije,e") val DatumVrijeme: String,
+    @SerialName("datumVrijeme") val DatumVrijeme: String,
     @SerialName("korisnikId") val KorisnikID: Int? = null,
     @SerialName("tipKazneId") val TipKazneId: Int? = null,
     @SerialName("adminId") val AdminId: Int? = null
