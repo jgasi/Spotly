@@ -5,4 +5,5 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     id("org.jetbrains.compose") version "1.5.3" apply false
     alias(libs.plugins.android.library) apply false
+    id("org.jetbrains.kotlin.kapt") version "2.0.0" apply false
 }
