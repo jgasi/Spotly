@@ -33,6 +33,11 @@ namespace Spotly.Services
             return await _rezervacijaRepository.GetByIdAsync(id);
         }
 
+        public async Task<Rezervacija> GetRezervacijaByVoziloAndParkingAsync(int voziloId, int parkingMjestoId)
+        {
+            return await _rezervacijaRepository.GetByVoziloAndParking(voziloId, parkingMjestoId);
+        }
+
         public async Task UpdateRezervacijaAsync(Rezervacija rezervacija)
         {
             await _rezervacijaRepository.UpdateAsync(rezervacija);

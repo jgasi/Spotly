@@ -12,6 +12,7 @@ namespace Spotly.Controllers
     public class ParkingMjestoController : ControllerBase
     {
         private readonly IParkingMjestoService _parkingMjestoService;
+        private readonly IRezervacijaService _rezervacijaService;
 
         public ParkingMjestoController(IParkingMjestoService parkingMjestoService)
         {
@@ -48,29 +49,56 @@ namespace Spotly.Controllers
         public async Task<ActionResult> ReserveParkingSpace([FromBody] RezervacijaDto request)
         {
             if (request.Id <= 0 ||
-    request.Datum_vrijeme_rezervacije == default(DateTime) ||
-    request.Datum_vrijeme_odlaska == default(DateTime) ||
-    !request.Parking_mjestoId.HasValue ||
-    !request.VoziloId.HasValue)
+        request.Datum_vrijeme_rezervacije == default(DateTime) ||
+        request.Datum_vrijeme_odlaska == default(DateTime) ||
+        !request.Parking_mjestoId.HasValue ||
+        !request.VoziloId.HasValue)
             {
                 return BadRequest("Sva polja su obavezna.");
             }
 
             var parkingSpace = await _parkingMjestoService.GetParkingMjestoById((int)request.Parking_mjestoId);
-            if(parkingSpace == null)
+            if (parkingSpace == null)
             {
                 return BadRequest("Parking mjesto ne postoji.");
             }
-            
-            if(parkingSpace.Status == "zauzeto")
+
+            var existingReservation = await _rezervacijaService.GetRezervacijaByVoziloAndParkingAsync(
+                (int)request.VoziloId, (int)request.Parking_mjestoId);
+
+            if (existingReservation != null)
+            {
+                existingReservation.DatumVrijemeOdlaska = request.Datum_vrijeme_odlaska;
+                await _rezervacijaService.UpdateRezervacijaAsync(existingReservation);
+
+                parkingSpace.Status = "slobodno";
+                parkingSpace.Dostupnost = "slobodno";
+                await _parkingMjestoService.UpdateParkingMjesto(parkingSpace);
+
+                return Ok("Rezervacija ažurirana.");
+            }
+
+            if (parkingSpace.Status == "zauzeto" || parkingSpace.Dostupnost == "zauzeto")
             {
                 return BadRequest("Parking mjesto je već zauzeto.");
             }
 
-            if(parkingSpace.Dostupnost == "zauzeto")
+            var newReservation = new Rezervacija
             {
-                return BadRequest("Parking mjesto je već zauzeto.");
-            }
+                Id = request.Id,
+                DatumVrijemeRezervacije = request.Datum_vrijeme_rezervacije,
+                DatumVrijemeOdlaska = request.Datum_vrijeme_odlaska,
+                ParkingMjestoId = (int)request.Parking_mjestoId,
+                VoziloId = (int)request.VoziloId
+            };
+
+            await _rezervacijaService.AddRezervacijaAsync(newReservation);
+
+            parkingSpace.Status = "zauzeto";
+            parkingSpace.Dostupnost = "zauzeto";
+            await _parkingMjestoService.UpdateParkingMjesto(parkingSpace);
+
+            return Ok("Rezervacija uspješno kreirana.");
         }
     }
 }

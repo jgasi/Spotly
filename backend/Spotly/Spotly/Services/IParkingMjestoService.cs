@@ -6,5 +6,6 @@ namespace Spotly.Services
     {
         Task<IEnumerable<ParkingMjesto>> GetAllParkingMjestaAsync();
         Task<ParkingMjesto> GetParkingMjestoById(int id);
+        Task UpdateParkingMjesto(ParkingMjesto parkingMjesto);
     }
 }
