@@ -171,8 +171,8 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("slanjeDokumenta")
             onClose()
         })
-        DrawerItem("Brisanje kazni korisnika", onClick = {
-            navController.navigate("brisanjeKazniKorisnika")
+        DrawerItem("Upravljanje kaznama korisnika", onClick = {
+            navController.navigate("upraljanjeKaznamaKorisnika")
             onClose()
         })
         DrawerItem("Kreiraj zahtjev", onClick = {
@@ -266,7 +266,7 @@ fun NavigationHost(
 
         }
         composable("page3") { PageContent("Page 3") }
-        composable("brisanjeKazniKorisnika") { KazneScreen() }
+        composable("upraljanjeKaznamaKorisnika") { KazneScreen() }
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
         composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }

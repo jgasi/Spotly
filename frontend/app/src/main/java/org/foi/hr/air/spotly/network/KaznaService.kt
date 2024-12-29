@@ -90,6 +90,22 @@ object KaznaService {
         }
     }
 
+    suspend fun updateKazna(kazna: Kazna): Boolean {
+        val json = Json.encodeToString(kazna)
+        val requestBody = Json.encodeToString(kazna).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$urlBase/kazna")
+            .put(requestBody)
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+            return response.isSuccessful
+        }
+    }
+
     suspend fun deleteKazna(kaznaId: Int): Boolean {
         val request = Request.Builder()
             .url("$urlBase/kazna/$kaznaId")
