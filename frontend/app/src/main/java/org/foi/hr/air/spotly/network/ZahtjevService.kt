@@ -111,11 +111,6 @@ object ZahtjevService {
 
 
     suspend fun addZahtjev(zahtjev: Zahtjev): Boolean {
-        if (!QueueService.hasInternet()) {
-            QueueService.addToQueue(zahtjev)
-            Log.d("ZahtjevService", "Internet nije dostupan. Zahtjev dodan u red čekanja.")
-            return false
-        }
         val url = "$urlBase/Zahtjev"
         val requestBody = Json.encodeToString(zahtjev).toRequestBody(jsonMediaType)
 
@@ -129,7 +124,7 @@ object ZahtjevService {
             response.isSuccessful
         } catch (e: Exception) {
             QueueService.addToQueue(zahtjev)
-            Log.e("ZahtjevService", "Greška prilikom slanja zahtjeva: ${e.message}")
+            Log.e("ZahtjevService", "Greška prilikom slanja zahtjeva. Zahtjev stavljen u red čekanja. ${e.message}")
             false
         }
     }
