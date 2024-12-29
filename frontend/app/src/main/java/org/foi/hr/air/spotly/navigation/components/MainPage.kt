@@ -198,13 +198,10 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             onClose()
         })
         DrawerItem("Lokalna baza podataka", onClick = {
-            navController.navigate("offlineDatabase")
+            navController.navigate("offlineDatabase")})
+
         DrawerItem("Parking", onClick = {
             navController.navigate("parking")
-            onClose()
-        })
-        DrawerItem("Page 3", onClick = {
-            navController.navigate("page3")
             onClose()
         })
     }
