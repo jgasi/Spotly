@@ -44,7 +44,7 @@ object ZahtjevService {
 
             if (response?.isSuccessful == true) {
                 response.body?.string()?.let { responseBody ->
-                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                    Json.decodeFromString<List<org.foi.hr.air.spotly.data.Zahtjev>>(responseBody)
                 }
             } else {
                 null
@@ -157,7 +157,7 @@ object ZahtjevService {
             response.isSuccessful
         } catch (e: Exception) {
             QueueService.addToQueue(zahtjev)
-            Log.e("ZahtjevService", "Greška prilikom slanja zahtjeva: ${e.message}")
+            Log.e("ZahtjevService", "Greška prilikom slanja zahtjeva. Zahtjev stavljen u red čekanja. ${e.message}")
             false
         }
     }
@@ -243,6 +243,4 @@ object ZahtjevService {
             false
         }
     }
-
-
 }

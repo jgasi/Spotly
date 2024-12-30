@@ -13,10 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.foi.hr.air.spotly.navigation.components.LoginPage
+import org.foi.hr.air.spotly.network.QueueService
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        QueueService.init(applicationContext)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
