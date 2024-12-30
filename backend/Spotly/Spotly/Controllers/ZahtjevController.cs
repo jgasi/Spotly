@@ -56,6 +56,19 @@ namespace Spotly.Controllers
             return Ok(zahtjevi);
         }
 
+        [HttpGet("paginated_odgovoreni")]
+        public async Task<ActionResult<IEnumerable<ZahtjevDto>>> GetPagedZahtjeviOdgovorenAsync(int pageNumber, int pageSize)
+        {
+            var zahtjevi = await _zahtjevService.GetPagedZahtjeviOdgovoreniAsync(pageNumber, pageSize);
+
+            if (zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva sa statusom Odgovoren.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ZahtjevDto>> GetZahtjevByIdAsync(int id)
         {

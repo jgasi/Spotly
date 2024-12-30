@@ -16,4 +16,7 @@
     <string name="title_activity_odgovaranje_na_zahtjev">OdgovaranjeNaZahtjev</string>
     <string name="title_activity_moji_zahtjevi">MojiZahtjeviActivity</string>
     <string name="title_activity_brisanje_kazni_korisnika">BrisanjeKazniKorisnikaActivity</string>
+    <string name="title_activity_upravljaj_odgovorenim_zahtjevima">
+        UpravljajOdgovorenimZahtjevimaActivity
+    </string>
 </resources>

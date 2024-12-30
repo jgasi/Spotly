@@ -33,14 +33,13 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
 @Composable
 fun UpravljanjeZahtjevimaScreen() {
     var currentPage by remember { mutableStateOf(1) }
-    val pageSize = 4
+    val pageSize = 3
     var zahtjevi by remember { mutableStateOf<List<Zahtjev>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var hasMoreData by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    // Pokrećemo korutinu za dohvaćanje zahtjeva pri svakoj promjeni stranice
     LaunchedEffect(currentPage) {
         coroutineScope.launch {
             isLoading = true

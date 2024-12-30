@@ -1,4 +1,5 @@
 ﻿using Spotly.Data.Repositories;
+using Spotly.DTOs;
 using Spotly.Models;
 
 namespace Spotly.Services
@@ -15,6 +16,11 @@ namespace Spotly.Services
         public async Task<IEnumerable<ParkingMjesto>> GetAllParkingMjestaAsync()
         {
             return await _parkingMjestoRepository.GetAllAsync();
+        }
+
+        public async Task<ParkingMjesto> GetParkingMjestoByIdAsync(int id)
+        {
+            return await _parkingMjestoRepository.GetByIdAsync(id);
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Spotly.Data.Repositories
     {
         Task<IEnumerable<ZahtjevDto>> GetPagedAsync(int page, int pageSize);
         Task<IEnumerable<ZahtjevDto>> GetPagedNaCekanjuAsync(int page, int pageSize);
+        Task<IEnumerable<ZahtjevDto>> GetPagedOdgovoreniAsync(int page, int pageSize);
 
         Task<ZahtjevDto> GetZahtjevByIdAsync(int id);
         Task<IEnumerable<ZahtjevDto>> GetZahtjevByKorisnikIdAsync(int id);
