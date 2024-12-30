@@ -1,15 +1,21 @@
 package org.foi.hr.air.spotly.ui
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -68,7 +74,7 @@ fun VehicleSuccessDialog(
     fun formatDate(date: String?): String {
         return try {
             val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            val parsedDate = formatter.parse(date)
+            val parsedDate = date?.let { formatter.parse(it) }
             val outputFormatter = SimpleDateFormat("dd.MM.yyyy. HH:mm", Locale.getDefault())
             parsedDate?.let { outputFormatter.format(it) } ?: "Nepoznato"
         } catch (e: Exception) {
@@ -123,120 +129,294 @@ fun VehicleSuccessDialog(
             usePlatformDefaultWidth = false
         )
     ) {
-        Column(
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.background,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .background(Color.White)
         ) {
-            Text(
-                text = "Podaci o vozilu",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            vehicleData.marka?.let {
-                Text(text = "Marka: $it", style = MaterialTheme.typography.bodyMedium)
-            }
-            vehicleData.model?.let {
-                Text(text = "Model: $it", style = MaterialTheme.typography.bodyMedium)
-            }
-            vehicleData.godiste?.let {
-                Text(text = "Godište: $it", style = MaterialTheme.typography.bodyMedium)
-            }
-            vehicleData.registracija?.let {
-                Text(text = "Registracija: $it", style = MaterialTheme.typography.bodyMedium)
-            }
-            vehicleData.tipVozila?.let {
-                Text(text = "Tip vozila: ${vehicleData.tipVozila?.tip}", style = MaterialTheme.typography.bodyMedium)
-            }
-            vehicleData.status?.let {
-                Text(text = "Status: $it", style = MaterialTheme.typography.bodyMedium)
-            }
-
-            vehicleData.korisnik?.let { user ->
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Podaci o korisniku",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                user.ime?.let {
-                    Text(text = "Ime: $it", style = MaterialTheme.typography.bodyMedium)
-                }
-                user.prezime?.let {
-                    Text(text = "Prezime: $it", style = MaterialTheme.typography.bodyMedium)
-                }
-                userTypee?.tip?.let {
-                    Text(text = "Uloga: $it", style = MaterialTheme.typography.bodyMedium)
-                }
-                user.email?.let {
-                    Text(text = "Email: $it", style = MaterialTheme.typography.bodyMedium)
-                }
-                user.brojMobitela?.let {
-                    Text(text = "Broj mobitela: $it", style = MaterialTheme.typography.bodyMedium)
-                }
-                user.status?.let {
-                    Text(text = "Status: $it", style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-
-            reservation?.let {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Podaci o rezervaciji",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(text = "Datum rezervacije: ${formatDate(it.datumVrijemeRezervacije)}", style = MaterialTheme.typography.bodyMedium)
-                it.datumVrijemeOdlaska?.let {
-                    Text(text = "Datum odlaska: ${formatDate(it)}", style = MaterialTheme.typography.bodyMedium)
-                }
-                it.parkingMjestoId?.let {
-                    Text(text = "Parking mjesto: $it", style = MaterialTheme.typography.bodyMedium)
-                }
-            } ?: run {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Nema podataka o rezervaciji", style = MaterialTheme.typography.bodyMedium)
-            }
-
-            parkingSpace?.let {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Podaci o parking mjestu",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(text = "Status: ${it.status}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Dostupnost: ${it.dostupnost}", style = MaterialTheme.typography.bodyMedium)
-
-                it.tipMjestaId?.let { tipId ->
-                    Text(text = "Tip mjesta: ${getParkingSpaceTypeName(tipId)}", style = MaterialTheme.typography.bodyMedium)
-                } ?: run {
-                    Text(text = "Tip mjesta: Nepoznato", style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (isValid) Color.Green else Color.Red,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Button(
-                onClick = { showKaznaDialog = true },
-                modifier = Modifier.align(Alignment.End)
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxHeight()
             ) {
-                Text(text = "Kreiraj kaznu")
-            }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = "Podaci o vozilu",
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
 
-            Button(
-                onClick = onDismissRequest,
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(text = "Zatvori")
+                    vehicleData.marka?.let {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Marka: ")
+                                }
+                                append(it)
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    vehicleData.model?.let {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Model: ")
+                                }
+                                append(it)
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    vehicleData.godiste?.let {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Godište: ")
+                                }
+                                append(it)
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    vehicleData.registracija?.let {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Registracija: ")
+                                }
+                                append(it)
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    vehicleData.tipVozila?.let {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Tip vozila: ")
+                                }
+                                append(vehicleData.tipVozila?.tip ?: "")
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    vehicleData.status?.let {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Status: ")
+                                }
+                                append(it)
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                    vehicleData.korisnik?.let { user ->
+                        Text(
+                            text = "Podaci o korisniku",
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        user.ime?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Ime: ")
+                                    }
+                                    append(it)
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        user.prezime?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Prezime: ")
+                                    }
+                                    append(it)
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        userTypee?.tip?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Uloga: ")
+                                    }
+                                    append(it)
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        user.email?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Email: ")
+                                    }
+                                    append(it)
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        user.brojMobitela?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Broj mobitela: ")
+                                    }
+                                    append(it)
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        user.status?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Status: ")
+                                    }
+                                    append(it)
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                    reservation?.let {
+                        Text(
+                            text = "Podaci o rezervaciji",
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Datum rezervacije: ")
+                                }
+                                append(formatDate(it.datumVrijemeRezervacije))
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        it.datumVrijemeOdlaska?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Datum odlaska: ")
+                                    }
+                                    append(formatDate(it))
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        it.parkingMjestoId?.let {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Parking mjesto: ")
+                                    }
+                                    append(it.toString())
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    } ?: run {
+                        Text(text = "Nema podataka o rezervaciji", style = MaterialTheme.typography.bodyMedium)
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                    parkingSpace?.let {
+                        Text(
+                            text = "Podaci o parking mjestu",
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Status: ")
+                                }
+                                append(it.status)
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Dostupnost: ")
+                                }
+                                append(it.dostupnost)
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        it.tipMjestaId.let { tipId ->
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("Tip mjesta: ")
+                                    }
+                                    append(getParkingSpaceTypeName(tipId))
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (isValid) Color.Green else Color.Red,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                // Scroll Indicator
+                Icon(
+                    imageVector = Icons.Default.ExpandMore,
+                    contentDescription = "Scroll down",
+                    tint = Color.Gray,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(
+                        onClick = onDismissRequest,
+                        modifier = Modifier
+                    ) {
+                        Text(text = "Zatvori")
+                    }
+
+                    Button(
+                        onClick = { showKaznaDialog = true },
+                        modifier = Modifier
+                    ) {
+                        Text(text = "Kreiraj kaznu")
+                    }
+                }
             }
         }
     }
@@ -286,88 +466,89 @@ fun CreateKaznaDialog(onDismissRequest: () -> Unit, onSaveClick: (String, Double
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnClickOutside = false)
     ) {
-        Column(
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.background,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .background(Color.White)
         ) {
-            Text(
-                text = "Kreiraj Kaznu",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Text(text = "Razlog:", style = MaterialTheme.typography.bodyMedium)
-            BasicTextField(
-                value = razlog,
-                onValueChange = { razlog = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .background(Color.LightGray)
-                    .padding(8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(text = "Novčani Iznos:", style = MaterialTheme.typography.bodyMedium)
-            BasicTextField(
-                value = novcaniIznos,
-                onValueChange = { novcaniIznos = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .background(Color.LightGray)
-                    .padding(8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(text = "Tip kazne:", style = MaterialTheme.typography.bodyMedium)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                RadioButton(
-                    selected = selectedType == "Parkiranje u zabranjenoj zoni",
-                    onClick = { selectedType = "Parkiranje u zabranjenoj zoni" }
+                Text(
+                    text = "Kreiraj Kaznu",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-                Text(text = "Parkiranje u zabranjenoj zoni")
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
-            ) {
-                RadioButton(
-                    selected = selectedType == "Nepravilno parkiranje",
-                    onClick = { selectedType = "Nepravilno parkiranje" }
+
+                OutlinedTextField(
+                    value = razlog,
+                    onValueChange = { razlog = it },
+                    label = { Text("Razlog") },
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Text(text = "Nepravilno parkiranje")
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
-                    onClick = onDismissRequest,
-                    modifier = Modifier
-                ) {
-                    Text(text = "Zatvori")
+                OutlinedTextField(
+                    value = novcaniIznos,
+                    onValueChange = { novcaniIznos = it },
+                    label = { Text("Novčani Iznos") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(text = "Tip kazne:", style = MaterialTheme.typography.bodyMedium)
+
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        RadioButton(
+                            selected = selectedType == "Parkiranje u zabranjenoj zoni",
+                            onClick = { selectedType = "Parkiranje u zabranjenoj zoni" }
+                        )
+                        Text(text = "Parkiranje u zabranjenoj zoni")
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        RadioButton(
+                            selected = selectedType == "Nepravilno parkiranje",
+                            onClick = { selectedType = "Nepravilno parkiranje" }
+                        )
+                        Text(text = "Nepravilno parkiranje")
+                    }
                 }
 
-                Button(
-                    onClick = {
-                        val iznos = novcaniIznos.toDoubleOrNull() ?: 0.0
-                        onSaveClick(razlog, iznos, selectedType)
-                        onDismissRequest()
-                    },
-                    modifier = Modifier
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "Spremi")
+                    Button(
+                        onClick = onDismissRequest,
+                        modifier = Modifier
+                    ) {
+                        Text(text = "Zatvori")
+                    }
+
+                    Button(
+                        onClick = {
+                            val iznos = novcaniIznos.toDoubleOrNull() ?: 0.0
+                            onSaveClick(razlog, iznos, selectedType)
+                            onDismissRequest()
+                        },
+                        modifier = Modifier
+                    ) {
+                        Text(text = "Spremi")
+                    }
                 }
             }
         }
