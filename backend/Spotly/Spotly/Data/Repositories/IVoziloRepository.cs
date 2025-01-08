@@ -6,6 +6,7 @@ namespace Spotly.Data.Repositories
     {
         Task<Vozilo> GetByLicensePlateAsync(string licensePlate);
         Task<Vozilo> GetVoziloByKorisnikIdAsync(int id);
+        Task<int> GetTotalVehiclesCountAsync();
     }
 }
 

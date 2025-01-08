@@ -46,6 +46,11 @@ namespace Spotly.Services
         {
             await _voziloRepository.UpdateAsync(vozilo);
         }
+
+        public async Task<int> GetTotalVehiclesCountAsync()
+        {
+            return await _voziloRepository.GetTotalVehiclesCountAsync();
+        }
     }
 }
 

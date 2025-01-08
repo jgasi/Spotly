@@ -33,6 +33,7 @@ import org.foi.hr.air.spotly.ProfilePage
 import org.foi.hr.air.spotly.QueueScreen
 import org.foi.hr.air.spotly.RequestSelectionScreen
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
+import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
 import org.foi.hr.air.spotly.data.QueueViewModel
@@ -276,6 +277,10 @@ fun NavigationHost(
 
         }
         composable("page3") { PageContent("Page 3") }
+        composable("queueScreen") {
+            val viewModel: QueueViewModel = viewModel()
+            QueueScreen(viewModel)
+        }
         composable("brisanjeKazniKorisnika") { KazneScreen() }
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }

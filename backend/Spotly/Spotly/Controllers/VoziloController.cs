@@ -80,6 +80,13 @@ namespace Spotly.Controllers
 
         }
 
+        [HttpGet("statistics/total-vehicles")]
+        public async Task<ActionResult<int>> GetTotalVehiclesCountAsync()
+        {
+            var totalVehicles = await _voziloService.GetTotalVehiclesCountAsync();
+            return Ok(totalVehicles);
+        }
+
         [HttpPost]
         public async Task<ActionResult> AddVoziloAsync(Spotly.DTOs.AddVoziloDto vozilo)
         {
