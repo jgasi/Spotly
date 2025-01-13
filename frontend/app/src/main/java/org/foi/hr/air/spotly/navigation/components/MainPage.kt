@@ -36,7 +36,6 @@ import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
-import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
 import org.foi.hr.air.spotly.network.ApiService
@@ -201,6 +200,11 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
         DrawerItem("Lokalna baza podataka", onClick = {
             navController.navigate("offlineDatabase")})
 
+        DrawerItem("Statistika", onClick = {
+            navController.navigate("statistikaScreen/2") // Zamijeniti s ID-om korisnika
+            onClose()
+        })
+
         DrawerItem("Parking", onClick = {
             navController.navigate("parking")
             onClose()
@@ -259,6 +263,10 @@ fun NavigationHost(
         composable("queueScreen") {
             val viewModel: QueueViewModel = viewModel()
             QueueScreen(viewModel)
+        }
+        composable("statistikaScreen/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: 0
+            StatistikaScreen(userId)
         }
         composable("slanjeDokumenta") { SendingDocumentsScreen() }
         composable("parking") {
