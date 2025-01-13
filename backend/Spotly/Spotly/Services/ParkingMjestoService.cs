@@ -22,5 +22,25 @@ namespace Spotly.Services
         {
             return await _parkingMjestoRepository.GetByIdAsync(id);
         }
+
+        public async Task<int> GetTotalParkingMjestaAsync()
+        {
+            return await _parkingMjestoRepository.GetCountAsync();
+        }
+
+        public async Task<int> GetAvailableParkingMjestaAsync()
+        {
+            return await _parkingMjestoRepository.GetCountByStatusAsync("Slobodno");
+        }
+
+        public async Task<int> GetReservedParkingMjestaAsync()
+        {
+            return await _parkingMjestoRepository.GetCountByStatusAsync("Rezervirano");
+        }
+
+        public async Task<int> GetBlockedParkingMjestaAsync()
+        {
+            return await _parkingMjestoRepository.GetCountByStatusAsync("Blokirano");
+        }
     }
 }
