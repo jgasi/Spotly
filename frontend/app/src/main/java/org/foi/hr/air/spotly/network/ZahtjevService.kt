@@ -44,7 +44,7 @@ object ZahtjevService {
 
             if (response?.isSuccessful == true) {
                 response.body?.string()?.let { responseBody ->
-                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                    Json.decodeFromString<List<org.foi.hr.air.spotly.data.Zahtjev>>(responseBody)
                 }
             } else {
                 null
@@ -59,6 +59,34 @@ object ZahtjevService {
 
     suspend fun getPagedZahtjeviNaCekanju(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
         val url = "$urlBase/Zahtjev/paginated_na_cekanju?pageNumber=$pageNumber&pageSize=$pageSize"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
+    suspend fun getPagedZahtjeviOdgovoreni(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/paginated_odgovoreni?pageNumber=$pageNumber&pageSize=$pageSize"
 
         val request = Request.Builder()
             .url(url)
@@ -210,6 +238,4 @@ object ZahtjevService {
             false
         }
     }
-
-
 }
