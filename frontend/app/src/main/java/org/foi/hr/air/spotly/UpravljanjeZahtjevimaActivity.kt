@@ -24,7 +24,6 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Pozivamo novu verziju Composable funkcije
             UpravljanjeZahtjevimaScreen()
         }
     }
@@ -32,30 +31,25 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
 
 @Composable
 fun UpravljanjeZahtjevimaScreen() {
-    var currentPage by remember { mutableStateOf(1) }
-    val pageSize = 3
     var zahtjevi by remember { mutableStateOf<List<Zahtjev>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
-    var hasMoreData by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    LaunchedEffect(currentPage) {
+    LaunchedEffect(Unit) {
         coroutineScope.launch {
             isLoading = true
             val result = withContext(Dispatchers.IO) {
-                ZahtjevService.getPagedZahtjeviNaCekanju(currentPage, pageSize)
+                ZahtjevService.getZahtjeviNaCekanju()
             }
             if (result != null) {
                 zahtjevi = result
-                hasMoreData = result.size == pageSize
             } else {
                 Toast.makeText(
                     context,
                     "Greška pri dohvaćanju zahtjeva",
                     Toast.LENGTH_SHORT
                 ).show()
-                hasMoreData = false
             }
             isLoading = false
         }
@@ -91,31 +85,6 @@ fun UpravljanjeZahtjevimaScreen() {
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { if (currentPage > 1) currentPage-- }, // Promjena stranice
-                enabled = currentPage > 1
-            ) {
-                Text("Previous")
-            }
-            Text(
-                "Page: $currentPage",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-            Button(
-                onClick = { if (hasMoreData) currentPage++ }, // Promjena stranice
-                enabled = hasMoreData
-            ) {
-                Text("Next")
-            }
-        }
     }
 }
 
@@ -125,12 +94,24 @@ fun ZahtjevItem(zahtjev: Zahtjev) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.elevatedCardElevation(4.dp) // Add elevation for better design
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Naslov: ${zahtjev.predmet}")
-            Text("Poruka: ${zahtjev.poruka}")
-            Text("Status: ${zahtjev.status}")
+            Text(
+                "Naslov: ${zahtjev.predmet}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                "Poruka: ${zahtjev.poruka}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                "Status: ${zahtjev.status}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
