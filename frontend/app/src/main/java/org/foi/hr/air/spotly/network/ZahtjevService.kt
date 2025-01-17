@@ -57,6 +57,34 @@ object ZahtjevService {
         }
     }
 
+    suspend fun getZahtjeviNaCekanju(): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/nacekanju"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
     suspend fun getPagedZahtjeviNaCekanju(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
         val url = "$urlBase/Zahtjev/paginated_na_cekanju?pageNumber=$pageNumber&pageSize=$pageSize"
 
