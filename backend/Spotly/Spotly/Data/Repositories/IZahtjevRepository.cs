@@ -6,6 +6,7 @@ namespace Spotly.Data.Repositories
     public interface IZahtjevRepository : IRepository<Zahtjev>
     {
         Task<IEnumerable<ZahtjevDto>> GetPagedAsync(int page, int pageSize);
+        Task<IEnumerable<ZahtjevDto>> GetZahtjeviNaCekanjuAsync();
         Task<IEnumerable<ZahtjevDto>> GetPagedNaCekanjuAsync(int page, int pageSize);
         Task<IEnumerable<ZahtjevDto>> GetPagedOdgovoreniAsync(int page, int pageSize);
 
