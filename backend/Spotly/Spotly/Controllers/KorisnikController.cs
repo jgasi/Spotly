@@ -164,7 +164,7 @@ namespace Spotly.Controllers
                     korisnik.Prezime,
                     korisnik.Email,
                     korisnik.TipKorisnikaId,
-                    token = token
+                    token
                 }
             });
         }

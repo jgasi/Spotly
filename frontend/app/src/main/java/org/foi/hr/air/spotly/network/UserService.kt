@@ -7,6 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -159,7 +161,7 @@ object UserService {
             if (response.isSuccessful) {
                 var responseBody = response.body?.toString()
                 val json = Json { ignoreUnknownKeys = true }
-                val loginResponse = json.decodeFromString(responseBody!!)
+                val loginResponse = json.decodeFromString<LoginResponse>(responseBody!!)
                 UserStore.setUser(loginResponse.user)
                 Result.success(Unit)
             } else {
@@ -169,4 +171,10 @@ object UserService {
             Result.failure(e)
         }
     }
+
+    @Serializable
+    data class LoginResponse(
+        val message: String,
+        val user: User
+    )
 }
