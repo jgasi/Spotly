@@ -11,5 +11,6 @@ data class User(
     @SerialName("lozinka") val lozinka: String,
     @SerialName("brojMobitela") val brojMobitela: String?,
     @SerialName("status") val status: String?,
-    @SerialName("tipKorisnikaId") val tipKorisnikaId: Int?
+    @SerialName("tipKorisnikaId") val tipKorisnikaId: Int?,
+    @SerialName("token") val token: String? = null
 )

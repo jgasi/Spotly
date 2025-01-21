@@ -19,6 +19,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import org.foi.hr.air.spotly.data.User
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.UserType
 import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
@@ -156,6 +157,10 @@ object UserService {
 
             val response = executeRequest(request)
             if (response.isSuccessful) {
+                var responseBody = response.body?.toString()
+                val json = Json { ignoreUnknownKeys = true }
+                val loginResponse = json.decodeFromString(responseBody!!)
+                UserStore.setUser(loginResponse.user)
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Prijava nije uspjela, provjerite podatke i pokušajte ponovno!, ${response.message}"))
