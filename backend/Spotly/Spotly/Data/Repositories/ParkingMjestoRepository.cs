@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Spotly.DTOs;
+using Microsoft.EntityFrameworkCore;
 using Spotly.Models;
 
 namespace Spotly.Data.Repositories

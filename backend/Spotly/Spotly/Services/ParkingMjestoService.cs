@@ -18,6 +18,11 @@ namespace Spotly.Services
             return await _parkingMjestoRepository.GetAllAsync();
         }
 
+        public async Task UpdateBlockStateAsync(ParkingMjesto parkingMjesto)
+        {
+            await _parkingMjestoRepository.UpdateAsync(parkingMjesto);
+        }
+
         public async Task<ParkingMjesto> GetParkingMjestoByIdAsync(int id)
         {
             return await _parkingMjestoRepository.GetByIdAsync(id);
