@@ -1,12 +1,9 @@
 package org.foi.hr.air.spotly.network
 
 import android.util.Log
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.foi.hr.air.spotly.data.ParkingSpace
 import java.io.IOException
@@ -44,23 +41,6 @@ object ParkingMjestoService {
             val responseBody = response.body!!.string()
             Log.d("ParkingSpace", "Parking space is: ${responseBody}")
             return json.decodeFromString(responseBody)
-        }
-    }
-
-    suspend fun updateParkingSpace(parkingSpace: ParkingSpace): Boolean {
-        val requestBody = Json.encodeToString(parkingSpace).toRequestBody("application/json".toMediaTypeOrNull())
-        val request = Request.Builder()
-            .url("$urlBase/ParkingMjesto/")
-            .put(requestBody)
-            .build()
-
-        val response = executeRequest(request)
-        response.use {
-            if (!response.isSuccessful) {
-                Log.e("ParkingSpace", "Greška prilikom ažuriranja: $response")
-                return false
-            }
-            return true
         }
     }
 }

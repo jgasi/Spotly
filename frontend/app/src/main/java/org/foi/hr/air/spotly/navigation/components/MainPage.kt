@@ -1,3 +1,4 @@
+import android.content.Context
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.util.Log
@@ -21,15 +22,17 @@ import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import org.foi.hr.air.spotly.ReserveParkingSpaceActivity
+import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.ParkingSpaceData
 import org.foi.hr.air.spotly.KazneScreen
 import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
 import org.foi.hr.air.spotly.RequestSelectionScreen
+import org.foi.hr.air.spotly.UpravljanjeZahtjevimaActivity
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
-import org.foi.hr.air.spotly.ui.ParkingAvailabilityPage
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -187,10 +190,6 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("parking")
             onClose()
         })
-        DrawerItem("Zaposleničko mjesto", onClick = {
-            navController.navigate("parkingAvailability")
-            onClose()
-        })
         DrawerItem("Page 3", onClick = {
             navController.navigate("page3")
             onClose()
@@ -229,7 +228,9 @@ fun NavigationHost(
                 manualLookupHandler = ManualLookupHandler(),
                 ocrLookupHandler = OcrLookupHandler(),
                 onVehicleFetched = { vehicle ->
-                    onSuccessfulLookup(vehicle)
+                    if (vehicle != null) {
+                        onSuccessfulLookup(vehicle)
+                    }
                 },
                 onError = { errorMessage, errorStatus ->
                     Log.d("MainPage", "$errorMessage, $errorStatus")
@@ -264,7 +265,6 @@ fun NavigationHost(
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
         composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
-        composable("parkingAvailability") { ParkingAvailabilityPage() }
     }
 }
 
