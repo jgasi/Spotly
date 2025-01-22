@@ -46,8 +46,8 @@ public partial class SpotlyContext : DbContext
     string dbPath = Path.Combine("/Users/toniivanovic/Desktop/air/Spotly/db", "spotly.db");
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
      //=> optionsBuilder.UseSqlite($"Data Source={dbPath}");
-     => optionsBuilder.UseSqlServer("Server=DESKTOP-GR1J490;Database=Spotly;Trusted_Connection=True;TrustServerCertificate=True");
-     //=> optionsBuilder.UseSqlServer("Server=tcp:air-spotly.database.windows.net,1433;Initial Catalog=spotly;Persist Security Info=False;User ID=spotlyadmin;Password=6Jj6+3+jr0)6;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;");
+     // => optionsBuilder.UseSqlServer("Server=DESKTOP-GR1J490;Database=Spotly;Trusted_Connection=True;TrustServerCertificate=True");
+     => optionsBuilder.UseSqlServer("Server=tcp:air-spotly.database.windows.net,1433;Initial Catalog=spotly;Persist Security Info=False;User ID=spotlyadmin;Password=6Jj6+3+jr0)6;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
