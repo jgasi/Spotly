@@ -1,4 +1,3 @@
-import android.content.Context
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.util.Log
@@ -18,7 +17,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
-import androidx.room.Room
 import com.example.core.vehicle_lookup.VehicleData
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
