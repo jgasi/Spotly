@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.example.core.vehicle_lookup.*
 import com.example.lookup_manual.*
@@ -28,7 +29,7 @@ fun HomePage(
             isLoading = true
             ocrLookupHandler.extractLicensePlateFromImage(bitmap.asAndroidBitmap()) {extractedPlate ->
                 if (extractedPlate != null) {
-                    ocrLookupHandler.handleLookup(extractedPlate, object : LookupOutcomeListener {
+                    ocrLookupHandler.handleLookup(extractedPlate.uppercase(), object : LookupOutcomeListener {
                         override fun onSuccessfulLookup(vehicleData: VehicleData) {
                             isLoading = false
                             onVehicleFetched(vehicleData)
@@ -69,7 +70,7 @@ fun HomePage(
         Button(
             onClick = {
                 isLoading = true
-                manualLookupHandler.handleLookup(licensePlate, object : LookupOutcomeListener {
+                manualLookupHandler.handleLookup(licensePlate.uppercase(), object : LookupOutcomeListener {
                     override fun onSuccessfulLookup(vehicleData: VehicleData) {
                         isLoading = false
                         onVehicleFetched(vehicleData)

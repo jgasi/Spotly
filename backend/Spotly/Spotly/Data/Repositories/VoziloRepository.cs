@@ -29,6 +29,11 @@ namespace Spotly.Data.Repositories
                 .Include(v => v.TipVozila)
                 .FirstOrDefaultAsync(v => v.KorisnikId == id);
         }
+
+        public async Task<int> GetTotalVehiclesCountAsync()
+        {
+            return await _context.Vozilos.CountAsync();
+        }
     }
 }
 

@@ -3,8 +3,13 @@ package org.foi.hr.air.spotly.network
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.foi.hr.air.spotly.data.Zahtjev
@@ -17,10 +22,12 @@ object QueueService {
 
     private val queue = mutableListOf<Zahtjev>()
 
-    fun initialize(context: Context) {
+    fun init(context: Context) {
         appContext = context.applicationContext
         sharedPreferences = appContext.getSharedPreferences(QUEUE_PREF, Context.MODE_PRIVATE)
         loadQueue()
+
+        NetworkMonitor(appContext).startMonitoring()
     }
 
     private fun loadQueue() {
@@ -73,5 +80,41 @@ object QueueService {
         }
     }
 
-    fun hasInternet(): Boolean = isInternetAvailable()
+    fun deleteFromQueue(zahtjevId: Int) {
+        val iterator = queue.iterator()
+        while (iterator.hasNext()) {
+            val zahtjev = iterator.next()
+            if (zahtjev.id == zahtjevId) {
+                iterator.remove()  // Brisanje zahtjeva iz reda
+                saveQueue()  // Ažuriranje podataka u SharedPreferences
+                Log.d("QueueService", "Zahtjev s ID $zahtjevId uspješno obrisan.")
+                return
+            }
+        }
+        Log.d("QueueService", "Zahtjev s ID $zahtjevId nije pronađen u redu.")
+    }
+}
+
+class NetworkMonitor(private val context: Context) {
+
+    private val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    fun startMonitoring() {
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+
+        connectivityManager.registerNetworkCallback(request, object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                Log.d("NetworkMonitor", "Internet dostupan - procesiranje reda.")
+
+                // Kada internet postane dostupan, pokrećemo `processQueue` iz coroutine
+                GlobalScope.launch(Dispatchers.Main) {
+                    QueueService.processQueue()  // Pozivamo suspend funkciju
+                }
+            }
+        })
+    }
 }

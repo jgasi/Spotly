@@ -11,6 +11,7 @@ namespace Spotly.Services
         Task AddVoziloAsync(Vozilo vozilo);
         Task UpdateVoziloAsync(Vozilo vozilo);
         Task DeleteVoziloAsync(int id);
+        Task<int> GetTotalVehiclesCountAsync();
     }
 }
 

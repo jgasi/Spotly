@@ -1,4 +1,5 @@
-﻿using Spotly.Models;
+﻿using Spotly.DTOs;
+using Spotly.Models;
 
 namespace Spotly.Services
 {
@@ -12,6 +13,7 @@ namespace Spotly.Services
         Task<Korisnik> GetKorisnikByEmailAsync(string email);
 
         Task<IEnumerable<TipKorisnika>> GetAllTipoviKorisnikaAsync();
-        Task<TipKorisnika> GetTipKorisnikaAsync(int id); 
+        Task<TipKorisnika> GetTipKorisnikaAsync(int id);
+        Task<TipKorisnikaDto> GetTipKorisnikaByKorisnikIdAsync(int id);
     }
 }

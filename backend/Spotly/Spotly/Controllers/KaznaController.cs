@@ -107,5 +107,19 @@ namespace Spotly.Controllers
 
             return Ok();
         }
+
+        [HttpGet("statistics/total")]
+        public async Task<ActionResult<int>> GetTotalKazneCountAsync()
+        {
+            var totalKazne = await _kaznaService.GetTotalKazneCountAsync();
+            return Ok(totalKazne);
+        }
+
+        [HttpGet("statistics/user/{korisnikId}")]
+        public async Task<ActionResult<int>> GetKazneCountByUserIdAsync(int korisnikId)
+        {
+            var userKazneCount = await _kaznaService.GetKazneCountByUserIdAsync(korisnikId);
+            return Ok(userKazneCount);
+        }
     }
 }

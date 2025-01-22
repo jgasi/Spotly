@@ -80,9 +80,9 @@ fun DetaljiZahtjevaScreen(korisnikId: Int) {
                         odgovor = null,
                         status = "Na čekanju",
                         datumVrijeme = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-                        korisnikId = korisnikId,
                         adminId = null,
-                        tipZahtjevaId = 2 // hard kodiran jer je ovaj Activity isključivo za kazne
+                        korisnikId = korisnikId,
+                        tipZahtjevaId = 1 // hard kodiran jer je ovaj Activity isključivo za kazne
                     )
 
                     (context as? ComponentActivity)?.lifecycleScope?.launch {

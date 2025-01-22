@@ -63,4 +63,21 @@ object ParkingMjestoService {
             return true
         }
     }
+
+    suspend fun fetchParkingSpaceById(id: Int): ParkingSpace? {
+        val request = Request.Builder()
+            .url("$urlBase/ParkingMjesto/$id")
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+
+            val json = Json { ignoreUnknownKeys = true }
+            val responseBody = response.body!!.string()
+            Log.d("ParkingSpace", "Parking space is: $responseBody")
+            return json.decodeFromString<ParkingSpace>(responseBody)
+        }
+    }
+
 }

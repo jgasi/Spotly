@@ -1,4 +1,5 @@
 ﻿using Spotly.Data.Repositories;
+using Spotly.DTOs;
 using Spotly.Models;
 
 namespace Spotly.Services
@@ -7,15 +8,20 @@ namespace Spotly.Services
     {
 
         private readonly IRezervacijaRepository _rezervacijaRepository;
-        private readonly IParkingMjestoRepository _parkingMjestoRepository;
-        public RezervacijaService(IRezervacijaRepository rezervacijaRepository, IParkingMjestoRepository parkingMjestoRepository)
+        //private readonly IParkingMjestoRepository _parkingMjestoRepository;
+        public RezervacijaService(IRezervacijaRepository rezervacijaRepository)
         {
             _rezervacijaRepository = rezervacijaRepository;
-            _parkingMjestoRepository = parkingMjestoRepository;
+            //_parkingMjestoRepository = parkingMjestoRepository;
         }
         public async Task AddRezervacijaAsync(Rezervacija rezervacija)
         {
             await _rezervacijaRepository.AddAsync(rezervacija);
+        }
+
+        public async Task DeleteRezervacijaAsync(int id)
+        {
+            await _rezervacijaRepository.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<Rezervacija>> GetAllRezervacijeAsync()
@@ -23,14 +29,19 @@ namespace Spotly.Services
             return await _rezervacijaRepository.GetAllAsync();
         }
 
-        public Task<ParkingMjesto> GetParkingMjestoKorisnikaAsync(int parkingMjestoId)
-        {
-            return _parkingMjestoRepository.GetByIdAsync(parkingMjestoId);
-        }
+        //public Task<ParkingMjesto> GetParkingMjestoKorisnikaAsync(int parkingMjestoId)
+        //{
+        //    return _parkingMjestoRepository.GetByIdAsync(parkingMjestoId);
+        //}
 
-        public async Task<Rezervacija> GetRezervacijaByIdAsync(int id)
+        public async Task<RezervacijaDto> GetRezervacijaByIdAsync(int id)
         {
             return await _rezervacijaRepository.GetByIdAsync(id);
+        }
+
+        public async Task<RezervacijaDto> GetRezervacijaByVoziloIdAsync(int id)
+        {
+            return await _rezervacijaRepository.GetByVoziloIdAsync(id);
         }
 
         public async Task UpdateRezervacijaAsync(Rezervacija rezervacija)

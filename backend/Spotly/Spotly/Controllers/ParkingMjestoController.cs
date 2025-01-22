@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
 
 namespace Spotly.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class ParkingMjestoController : ControllerBase
@@ -27,6 +27,36 @@ namespace Spotly.Controllers
             }
 
             return Ok(parkingMjesta);
+        }
+
+        [HttpGet("statistics")]
+        public async Task<ActionResult> GetParkingStatisticsAsync()
+        {
+            var total = await _parkingMjestoService.GetTotalParkingMjestaAsync();
+            var available = await _parkingMjestoService.GetAvailableParkingMjestaAsync();
+            var reserved = await _parkingMjestoService.GetReservedParkingMjestaAsync();
+            var blocked = await _parkingMjestoService.GetBlockedParkingMjestaAsync();
+
+            return Ok(new
+            {
+                Ukupno = total,
+                Slobodna = available,
+                Rezervirana = reserved,
+                Blokirana = blocked
+            });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ParkingMjesto>> GetParkingMjestoByIdAsync(int id)
+        {
+            var parkingMjesto = await _parkingMjestoService.GetParkingMjestoByIdAsync(id);
+
+            if (parkingMjesto == null)
+            {
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
+            }
+
+            return Ok(parkingMjesto);
         }
 
         [HttpPut]

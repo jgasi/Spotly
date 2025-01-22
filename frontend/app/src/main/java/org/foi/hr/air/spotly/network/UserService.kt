@@ -1,6 +1,12 @@
 package org.foi.hr.air.spotly.network
 
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
+import com.example.core.vehicle_lookup.LookupOutcomeListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,6 +20,8 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import org.foi.hr.air.spotly.data.User
 import org.foi.hr.air.spotly.data.UserType
+import org.foi.hr.air.spotly.database.AppDatabase
+import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
 import java.io.IOException
 
 object UserService {
@@ -81,6 +89,22 @@ object UserService {
     suspend fun fetchUserTypeId(id: Int): UserType {
         val request = Request.Builder()
             .url("$urlBase/Korisnik/user-types/$id")
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+
+            val json = Json { ignoreUnknownKeys = true }
+            val responseBody = response.body!!.string()
+            val types = json.decodeFromString<UserType>(responseBody)
+            return types
+        }
+    }
+
+    suspend fun fetchUserTypeByKorisnikId(id: Int): UserType {
+        val request = Request.Builder()
+            .url("$urlBase/Korisnik/user-types-by-userid/$id")
             .build()
 
         val response = executeRequest(request)

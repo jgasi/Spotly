@@ -1,5 +1,7 @@
 package org.foi.hr.air.spotly.navigation.components
 
+import android.content.Context
+import android.net.Network
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,26 +14,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.core.vehicle_lookup.network.NetworkManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.foi.hr.air.spotly.data.User
+import org.foi.hr.air.spotly.data.UserType
+import org.foi.hr.air.spotly.database.AppDatabase
+import org.foi.hr.air.spotly.datastore.RoomUsersDataSource
 import org.foi.hr.air.spotly.network.UserService.fetchUserTypes
 import org.foi.hr.air.spotly.network.UserService.fetchUsers
 import org.foi.hr.air.spotly.network.UserService.registerUser
 
 @Composable
-fun UsersPage() {
+fun UsersPage(
+    context: Context
+) {
     var users by remember { mutableStateOf(listOf<User>()) }
     var userTypes by remember { mutableStateOf(mapOf<Int, String>()) }
     val coroutineScope = rememberCoroutineScope()
     var showRegistration by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
+    val networkManager = NetworkManager(context)
+    val offlineDb = RoomUsersDataSource(AppDatabase.getDatabase(context))
+
+    suspend fun fetchOfflineUsers(): List<User> {
+        return offlineDb.fetchUsers()
+    }
+    suspend fun fetchOfflineUserTypes(): Map<Int, String> {
+        return offlineDb.fetchUserTypes()
+    }
+
     fun fetchUserData() {
         coroutineScope.launch {
             isLoading = true
+
             try {
-                users = fetchUsers()
-                userTypes = fetchUserTypes()
+                if (networkManager.isNetworkAvailable()) {
+                    users = fetchUsers()
+                    userTypes = fetchUserTypes()
+                } else {
+                    users = fetchOfflineUsers()
+                    userTypes = fetchOfflineUserTypes()
+                }
             } catch (e: Exception) {
                 Log.e("UsersPage", "Error fetching users: ${e.message}")
             } finally {
