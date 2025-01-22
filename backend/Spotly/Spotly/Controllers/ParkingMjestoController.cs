@@ -14,9 +14,10 @@ namespace Spotly.Controllers
         private readonly IParkingMjestoService _parkingMjestoService;
         private readonly IRezervacijaService _rezervacijaService;
 
-        public ParkingMjestoController(IParkingMjestoService parkingMjestoService)
+        public ParkingMjestoController(IParkingMjestoService parkingMjestoService, IRezervacijaService rezervacijaService)
         {
             _parkingMjestoService = parkingMjestoService;
+            _rezervacijaService = rezervacijaService;
         }
 
         [HttpGet]
@@ -63,29 +64,32 @@ namespace Spotly.Controllers
                 return BadRequest("Parking mjesto ne postoji.");
             }
 
+            int voziloId = (int)request.VoziloId;
+            int parkingMjestoId = (int)request.Parking_mjestoId;
+
+
             var existingReservation = await _rezervacijaService.GetRezervacijaByVoziloAndParkingAsync(
-                (int)request.VoziloId, (int)request.Parking_mjestoId);
+                voziloId, parkingMjestoId);
 
             if (existingReservation != null)
             {
                 existingReservation.DatumVrijemeOdlaska = request.Datum_vrijeme_odlaska;
                 await _rezervacijaService.UpdateRezervacijaAsync(existingReservation);
 
-                parkingSpace.Status = "slobodno";
-                parkingSpace.Dostupnost = "slobodno";
+                parkingSpace.Status = "Slobodno";
+                parkingSpace.Dostupnost = "Slobodno";
                 await _parkingMjestoService.UpdateParkingMjesto(parkingSpace);
 
                 return Ok("Rezervacija ažurirana.");
             }
 
-            if (parkingSpace.Status == "zauzeto" || parkingSpace.Dostupnost == "zauzeto")
+            if (parkingSpace.Status == "Zauzeto" || parkingSpace.Dostupnost == "Zauzeto")
             {
                 return BadRequest("Parking mjesto je već zauzeto.");
             }
 
             var newReservation = new Rezervacija
             {
-                Id = request.Id,
                 DatumVrijemeRezervacije = request.Datum_vrijeme_rezervacije,
                 DatumVrijemeOdlaska = request.Datum_vrijeme_odlaska,
                 ParkingMjestoId = (int)request.Parking_mjestoId,
@@ -94,8 +98,8 @@ namespace Spotly.Controllers
 
             await _rezervacijaService.AddRezervacijaAsync(newReservation);
 
-            parkingSpace.Status = "zauzeto";
-            parkingSpace.Dostupnost = "zauzeto";
+            parkingSpace.Status = "Zauzeto";
+            parkingSpace.Dostupnost = "Zauzeto";
             await _parkingMjestoService.UpdateParkingMjesto(parkingSpace);
 
             return Ok("Rezervacija uspješno kreirana.");
