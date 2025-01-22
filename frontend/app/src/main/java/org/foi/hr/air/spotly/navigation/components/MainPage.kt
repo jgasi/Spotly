@@ -15,8 +15,10 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
+import androidx.room.Room
 import com.example.core.vehicle_lookup.VehicleData
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
@@ -28,11 +30,16 @@ import org.foi.hr.air.spotly.data.ParkingSpaceData
 import org.foi.hr.air.spotly.KazneScreen
 import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
+import org.foi.hr.air.spotly.QueueScreen
 import org.foi.hr.air.spotly.RequestSelectionScreen
-import org.foi.hr.air.spotly.UpravljanjeZahtjevimaActivity
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
+import org.foi.hr.air.spotly.database.AppDatabase
+import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
+import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
+import org.foi.hr.air.spotly.network.ApiService
+import org.foi.hr.air.spotly.repository.OfflineRepository
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -182,16 +189,19 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("mojiZahtjevi")
             onClose()
         })
+        DrawerItem("Red čekanja poruka", onClick = {
+            navController.navigate("queueScreen")
+            onClose()
+        })
         DrawerItem("Upravljanje zahtjevima", onClick = {
             navController.navigate("upravljanjeZahtjevima")
             onClose()
         })
+        DrawerItem("Lokalna baza podataka", onClick = {
+            navController.navigate("offlineDatabase")})
+
         DrawerItem("Parking", onClick = {
             navController.navigate("parking")
-            onClose()
-        })
-        DrawerItem("Page 3", onClick = {
-            navController.navigate("page3")
             onClose()
         })
     }
@@ -217,6 +227,7 @@ fun NavigationHost(
     NavHost(navController = navController, startDestination = "homePage") {
         composable("homePage") {
             val context = LocalContext.current
+            val db = AppDatabase.getDatabase(context)
             val bitmap = remember(selectedImageUri) {
                 selectedImageUri?.let { uri ->
                     val androidBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
@@ -225,8 +236,8 @@ fun NavigationHost(
             }
 
             HomePage(
-                manualLookupHandler = ManualLookupHandler(),
-                ocrLookupHandler = OcrLookupHandler(),
+                manualLookupHandler = ManualLookupHandler(context, RoomVehicleLookupDataSource(db)),
+                ocrLookupHandler = OcrLookupHandler(context, RoomVehicleLookupDataSource(db)),
                 onVehicleFetched = { vehicle ->
                     if (vehicle != null) {
                         onSuccessfulLookup(vehicle)
@@ -243,7 +254,11 @@ fun NavigationHost(
             )
         }
         composable("userProfile") { ProfilePage() }
-        composable("users") { UsersPage() }
+        composable("users") { UsersPage(LocalContext.current) }
+        composable("queueScreen") {
+            val viewModel: QueueViewModel = viewModel()
+            QueueScreen(viewModel)
+        }
         composable("slanjeDokumenta") { SendingDocumentsScreen() }
         composable("parking") {
 
@@ -265,6 +280,13 @@ fun NavigationHost(
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
         composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
+        composable("offlineDatabase") {
+            val context = LocalContext.current
+            val api = ApiService()
+            val db = AppDatabase.getDatabase(context)
+            val repository = OfflineRepository(api, db, context)
+            OfflineDatabasePage(repository)
+        }
     }
 }
 

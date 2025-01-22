@@ -36,6 +36,8 @@ builder.Services.AddScoped<IKaznaService, KaznaService>();
 builder.Services.AddScoped<IVoziloService, VoziloService>();
 builder.Services.AddScoped<ITipVozilaService, TipVozilaService>();
 builder.Services.AddScoped<IParkingMjestoService, ParkingMjestoService>();
+builder.Services.AddHttpClient<WeatherService>();
+builder.Services.AddHostedService<WeatherBackgroundService>();
 
 var app = builder.Build();
 
