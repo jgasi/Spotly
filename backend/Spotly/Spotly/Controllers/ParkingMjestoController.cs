@@ -28,18 +28,5 @@ namespace Spotly.Controllers
 
             return Ok(parkingMjesta);
         }
-
-        [HttpPut]
-        public async Task<ActionResult> UpdateBlockStateAsync(ParkingMjesto parkingMjesto)
-        {
-            if (parkingMjesto == null)
-            {
-                return BadRequest("Podaci za parking mjesto nisu valjani");
-            }
-
-            await _parkingMjestoService.UpdateBlockStateAsync(parkingMjesto);
-
-            return Ok();
-        }
     }
 }
