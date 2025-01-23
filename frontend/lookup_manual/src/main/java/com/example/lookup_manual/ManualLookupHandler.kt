@@ -19,7 +19,7 @@ class ManualLookupHandler(
 ) : LookupHandler {
     private val networkManager = NetworkManager(context)
 
-    override fun handleLookup(licensePlate: String, lookupListner: LookupOutcomeListener) {
+    override fun handleLookup(licensePlate: String, token: String, lookupListner: LookupOutcomeListener) {
         require(licensePlate is String) { "Must receive String instance for 'licensePlate'!" }
 
         if (!networkManager.isNetworkAvailable()) {
@@ -72,7 +72,7 @@ class ManualLookupHandler(
                         tip = this.tip
                     )
                 }
-            })
+            }, token)
         }
     }
 

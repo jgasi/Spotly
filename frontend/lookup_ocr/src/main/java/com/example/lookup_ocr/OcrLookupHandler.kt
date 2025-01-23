@@ -27,7 +27,7 @@ class OcrLookupHandler(
     private val networkManager = NetworkManager(context)
 
 
-    override fun handleLookup(licensePlate: String, lookupListner: LookupOutcomeListener) {
+    override fun handleLookup(licensePlate: String, token: String, lookupListner: LookupOutcomeListener) {
         require(licensePlate is String) { "Must receive String instance for 'licensePlate'!" }
 
         if (!networkManager.isNetworkAvailable()) {
@@ -61,7 +61,7 @@ class OcrLookupHandler(
                 override fun onNetworkFailiure(t: Throwable) {
                     lookupListner.onFailedLookup("Network error: ${t.message}")
                 }
-            })
+            }, token)
         }
     }
 
