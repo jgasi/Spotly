@@ -1,4 +1,3 @@
-import android.content.Context
 import android.graphics.ImageDecoder
 import android.health.connect.datatypes.units.Length
 import android.net.Uri
@@ -20,14 +19,11 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
-import androidx.room.Room
 import com.example.core.vehicle_lookup.VehicleData
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import org.foi.hr.air.spotly.ReserveParkingSpaceActivity
-import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.ParkingSpaceData
 import org.foi.hr.air.spotly.KazneScreen
 import org.foi.hr.air.spotly.MojiZahtjeviScreen
@@ -41,6 +37,7 @@ import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
 import org.foi.hr.air.spotly.navigation.components.*
+import org.foi.hr.air.spotly.ui.ParkingAvailabilityPage
 import org.foi.hr.air.spotly.network.ApiService
 import org.foi.hr.air.spotly.repository.OfflineRepository
 import org.foi.hr.air.spotly.ui.VehicleSuccessDialog
@@ -223,7 +220,11 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
             navController.navigate("parking")
             onClose()
         })
-
+        DrawerItem("Zaposleničko mjesto", onClick = {
+            navController.navigate("parkingAvailability")
+            onClose()
+        })
+        
         DrawerItem("Odjava", onClick = {
             onClose()
             onLogout()
@@ -281,9 +282,7 @@ fun NavigationHost(
                 manualLookupHandler = ManualLookupHandler(context, RoomVehicleLookupDataSource(db)),
                 ocrLookupHandler = OcrLookupHandler(context, RoomVehicleLookupDataSource(db)),
                 onVehicleFetched = { vehicle ->
-                    if (vehicle != null) {
-                        onSuccessfulLookup(vehicle)
-                    }
+                    onSuccessfulLookup(vehicle)
                 },
                 onError = { errorMessage, errorStatus ->
                     Log.d("MainPage", "$errorMessage, $errorStatus")
@@ -330,6 +329,7 @@ fun NavigationHost(
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
         composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
+        composable("parkingAvailability") { ParkingAvailabilityPage() }
         composable("offlineDatabase") {
             val context = LocalContext.current
             val api = ApiService()

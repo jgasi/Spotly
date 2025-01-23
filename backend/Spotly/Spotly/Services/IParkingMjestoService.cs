@@ -12,5 +12,6 @@ namespace Spotly.Services
         Task<int> GetAvailableParkingMjestaAsync();
         Task<int> GetReservedParkingMjestaAsync();
         Task<int> GetBlockedParkingMjestaAsync();
+        Task UpdateBlockStateAsync(ParkingMjesto parkingMjesto);
     }
 }
