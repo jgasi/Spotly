@@ -31,8 +31,10 @@ class OcrLookupHandler(
         require(licensePlate is String) { "Must receive String instance for 'licensePlate'!" }
 
         if (!networkManager.isNetworkAvailable()) {
+            Log.d("Lookup", "Offline lookup triggered for plate: $licensePlate")
             tryOfflineLookup(licensePlate, lookupListner)
         } else {
+            Log.d("Lookup", "Online lookup triggered for plate: $licensePlate")
             val requestHandler = GetVehicleByLicensePlateRequestHandler(licensePlate)
             requestHandler.sendRequest(object : ResponseListener<Vehicle> {
                 override fun onSuccessfulResponse(response: SuccessfulResponseBody<Vehicle>) {
