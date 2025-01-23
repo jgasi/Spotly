@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Spotly.Models;
@@ -11,6 +12,7 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class KorisnikController : ControllerBase
     {
         private readonly IKorisnikService _korisnikService;
@@ -128,6 +130,7 @@ namespace Spotly.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult> LoginAsync([FromBody] LoginRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Lozinka))

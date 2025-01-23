@@ -1,7 +1,9 @@
 import android.content.Context
 import android.graphics.ImageDecoder
+import android.health.connect.datatypes.units.Length
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -51,7 +53,6 @@ fun MainPage() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val user = UserStore.getUser()
 
     val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
     val selectImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
@@ -156,6 +157,9 @@ fun MainPage() {
 
 @Composable
 fun DrawerContent(navController: NavController, onClose: () -> Unit) {
+    val user = UserStore.getUser()
+    val isAdmin = user?.tipKorisnikaId == 1
+
     ModalDrawerSheet {
         Text(
             text = "Izbornik",
@@ -167,10 +171,18 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("homePage")
             onClose()
         })
-        DrawerItem("Korisnici", onClick = {
-            navController.navigate("users")
-            onClose()
-        })
+
+        if (isAdmin) {
+            DrawerItem("Korisnici", onClick = {
+                navController.navigate("users")
+                onClose()
+            })
+            DrawerItem("Brisanje kazni korisnika", onClick = {
+                navController.navigate("brisanjeKazniKorisnika")
+                onClose()
+            })
+        }
+
         DrawerItem("Profil korisnika", onClick = {
             navController.navigate("userProfile")
             onClose()
@@ -179,10 +191,7 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("slanjeDokumenta")
             onClose()
         })
-        DrawerItem("Brisanje kazni korisnika", onClick = {
-            navController.navigate("brisanjeKazniKorisnika")
-            onClose()
-        })
+
         DrawerItem("Kreiraj zahtjev", onClick = {
             navController.navigate("izborVrsteZahtjeva")
             onClose()
@@ -203,7 +212,7 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("offlineDatabase")})
 
         DrawerItem("Statistika", onClick = {
-            navController.navigate("statistikaScreen/2") // Zamijeniti s ID-om korisnika
+            navController.navigate("statistikaScreen/${user?.id}")
             onClose()
         })
 

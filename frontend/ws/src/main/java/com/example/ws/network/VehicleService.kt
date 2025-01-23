@@ -7,5 +7,8 @@ import retrofit2.http.*
 
 interface VehicleService {
     @GET("Vozilo/vehicles/lookup")
-    fun lookupVehicle(@Query("licensePlate") licensePlate: String): Call<SuccessfulResponseBody<Vehicle>>
+    fun lookupVehicle(
+        @Header("Authorization") token: String,
+        @Query("licensePlate") licensePlate: String
+    ): Call<SuccessfulResponseBody<Vehicle>>
 }

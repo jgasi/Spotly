@@ -11,14 +11,15 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class GetVehicleByLicensePlateRequestHandler(private val licensePlate: String): TemplateRequestHandler<Vehicle>() {
-    override fun getServiceCall(): Call<SuccessfulResponseBody<Vehicle>> {
+    override fun getServiceCall(token: String): Call<SuccessfulResponseBody<Vehicle>> {
         val service = NetworkService.vozilaService
         Log.d("GetVehicleByLicensePlateRequestHandler", "Preparing service call for $licensePlate")
-        return service.lookupVehicle(licensePlate)
+        val token = "Bearer $token"
+        return service.lookupVehicle(token, licensePlate)
     }
 
-    override fun sendRequest(responseListener: ResponseListener<Vehicle>) {
-        val serviceCall = getServiceCall()
+    override fun sendRequest(responseListener: ResponseListener<Vehicle>, token: String) {
+        val serviceCall = getServiceCall(token)
 
         serviceCall.enqueue(object : Callback<SuccessfulResponseBody<Vehicle>> {
             override fun onResponse(

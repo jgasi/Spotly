@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.core.vehicle_lookup.*
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
+import org.foi.hr.air.spotly.data.UserStore
 
 @Composable
 fun HomePage(
@@ -29,7 +30,7 @@ fun HomePage(
             isLoading = true
             ocrLookupHandler.extractLicensePlateFromImage(bitmap.asAndroidBitmap()) {extractedPlate ->
                 if (extractedPlate != null) {
-                    ocrLookupHandler.handleLookup(extractedPlate.uppercase(), object : LookupOutcomeListener {
+                    ocrLookupHandler.handleLookup(extractedPlate.uppercase(), UserStore.getUser()?.token ?: "", object : LookupOutcomeListener {
                         override fun onSuccessfulLookup(vehicleData: VehicleData) {
                             isLoading = false
                             onVehicleFetched(vehicleData)
@@ -70,7 +71,7 @@ fun HomePage(
         Button(
             onClick = {
                 isLoading = true
-                manualLookupHandler.handleLookup(licensePlate.uppercase(), object : LookupOutcomeListener {
+                manualLookupHandler.handleLookup(licensePlate.uppercase(), UserStore.getUser()?.token ?: "", object : LookupOutcomeListener {
                     override fun onSuccessfulLookup(vehicleData: VehicleData) {
                         isLoading = false
                         onVehicleFetched(vehicleData)
