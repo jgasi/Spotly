@@ -34,6 +34,7 @@ import org.foi.hr.air.spotly.QueueScreen
 import org.foi.hr.air.spotly.RequestSelectionScreen
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.data.QueueViewModel
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.database.AppDatabase
 import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
 import org.foi.hr.air.spotly.navigation.components.SendingDocumentsScreen
@@ -50,6 +51,7 @@ fun MainPage() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val user = UserStore.getUser()
 
     val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
     val selectImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
@@ -209,6 +211,17 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             navController.navigate("parking")
             onClose()
         })
+
+        DrawerItem("Odjava", onClick = {
+            navController.popBackStack()
+            navController.navigate("login") {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+            }
+            UserStore.clearUser()
+            onClose()
+        })
     }
 }
 
@@ -230,6 +243,15 @@ fun NavigationHost(
     onSuccessfulLookup: (VehicleData) -> Unit
 ) {
     NavHost(navController = navController, startDestination = "homePage") {
+        composable("login") {
+            LoginPage(
+                navigateToRequestDetails = {
+                    navController.navigate("homePage") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("homePage") {
             val context = LocalContext.current
             val db = AppDatabase.getDatabase(context)

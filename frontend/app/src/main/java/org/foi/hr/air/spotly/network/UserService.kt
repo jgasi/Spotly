@@ -159,7 +159,7 @@ object UserService {
 
             val response = executeRequest(request)
             if (response.isSuccessful) {
-                var responseBody = response.body?.toString()
+                var responseBody = response.body?.string()
                 val json = Json { ignoreUnknownKeys = true }
                 val loginResponse = json.decodeFromString<LoginResponse>(responseBody!!)
                 UserStore.setUser(loginResponse.user)
@@ -168,6 +168,7 @@ object UserService {
                 Result.failure(Exception("Prijava nije uspjela, provjerite podatke i pokušajte ponovno!, ${response.message}"))
             }
         } catch (e: Exception) {
+            Log.e("Login", "${e.message}")
             Result.failure(e)
         }
     }
