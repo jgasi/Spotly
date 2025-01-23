@@ -47,7 +47,7 @@ import java.io.InputStreamReader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage() {
+fun MainPage(onLogout: () -> Unit) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -64,97 +64,100 @@ fun MainPage() {
     val showSuccessDialog = remember { mutableStateOf(true) }
     val vehicleData = remember { mutableStateOf<VehicleData?>(null) }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            DrawerContent(navController = navController, onClose = {
-                scope.launch { drawerState.close() }
-            })
-        }
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Spotly") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch { drawerState.open() }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+    val currentDestination = navController.currentBackStackEntry?.destination?.route
+    if (currentDestination != "login" || UserStore.getUser()?.token.isNullOrEmpty()) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                DrawerContent(navController = navController, onClose = {
+                    scope.launch { drawerState.close() }
+                }, onLogout = onLogout)
+            }
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("Spotly") },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                scope.launch { drawerState.open() }
+                            }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            }
                         }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                NavigationHost(
-                    navController,
-                    selectImageLauncher = {
-                        selectedImageUri.value = null
-                        selectImageLauncher.launch("image/*")
-                    },
-                    selectedImageUri = selectedImageUri.value,
-                    onFailedLookup = { reason, statusCode ->
-                        errorDialogmessage.value = reason
-                        showErrorDialog.value = true
-                    },
-                    onSuccessfulLookup = { vehicle ->
-                        vehicleData.value = vehicle
-                        showSuccessDialog.value = true
-                    }
-                )
-            }
-
-            if (showErrorDialog.value) {
-                BasicAlertDialog(
-                    onDismissRequest = { showErrorDialog.value = false },
-                    properties = DialogProperties(
-                        dismissOnClickOutside = true,
-                        usePlatformDefaultWidth = false
                     )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .background(Color.White)
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    NavigationHost(
+                        navController,
+                        selectImageLauncher = {
+                            selectedImageUri.value = null
+                            selectImageLauncher.launch("image/*")
+                        },
+                        selectedImageUri = selectedImageUri.value,
+                        onFailedLookup = { reason, statusCode ->
+                            errorDialogmessage.value = reason
+                            showErrorDialog.value = true
+                        },
+                        onSuccessfulLookup = { vehicle ->
+                            vehicleData.value = vehicle
+                            showSuccessDialog.value = true
+                        }
+                    )
+                }
+
+                if (showErrorDialog.value) {
+                    BasicAlertDialog(
+                        onDismissRequest = { showErrorDialog.value = false },
+                        properties = DialogProperties(
+                            dismissOnClickOutside = true,
+                            usePlatformDefaultWidth = false
+                        )
                     ) {
-                        Text(
-                            text = "Greška",
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        Text(
-                            text = errorDialogmessage.value,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                        Row(
-                            horizontalArrangement = Arrangement.End,
-                            modifier = Modifier.fillMaxWidth()
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .background(Color.White)
                         ) {
-                            Button(
-                                onClick = { showErrorDialog.value = false}
+                            Text(
+                                text = "Greška",
+                                style = MaterialTheme.typography.headlineSmall,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            Text(
+                                text = errorDialogmessage.value,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.End,
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Ok")
+                                Button(
+                                    onClick = { showErrorDialog.value = false}
+                                ) {
+                                    Text("Ok")
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (showSuccessDialog.value && vehicleData.value != null) {
-                VehicleSuccessDialog(
-                    onDismissRequest = { showSuccessDialog.value = false },
-                    vehicleData = vehicleData.value!!
-                )
+                if (showSuccessDialog.value && vehicleData.value != null) {
+                    VehicleSuccessDialog(
+                        onDismissRequest = { showSuccessDialog.value = false },
+                        vehicleData = vehicleData.value!!
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun DrawerContent(navController: NavController, onClose: () -> Unit) {
+fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: () -> Unit) {
     val user = UserStore.getUser()
     val isAdmin = user?.tipKorisnikaId == 1
 
@@ -220,14 +223,8 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
         })
 
         DrawerItem("Odjava", onClick = {
-            navController.popBackStack()
-            navController.navigate("login") {
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true
-                }
-            }
-            UserStore.clearUser()
             onClose()
+            onLogout()
         })
     }
 }
@@ -262,10 +259,19 @@ fun NavigationHost(
         composable("homePage") {
             val context = LocalContext.current
             val db = AppDatabase.getDatabase(context)
-            val bitmap = remember(selectedImageUri) {
+            val selectedImageBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
+
+            LaunchedEffect(selectedImageUri) {
                 selectedImageUri?.let { uri ->
-                    val androidBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
-                    androidBitmap.asImageBitmap()
+                    try {
+                        val androidBitmap = ImageDecoder.decodeBitmap(
+                            ImageDecoder.createSource(context.contentResolver, uri)
+                        )
+                        selectedImageBitmap.value = androidBitmap.asImageBitmap()
+                    } catch (e: Exception) {
+                        Log.e("DecodeImageError", "Error decoding image: ${e.message}")
+                        selectedImageBitmap.value = null
+                    }
                 }
             }
 
@@ -284,7 +290,7 @@ fun NavigationHost(
                 onImageSelected = {
                     selectImageLauncher()
                 },
-                selectedImageBitmap = bitmap,
+                selectedImageBitmap = selectedImageBitmap,
             )
         }
         composable("userProfile") { ProfilePage() }
