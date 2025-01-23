@@ -6,11 +6,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.example.core.vehicle_lookup.*
 import com.example.lookup_manual.*
 import com.example.lookup_ocr.*
+import org.foi.hr.air.spotly.data.UserStore
+import org.foi.hr.air.spotly.network.isInternetAvailable
 
 @Composable
 fun HomePage(
@@ -19,30 +22,36 @@ fun HomePage(
     onVehicleFetched: (VehicleData) -> Unit,
     onError: (String, Int?) -> Unit,
     onImageSelected: () -> Unit,
-    selectedImageBitmap: ImageBitmap?,
+    selectedImageBitmap: MutableState<ImageBitmap?>,
 ) {
     var licensePlate by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    LaunchedEffect(selectedImageBitmap) {
-        selectedImageBitmap?.let { bitmap ->
+    val context = LocalContext.current
+    val isConnected = remember { mutableStateOf(isInternetAvailable(context)) }
+
+    LaunchedEffect(selectedImageBitmap.value) {
+        selectedImageBitmap.value?.let { bitmap ->
             isLoading = true
             ocrLookupHandler.extractLicensePlateFromImage(bitmap.asAndroidBitmap()) {extractedPlate ->
                 if (extractedPlate != null) {
-                    ocrLookupHandler.handleLookup(extractedPlate.uppercase(), object : LookupOutcomeListener {
+                    ocrLookupHandler.handleLookup(extractedPlate.uppercase(), UserStore.getUser()?.token ?: "", object : LookupOutcomeListener {
                         override fun onSuccessfulLookup(vehicleData: VehicleData) {
                             isLoading = false
                             onVehicleFetched(vehicleData)
+                            selectedImageBitmap.value = null
                         }
 
                         override fun onFailedLookup(reason: String, statusCode: Int?) {
                             isLoading = false
                             onError(reason, statusCode)
+                            selectedImageBitmap.value = null
                         }
                     })
                 } else {
                     isLoading = false
                     onError("Nije pronađena registracija na slici", 0)
+                    selectedImageBitmap.value = null
                 }
             }
         }
@@ -70,7 +79,7 @@ fun HomePage(
         Button(
             onClick = {
                 isLoading = true
-                manualLookupHandler.handleLookup(licensePlate.uppercase(), object : LookupOutcomeListener {
+                manualLookupHandler.handleLookup(licensePlate.uppercase(), UserStore.getUser()?.token ?: "", object : LookupOutcomeListener {
                     override fun onSuccessfulLookup(vehicleData: VehicleData) {
                         isLoading = false
                         onVehicleFetched(vehicleData)
@@ -94,7 +103,8 @@ fun HomePage(
             onClick = {
                 onImageSelected()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = isConnected.value
         ) {
             Text("Slikaj tablice")
         }

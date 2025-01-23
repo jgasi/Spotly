@@ -1,12 +1,7 @@
 package org.foi.hr.air.spotly.network
 
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
-import com.example.core.vehicle_lookup.LookupOutcomeListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -19,9 +14,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import org.foi.hr.air.spotly.data.User
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.UserType
-import org.foi.hr.air.spotly.database.AppDatabase
-import org.foi.hr.air.spotly.datastore.RoomVehicleLookupDataSource
 import java.io.IOException
 
 object UserService {
@@ -29,7 +23,15 @@ object UserService {
     private val client = OkHttpClient()
 
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val userToken = UserStore.getUser()?.token
+
+        val finalRequest = userToken?.let {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $it")
+                .build()
+        } ?: request
+
+        client.newCall(finalRequest).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 continuation.resumeWithException(e)
             }
@@ -156,12 +158,23 @@ object UserService {
 
             val response = executeRequest(request)
             if (response.isSuccessful) {
+                var responseBody = response.body?.string()
+                val json = Json { ignoreUnknownKeys = true }
+                val loginResponse = json.decodeFromString<LoginResponse>(responseBody!!)
+                UserStore.setUser(loginResponse.user)
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Prijava nije uspjela, provjerite podatke i pokušajte ponovno!, ${response.message}"))
             }
         } catch (e: Exception) {
+            Log.e("Login", "${e.message}")
             Result.failure(e)
         }
     }
+
+    @Serializable
+    data class LoginResponse(
+        val message: String,
+        val user: User
+    )
 }

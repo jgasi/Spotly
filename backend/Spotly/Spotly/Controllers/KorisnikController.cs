@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Spotly.Models;
 using Spotly.Services;
 using Spotly.DTOs;
@@ -7,13 +12,16 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class KorisnikController : ControllerBase
     {
         private readonly IKorisnikService _korisnikService;
+        private readonly IConfiguration _configuration;
 
-        public KorisnikController(IKorisnikService korisnikService) 
+        public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration) 
         {
             _korisnikService = korisnikService;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -122,6 +130,7 @@ namespace Spotly.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult> LoginAsync([FromBody] LoginRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Lozinka))
@@ -145,6 +154,8 @@ namespace Spotly.Controllers
             {
                 return Unauthorized("Račun korisnika nije aktivan.");
             }
+            
+            var token = GenerateJwtToken(korisnik);
 
             return Ok(new
             {
@@ -155,7 +166,8 @@ namespace Spotly.Controllers
                     korisnik.Ime,
                     korisnik.Prezime,
                     korisnik.Email,
-                    korisnik.TipKorisnikaId
+                    korisnik.TipKorisnikaId,
+                    token
                 }
             });
         }
@@ -196,6 +208,29 @@ namespace Spotly.Controllers
             }
 
             return Ok(tipKorisnika);
+        }
+
+        private string GenerateJwtToken(Korisnik korisnik)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, korisnik.Id.ToString()),
+                new Claim(ClaimTypes.Email, korisnik.Email),
+                new Claim(ClaimTypes.Role, korisnik.TipKorisnikaId.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
     }
