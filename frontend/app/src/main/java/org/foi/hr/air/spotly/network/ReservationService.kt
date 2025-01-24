@@ -9,6 +9,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.MediaType.Companion.toMediaType
 import org.foi.hr.air.spotly.data.Reservation
+import org.foi.hr.air.spotly.data.UserStore
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -19,7 +20,15 @@ object ReservationService {
     private val client = OkHttpClient()
 
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val userToken = UserStore.getUser()?.token
+
+        val finalRequest = userToken?.let {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $it")
+                .build()
+        } ?: request
+
+        client.newCall(finalRequest).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 continuation.resumeWithException(e)
             }
