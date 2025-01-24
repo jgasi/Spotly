@@ -163,6 +163,7 @@ namespace Spotly.Data.Repositories
             existingZahtjev.Predmet = zahtjev.Predmet;
             existingZahtjev.Odgovor = zahtjev.Odgovor;
             existingZahtjev.Status = zahtjev.Status;
+            existingZahtjev.AdminId = zahtjev.AdminId;
 
             _context.Zahtjevs.Update(existingZahtjev);
             await _context.SaveChangesAsync();
@@ -171,7 +172,8 @@ namespace Spotly.Data.Repositories
             {
                 Id = existingZahtjev.Id,
                 Odgovor = existingZahtjev.Odgovor,
-                Status = existingZahtjev.Status
+                Status = existingZahtjev.Status,
+                AdminId = existingZahtjev.AdminId
             };
 
             return updatedDto;
