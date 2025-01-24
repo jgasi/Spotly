@@ -9,6 +9,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.foi.hr.air.spotly.data.ParkingSpace
+import org.foi.hr.air.spotly.data.UserStore
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -20,7 +21,15 @@ object ParkingMjestoService {
 
 
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val userToken = UserStore.getUser()?.token
+
+        val finalRequest = userToken?.let {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $it")
+                .build()
+        } ?: request
+
+        client.newCall(finalRequest).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 continuation.resumeWithException(e)
             }

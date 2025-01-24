@@ -23,6 +23,7 @@ import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.Zahtjev
 import org.foi.hr.air.spotly.network.ZahtjevService
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
@@ -31,11 +32,13 @@ class MojiZahtjeviActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val currentUser = UserStore.getUser()
+
         setContent {
             SpotlyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MojiZahtjeviScreen(
-                        userId = 2, // hard kodirano dok se ne spoji s login
+                        userId = currentUser?.id ?: -1,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

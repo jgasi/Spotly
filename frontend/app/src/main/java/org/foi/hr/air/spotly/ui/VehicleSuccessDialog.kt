@@ -21,14 +21,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.core.vehicle_lookup.VehicleData
 import kotlinx.coroutines.launch
-import org.foi.hr.air.spotly.data.Kazna
-import org.foi.hr.air.spotly.data.ParkingSpace
-import org.foi.hr.air.spotly.data.Reservation
-import org.foi.hr.air.spotly.data.UserType
-import org.foi.hr.air.spotly.network.KaznaService
-import org.foi.hr.air.spotly.network.ParkingMjestoService
-import org.foi.hr.air.spotly.network.ReservationService
-import org.foi.hr.air.spotly.network.UserService
+import org.foi.hr.air.spotly.data.*
+import org.foi.hr.air.spotly.network.*
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -49,17 +43,35 @@ fun VehicleSuccessDialog(
     val context = LocalContext.current
 
     LaunchedEffect(vehicleData.id) {
-        reservation = ReservationService.fetchReservationByVehicleId(vehicleData.id)
+        coroutineScope.launch {
+            reservation = try {
+                ReservationService.fetchReservationByVehicleId(vehicleData.id)
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     LaunchedEffect(reservation?.parkingMjestoId) {
         reservation?.parkingMjestoId?.let { parkingMjestoId ->
-            parkingSpace = ParkingMjestoService.fetchParkingSpaceById(parkingMjestoId)
+            coroutineScope.launch {
+                parkingSpace = try {
+                    ParkingMjestoService.fetchParkingSpaceById(parkingMjestoId)
+                } catch (e: Exception) {
+                    null
+                }
+            }
         }
     }
 
     LaunchedEffect(korisnikId) {
-        userTypee = UserService.fetchUserTypeByKorisnikId(korisnikId)
+        coroutineScope.launch {
+            userTypee = try {
+                UserService.fetchUserTypeByKorisnikId(korisnikId)
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     fun getParkingSpaceTypeName(tipMjestaId: Int): String {
@@ -123,7 +135,13 @@ fun VehicleSuccessDialog(
     val (isValid, message) = validateParking()
 
     BasicAlertDialog(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            onDismissRequest()
+            // Reset states to ensure the dialog does not reopen unintentionally
+            reservation = null
+            parkingSpace = null
+            userTypee = null
+        },
         properties = DialogProperties(
             dismissOnClickOutside = true,
             usePlatformDefaultWidth = false
@@ -421,6 +439,8 @@ fun VehicleSuccessDialog(
         }
     }
 
+    val currentUser = UserStore.getUser()
+
     if (showKaznaDialog) {
         CreateKaznaDialog(
             onDismissRequest = { showKaznaDialog = false },
@@ -432,7 +452,7 @@ fun VehicleSuccessDialog(
                             razlog = razlog,
                             novcaniIznos = novcaniIznos.toString(),
                             datumVrijeme = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
-                            adminId = 4, // Hard kodirani admin ID
+                            adminId = currentUser?.id ?: 0,
                             korisnikId = korisnikId,
                             tipKazneId = when (tipKazne) {
                                 "Parkiranje u zabranjenoj zoni" -> 1

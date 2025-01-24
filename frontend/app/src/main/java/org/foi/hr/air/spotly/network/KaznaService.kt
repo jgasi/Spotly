@@ -8,6 +8,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.foi.hr.air.spotly.data.Kazna
+import org.foi.hr.air.spotly.data.UserStore
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -20,7 +21,15 @@ object KaznaService {
 
 
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val userToken = UserStore.getUser()?.token
+
+        val finalRequest = userToken?.let {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $it")
+                .build()
+        } ?: request
+
+        client.newCall(finalRequest).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 continuation.resumeWithException(e)
             }
@@ -45,7 +54,7 @@ object KaznaService {
         }
     }
 
-    suspend fun fetchKazneForUserr(korisnikId: Int): List<Kazna>? {
+    suspend fun fetchKazneForUserr(korisnikId: Int?): List<Kazna>? {
         val url = "$urlBase/Kazna/user/$korisnikId"
 
         val request = Request.Builder()

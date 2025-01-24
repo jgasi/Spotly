@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.foi.hr.air.spotly.data.Kazna
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.network.KaznaService
 
 class ZahtjevZaBrisanjeKazneActivity : ComponentActivity() {
@@ -41,11 +42,13 @@ fun ZahtjevZaBrisanjeKazneScreen() {
     var selectedKazna by remember { mutableStateOf<Kazna?>(null) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val currentUser = UserStore.getUser()
+
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             try {
-                val korisnikId = 4 // Zamijeniti s pravim korisničkim ID-om
+                val korisnikId = currentUser?.id
                 kazne = withContext(Dispatchers.IO) {
                     KaznaService.fetchKazneForUserr(korisnikId)
                 } ?: emptyList()
@@ -56,7 +59,6 @@ fun ZahtjevZaBrisanjeKazneScreen() {
         }
     }
 
-    // Filtriranje kazni prema pretrazi
     LaunchedEffect(searchText) {
         filteredKazne = if (searchText.isEmpty()) {
             kazne
@@ -104,7 +106,7 @@ fun ZahtjevZaBrisanjeKazneScreen() {
                     if (selectedKazna != null) {
                         val intent = Intent(context, DetaljiZahtjevaActivity::class.java)
                         intent.putExtra("kazna_id", selectedKazna!!.id)
-                        intent.putExtra("korisnik_id", 4)  // Treba staviti ID ulogiranog korisnika
+                        intent.putExtra("korisnik_id", currentUser?.id)
                         context.startActivity(intent)
                     } else {
                         Toast.makeText(context, "Molimo odaberite kaznu!", Toast.LENGTH_SHORT).show()
