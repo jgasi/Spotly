@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
@@ -7,6 +8,7 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class KaznaController : ControllerBase
     {
         private readonly IKaznaService _kaznaService;

@@ -4,7 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,6 +39,31 @@ fun UpravljanjeZahtjevimaScreen() {
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    // Define the launcher for the result
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == ComponentActivity.RESULT_OK) {
+            // Refresh the list when returning from OdgovaranjeNaZahtjev
+            coroutineScope.launch {
+                isLoading = true
+                val updatedZahtjevi = withContext(Dispatchers.IO) {
+                    ZahtjevService.getZahtjeviNaCekanju()
+                }
+                if (updatedZahtjevi != null) {
+                    zahtjevi = updatedZahtjevi
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Greška pri dohvaćanju zahtjeva",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                isLoading = false
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -81,7 +110,7 @@ fun UpravljanjeZahtjevimaScreen() {
                     .weight(1f)
             ) {
                 items(zahtjevi) { zahtjev ->
-                    ZahtjevItem(zahtjev)
+                    ZahtjevItem(zahtjev, launcher)
                 }
             }
         }
@@ -89,13 +118,13 @@ fun UpravljanjeZahtjevimaScreen() {
 }
 
 @Composable
-fun ZahtjevItem(zahtjev: Zahtjev) {
+fun ZahtjevItem(zahtjev: Zahtjev, launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(4.dp) // Add elevation for better design
+        elevation = CardDefaults.elevatedCardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -118,7 +147,7 @@ fun ZahtjevItem(zahtjev: Zahtjev) {
                     val intent = Intent(context, OdgovaranjeNaZahtjev::class.java).apply {
                         putExtra("ZAHTJEV_ID", zahtjev.id)
                     }
-                    context.startActivity(intent)
+                    launcher.launch(intent)
                 }
             ) {
                 Text("Odgovori")

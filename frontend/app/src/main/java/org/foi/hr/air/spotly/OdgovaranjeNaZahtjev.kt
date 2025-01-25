@@ -1,6 +1,7 @@
 package org.foi.hr.air.spotly
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.Zahtjev
 import org.foi.hr.air.spotly.network.ZahtjevService
 import org.foi.hr.air.spotly.ui.theme.ui.theme.SpotlyTheme
@@ -37,7 +39,10 @@ class OdgovaranjeNaZahtjev : ComponentActivity() {
                         withContext(Dispatchers.Main) {
                             val message = if (isSuccessful) "Zahtjev ažuriran!" else "Greška pri ažuriranju!"
                             Toast.makeText(this@OdgovaranjeNaZahtjev, message, Toast.LENGTH_SHORT).show()
-                            if (isSuccessful) finish() //Aktivnost se zatvori nakon ažuriranja
+                            if (isSuccessful) {
+                                setResult(RESULT_OK)
+                                finish()
+                            }
                         }
                     }
                 }
@@ -136,9 +141,13 @@ fun OdgovaranjeScreen(zahtjevId: Int, onSave: (Zahtjev) -> Unit) {
                 Text(text = "Pregledaj dokumente")
             }
 
+            val currentUser = UserStore.getUser()
+            Log.d("OdgovaranjeScreen", "Current User: $currentUser")
+
             Button(
                 onClick = {
-                    val updatedZahtjev = it.copy(odgovor = odgovor, status = status)
+                    val updatedZahtjev = it.copy(odgovor = odgovor, status = status, adminId = currentUser?.id)
+                    Log.d("OdgovaranjeScreen", "Updated Zahtjev: $updatedZahtjev")
                     onSave(updatedZahtjev)
                 },
                 modifier = Modifier

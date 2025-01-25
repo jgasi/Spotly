@@ -159,6 +159,8 @@ fun MainPage(onLogout: () -> Unit) {
 fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: () -> Unit) {
     val user = UserStore.getUser()
     val isAdmin = user?.tipKorisnikaId == 1
+    val isZaposlenik = user?.tipKorisnikaId == 2
+    val isObicanKorisnik = user?.tipKorisnikaId == 3
 
     ModalDrawerSheet {
         Text(
@@ -179,6 +181,10 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
             })
             DrawerItem("Brisanje kazni korisnika", onClick = {
                 navController.navigate("brisanjeKazniKorisnika")
+                onClose()
+            })
+            DrawerItem("Upravljanje zahtjevima", onClick = {
+                navController.navigate("upravljanjeZahtjevima")
                 onClose()
             })
         }
@@ -202,10 +208,6 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
         })
         DrawerItem("Red čekanja poruka", onClick = {
             navController.navigate("queueScreen")
-            onClose()
-        })
-        DrawerItem("Upravljanje zahtjevima", onClick = {
-            navController.navigate("upravljanjeZahtjevima")
             onClose()
         })
         DrawerItem("Lokalna baza podataka", onClick = {
