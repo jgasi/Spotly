@@ -7,5 +7,7 @@ namespace Spotly.Data.Repositories
     {
         Task<int> GetCountAsync();
         Task<int> GetCountByStatusAsync(string status);
+        Task<bool> BlokirajParkingMjestoAsync(int id);
+        Task<bool> OdblokirajParkingMjestoAsync(int id);
     }
 }

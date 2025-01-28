@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
@@ -8,7 +7,6 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class ParkingMjestoController : ControllerBase
     {
         private readonly IParkingMjestoService _parkingMjestoService;
@@ -61,17 +59,30 @@ namespace Spotly.Controllers
             return Ok(parkingMjesto);
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateBlockStateAsync(ParkingMjesto parkingMjesto)
+        [HttpPut("blokiraj/{id}")]
+        public async Task<ActionResult> BlokirajParkingMjestoAsync(int id)
         {
-            if (parkingMjesto == null)
+            var uspjeh = await _parkingMjestoService.BlokirajParkingMjestoAsync(id);
+
+            if (!uspjeh)
             {
-                return BadRequest("Podaci za parking mjesto nisu valjani");
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
             }
 
-            await _parkingMjestoService.UpdateBlockStateAsync(parkingMjesto);
+            return Ok($"Parking mjesto s ID {id} je blokirano.");
+        }
 
-            return Ok();
+        [HttpPut("odblokiraj/{id}")]
+        public async Task<ActionResult> OdblokirajParkingMjestoAsync(int id)
+        {
+            var uspjeh = await _parkingMjestoService.OdblokirajParkingMjestoAsync(id);
+
+            if (!uspjeh)
+            {
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
+            }
+
+            return Ok($"Parking mjesto s ID {id} je odblokirano.");
         }
     }
 }
