@@ -394,8 +394,8 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        when (selectedSpace?.dostupnost) {
-                            "Blokirano" -> {
+                        when {
+                            selectedSpace?.dostupnost == "Blokirano" -> {
                                 Button(
                                     onClick = {
                                         coroutineScope.launch {
@@ -407,7 +407,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                                         "Parking space unblocked successfully!",
                                                         Toast.LENGTH_SHORT
                                                     ).show()
-                                                    fetchParkingSpaceData() // Refresh data
+                                                    fetchParkingSpaceData()
                                                 } else {
                                                     Toast.makeText(
                                                         context,
@@ -431,7 +431,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                     Text(text = "Odblokiraj")
                                 }
                             }
-                            "Slobodno" -> {
+                            selectedSpace?.dostupnost == "Slobodno" -> {
                                 Button(
                                     onClick = {
                                         coroutineScope.launch {
@@ -443,7 +443,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                                         "Parking space blocked successfully!",
                                                         Toast.LENGTH_SHORT
                                                     ).show()
-                                                    fetchParkingSpaceData() // Refresh data
+                                                    fetchParkingSpaceData()
                                                 } else {
                                                     Toast.makeText(
                                                         context,
@@ -489,6 +489,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                                         "Parking space reserved successfully!",
                                                         Toast.LENGTH_SHORT
                                                     ).show()
+                                                    fetchParkingSpaceData()
                                                 } else {
                                                     Toast.makeText(
                                                         context,
@@ -510,6 +511,53 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                     colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.8f))
                                 ) {
                                     Text(text = "Rezerviraj")
+                                }
+                            }
+                            else -> {
+                                Button(
+                                    onClick = {
+                                        (context as? ComponentActivity)?.lifecycleScope?.launch {
+                                            try {
+                                                val reservationStartTime = LocalDateTime.now()
+                                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                                Log.d("RectangleClick", "Zone is ${lastZoneIndex}")
+                                                val result = userVehicle.value?.id?.let {
+                                                    reserveParkingSpace(
+                                                        parkingSpaceId = lastZoneIndex+1,
+                                                        voziloId = it,
+                                                        reservationStartTime = reservationStartTime,
+                                                        reservationEndTime = reservationStartTime
+                                                    )
+                                                }
+
+                                                if (result == true) {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Reservation removed successfully!",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    fetchParkingSpaceData()
+                                                } else {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Failed to reserve parking space.",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                                Toast.makeText(
+                                                    context,
+                                                    "An error occurred while reserving the parking space.",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                    },
+                                    Modifier.size(140.dp, 50.dp).padding(0.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.8f))
+                                ) {
+                                    Text(text = "Otkaži rezervaciju")
                                 }
                             }
                         }
