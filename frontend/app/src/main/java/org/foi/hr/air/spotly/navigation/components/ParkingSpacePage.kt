@@ -50,15 +50,21 @@ import kotlinx.coroutines.withContext
 import org.foi.hr.air.spotly.R
 import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.ParkingSpaceData
+import org.foi.hr.air.spotly.data.UserStore
+import org.foi.hr.air.spotly.data.Vehicle
 import org.foi.hr.air.spotly.data.ZoneList
 import org.foi.hr.air.spotly.network.ParkingMjestoService.fetchParkingSpaces
 import org.foi.hr.air.spotly.network.ParkingMjestoService.reserveParkingSpace
+import org.foi.hr.air.spotly.network.UserService
+import org.foi.hr.air.spotly.network.VoziloService
+import org.foi.hr.air.spotly.network.VoziloService.fetchVehicleByUserId
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 @Composable
 fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
+
 
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -84,6 +90,36 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     var parkingSpaces by remember { mutableStateOf(listOf<ParkingSpace>()) }
+//    var userVehicle = remember { mutableStateOf<Vehicle?>(null) }
+
+
+
+    val user = UserStore.getUser()
+//    user.let {
+//        val fetchedVehicle = VoziloService.fetchVehicleByUserId(it.id)
+//        userVehicle.value = fetchedVehicle
+//    }
+
+    var userVehicle = remember { mutableStateOf<Vehicle?>(null) }
+
+    fun fetchUserVehicle() {
+        coroutineScope.launch {
+            isLoading = true
+            try {
+                if (user != null) {
+                    userVehicle.value = withContext(Dispatchers.IO) {
+                        fetchVehicleByUserId(user.id)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Vehicle", "Error fetching user vehicle", e)
+                e.printStackTrace()
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
 
     fun fetchParkingSpaceData() {
         coroutineScope.launch {
@@ -103,10 +139,12 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
 
     LaunchedEffect(Unit) {
         fetchParkingSpaceData()
+        fetchUserVehicle()
     }
 
 
     Log.d("ParkingSpace", "Parking space is loaded: ${parkingSpaces}")
+    Log.d("Vehicle", "Vehicle is loaded: ${userVehicle}")
     parkingSpaces.forEach { parkingSpace ->
         Log.d("ParkingSpace", "ParkingSpace details: $parkingSpace")
     }
@@ -248,7 +286,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                     color = when {
                                         zoneInList?.isClicked == true -> Color.Blue.copy(alpha = 0.5f)
                                         parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Slobodno" -> Color.Green.copy(alpha = 0.5f)
-                                        //AKO JE AUTO ID JEDNAKO
+                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.vehicleId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
 
                                         else -> Color.Red.copy(alpha = 0.5f)
                                     },
@@ -326,7 +364,13 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                     }
                     drawPath(
                         path,
-                        color = if (zoneInList?.isClicked == true) Color.Blue.copy(alpha = 0.5f) else Color.Gray.copy(alpha = 0.3f)
+                        color = when {
+                            zoneInList?.isClicked == true -> Color.Blue.copy(alpha = 0.5f)
+                            parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Slobodno" -> Color.Green.copy(alpha = 0.5f)
+                            parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.vehicleId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
+
+                            else -> Color.Red.copy(alpha = 0.5f)
+                        },
                     )
                 }
             }
@@ -345,15 +389,17 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                 try {
                                     val reservationStartTime = LocalDateTime.now()
                                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                    Log.d("RectangleClick", "Zone is ${lastZoneIndex}")
+                                    val result = userVehicle.value?.id?.let {
+                                        reserveParkingSpace(
+                                            parkingSpaceId = lastZoneIndex+1,
+                                            voziloId = it,
+                                            reservationStartTime = reservationStartTime,
+                                            reservationEndTime = reservationStartTime
+                                        )
+                                    }
 
-                                    val result = reserveParkingSpace(
-                                        parkingSpaceId = lastZoneIndex,
-                                        voziloId = 2,
-                                        reservationStartTime = reservationStartTime,
-                                        reservationEndTime = reservationStartTime
-                                    )
-
-                                    if (result) {
+                                    if (result == true) {
                                         Toast.makeText(
                                             context,
                                             "Parking space reserved successfully!",

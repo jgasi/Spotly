@@ -8,5 +8,6 @@ namespace Spotly.Data.Repositories
         Task<RezervacijaDto> GetByIdAsync(int id);
         Task<RezervacijaDto> GetByVoziloIdAsync(int id);
         Task<Rezervacija> GetByVoziloAndParking(int voziloId, int parkingId);
+        Task<Rezervacija> GetLatestRezervacijaByVozilo(int voziloId);
     }
 }

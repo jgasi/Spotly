@@ -53,5 +53,10 @@ namespace Spotly.Services
         {
             await _rezervacijaRepository.UpdateAsync(rezervacija);
         }
+
+        public async Task<Rezervacija> GetLatestRezervacijaByVozilo(int voziloId)
+        {
+            return await _rezervacijaRepository.GetLatestRezervacijaByVozilo(voziloId);
+        }
     }
 }

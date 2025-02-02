@@ -99,12 +99,12 @@ object ParkingMjestoService {
         reservationStartTime: String,
         reservationEndTime: String
     ): Boolean {
-        val reservationDTO = ReservationPS(
+        val reservationDTO = Reservation(
             id = 2,
-            parkingSpaceId = parkingSpaceId,
-            vehicleId = voziloId,
-            reservationStartTime = reservationStartTime,
-            reservationEndTime = reservationEndTime
+            parkingMjestoId = parkingSpaceId,
+            voziloId = voziloId,
+            datumVrijemeRezervacije = reservationStartTime,
+            datumVrijemeOdlaska = reservationEndTime
         )
 
         val json = Json { ignoreUnknownKeys = true }
