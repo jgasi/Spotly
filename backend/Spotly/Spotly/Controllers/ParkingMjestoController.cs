@@ -91,6 +91,7 @@ namespace Spotly.Controllers
             return Ok($"Parking mjesto s ID {id} je odblokirano.");
         }
 
+
         //[HttpGet("{id}")]
         //public async Task<ActionResult<ParkingMjesto>> GetParkingMjestoByID(int id)
         //{
