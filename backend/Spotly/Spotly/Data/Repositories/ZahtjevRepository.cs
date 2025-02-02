@@ -145,6 +145,28 @@ namespace Spotly.Data.Repositories
             return zahtjeviDto;
         }
 
+        public async Task<IEnumerable<ZahtjevDto>> GetZahtjeviOdgovoreniAsync()
+        {
+            var zahtjevi = await _context.Zahtjevs
+                .Where(z => z.Status == "Odgovoren")
+                .ToListAsync();
+
+            var zahtjeviDto = zahtjevi.Select(z => new ZahtjevDto
+            {
+                Id = z.Id,
+                Predmet = z.Predmet,
+                Poruka = z.Poruka,
+                Odgovor = z.Odgovor,
+                Status = z.Status,
+                DatumVrijeme = z.DatumVrijeme.ToString(),
+                AdminId = z.AdminId,
+                KorisnikId = z.KorisnikId,
+                TipZahtjevaId = z.TipZahtjevaId
+            });
+
+            return zahtjeviDto;
+        }
+
         public async Task<ZahtjevDto> UpdateAsync(ZahtjevDto zahtjev)
         {
             if (zahtjev == null)

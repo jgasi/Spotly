@@ -23,6 +23,11 @@ namespace Spotly.Services
             return await _zahtjevRepository.GetZahtjeviNaCekanjuAsync();
         }
 
+        public async Task<IEnumerable<ZahtjevDto>> GetAllZahtjeviOdgovoreniAsync()
+        {
+            return await _zahtjevRepository.GetZahtjeviOdgovoreniAsync();
+        }
+
         public async Task<IEnumerable<ZahtjevDto>> GetPagedZahtjeviAsync(int pageNumber, int pageSize)
         {
             if (pageNumber < 1 || pageSize < 1)
