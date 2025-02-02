@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "855799134175",
+    "project_id": "air-projekt-ctrls",
+    "storage_bucket": "air-projekt-ctrls.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855799134175:android:25d6a69ad3c35382c4766a",
+        "android_client_info": {
+          "package_name": "org.foi.hr.air.spotly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6APJ5Yegd5My_ciDWA4O1HL19etlGN4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,3 +11,13 @@ data class ParkingSpace (
     @SerialName("rezervacijas") val rezervacijas: List<String> = emptyList(),
     @SerialName("tipMjesta") val tipMjesta: Int? = null
 )
+
+
+@kotlinx.serialization.Serializable
+data class ReservationPS(
+    @SerialName("id") val id: Int,
+    @SerialName("parkingMjestoId") val parkingSpaceId: Int,
+    @SerialName("voziloId") val vehicleId: Int,
+    @SerialName("datumVrijemeRezervacije") val reservationStartTime: String,
+    @SerialName("datumVrijemeOdlaska") val reservationEndTime: String
+)

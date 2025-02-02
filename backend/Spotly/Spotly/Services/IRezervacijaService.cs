@@ -13,5 +13,8 @@ namespace Spotly.Services
             Task UpdateRezervacijaAsync(Rezervacija rezervacija);
             Task DeleteRezervacijaAsync(int id);
             //Task<ParkingMjesto> GetParkingMjestoKorisnikaAsync(int parkingMjestoId);
+        Task<ParkingMjesto> GetParkingMjestoKorisnikaAsync(int parkingMjestoId);
+        Task<Rezervacija> GetRezervacijaByVoziloAndParkingAsync(int voziloId, int parkingMjestoId);
+        Task<Rezervacija> GetLatestRezervacijaByVozilo(int voziloId);
     }
 }

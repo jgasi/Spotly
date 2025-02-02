@@ -388,7 +388,7 @@ fun VehicleSuccessDialog(
                                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                         append("Tip mjesta: ")
                                     }
-                                    append(getParkingSpaceTypeName(tipId))
+                                    append(tipId?.let { it1 -> getParkingSpaceTypeName(it1) })
                                 },
                                 style = MaterialTheme.typography.bodyMedium
                             )

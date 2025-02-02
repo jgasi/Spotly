@@ -3,12 +3,16 @@ package org.foi.hr.air.spotly.network
 import android.util.Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.foi.hr.air.spotly.data.ParkingSpace
+import org.foi.hr.air.spotly.data.UserStore
+import org.foi.hr.air.spotly.data.Reservation
+import org.foi.hr.air.spotly.data.ReservationPS
 import org.foi.hr.air.spotly.data.UserStore
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -90,6 +94,70 @@ object ParkingMjestoService {
             val responseBody = response.body!!.string()
             Log.d("ParkingSpace", "Parking space is: $responseBody")
             return json.decodeFromString<ParkingSpace>(responseBody)
+        }
+    }
+
+
+    suspend fun reserveParkingSpace(
+        parkingSpaceId: Int,
+        voziloId: Int,
+        reservationStartTime: String,
+        reservationEndTime: String
+    ): Boolean {
+        val reservationDTO = Reservation(
+            id = 2,
+            parkingMjestoId = parkingSpaceId,
+            voziloId = voziloId,
+            datumVrijemeRezervacije = reservationStartTime,
+            datumVrijemeOdlaska = reservationEndTime
+        )
+
+        val json = Json { ignoreUnknownKeys = true }
+        val requestBody = json.encodeToString(reservationDTO).toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("$urlBase/ParkingMjesto")
+            .post(requestBody)
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Reservation failed: $response")
+
+            Log.d("ParkingSpace", "Reservation successful: ${response.body!!.string()}")
+            return true
+        }
+    }
+
+    suspend fun blockParkingSpace(id: Int): Boolean {
+        val request = Request.Builder()
+            .url("$urlBase/ParkingMjesto/blokiraj/$id")
+            .put("".toRequestBody(null))
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) {
+                Log.e("ParkingSpace", "Greška prilikom blokiranja: $response")
+                return false
+            }
+            return true
+        }
+    }
+
+    suspend fun unblockParkingSpace(id: Int): Boolean {
+        val request = Request.Builder()
+            .url("$urlBase/ParkingMjesto/odblokiraj/$id")
+            .put("".toRequestBody(null))
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) {
+                Log.e("ParkingSpace", "Greška prilikom deblokiranja: $response")
+                return false
+            }
+            return true
         }
     }
 

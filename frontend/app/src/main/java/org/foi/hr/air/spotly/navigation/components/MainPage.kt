@@ -1,6 +1,8 @@
 import android.graphics.ImageDecoder
+import android.health.connect.datatypes.units.Length
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -230,7 +232,6 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
             navController.navigate("parking")
             onClose()
         })
-
         DrawerItem("Odjava", onClick = {
             onClose()
             onLogout()
