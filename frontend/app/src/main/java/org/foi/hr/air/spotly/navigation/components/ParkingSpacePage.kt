@@ -194,6 +194,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
 
             parkingSpaceData?.zones?.forEach { (zoneName, zone) ->
                 Log.d("Zone", "Zone is ${zoneName}")
+                Log.d("Zone", "Zone is ${zone}")
                 val zoneLocation = zone.location
                 if (zoneLocation.shape == "rect") {
                     zoneLocation.size?.let {
@@ -246,7 +247,9 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                 drawRect(
                                     color = when {
                                         zoneInList?.isClicked == true -> Color.Blue.copy(alpha = 0.5f)
-                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.status == "slobodno" -> Color.Green.copy(alpha = 0.5f)
+                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Slobodno" -> Color.Green.copy(alpha = 0.5f)
+                                        //AKO JE AUTO ID JEDNAKO
+
                                         else -> Color.Red.copy(alpha = 0.5f)
                                     },
                                     topLeft = Offset(0f, 0f),

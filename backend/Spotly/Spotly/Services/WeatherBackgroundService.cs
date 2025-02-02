@@ -95,7 +95,7 @@ namespace Spotly.Services
                     Console.WriteLine($"Error fetching weather: {ex.Message}");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
+                await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
             }
         }
     }

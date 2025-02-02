@@ -7,7 +7,7 @@ data class ParkingSpace (
     @SerialName("id") val id: Int,
     @SerialName("status") val status: String,
     @SerialName("dostupnost") val dostupnost: String,
-    @SerialName("tipMjestaId") val tipMjestaId: Int,
-    @SerialName("rezervacijas") val rezervacijas: List<String> = emptyList(),
-    @SerialName("tipMjesta") val tipMjesta: Int? = null
+    @SerialName("tipMjestaId") val tipMjestaId: Int? = null,
+    @SerialName("rezervacijas") val reservations: List<Reservation> = emptyList(),
+    @SerialName("tipMjesta") val tipMjesta: TipMjesta? = null
 )

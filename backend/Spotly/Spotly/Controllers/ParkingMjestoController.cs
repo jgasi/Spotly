@@ -23,7 +23,8 @@ namespace Spotly.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ParkingMjesto>>> GetAllParkingMjestaAsync()
         {
-            var parkingMjesta = await _parkingMjestoService.GetAllParkingMjestaAsync();
+            var parkingMjesta = await _parkingMjestoService.GetAllParkingMjestaIncludeAsync();
+            //var parkingMjesta = await _parkingMjestoService.GetAllParkingMjestaAsync();
 
             if (parkingMjesta == null || !parkingMjesta.Any())
             {
