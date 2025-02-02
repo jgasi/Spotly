@@ -10,7 +10,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.foi.hr.air.spotly.data.ParkingSpace
-import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.Reservation
 import org.foi.hr.air.spotly.data.ReservationPS
 import org.foi.hr.air.spotly.data.UserStore
