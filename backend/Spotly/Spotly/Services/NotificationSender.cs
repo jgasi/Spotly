@@ -1,5 +1,4 @@
-﻿
-namespace Spotly.Services
+﻿namespace Spotly.Services
 {
     using System;
     using System.Net.Http;
@@ -9,19 +8,14 @@ namespace Spotly.Services
     using System.Threading.Tasks;
     using Google.Apis.Auth.OAuth2;
 
-    public class WeatherBackgroundService : BackgroundService
+    public class NotificationSender
     {
-        private readonly WeatherService _weatherService;
-        private readonly NotificationSender _notificationSender;
         private readonly string _serviceAccountPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "air-projekt-ctrls-firebase-adminsdk-fbsvc-21b5a9b3ae.json");
         private readonly string _projectId = "air-projekt-ctrls";
         private readonly string _fcmEndpoint;
 
-
-        public WeatherBackgroundService(WeatherService weatherService, NotificationSender notificationSender)
+        public NotificationSender()
         {
-            _weatherService = weatherService;
-            _notificationSender = notificationSender;
             _fcmEndpoint = $"https://fcm.googleapis.com/v1/projects/{_projectId}/messages:send";
         }
 
@@ -73,30 +67,6 @@ namespace Spotly.Services
                 Console.WriteLine($"Notification sent successfully to topic '{topic}': {responseContent}");
             }
         }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    var weather = await _weatherService.GetWeatherAsync();
-                    Console.WriteLine($"Temperature: {weather.Weather[0].Main}, Condition: {weather.Weather[0].Description}");
-                    if (weather.Weather[0].Main == "Thunderstorm")
-                    {
-                        await this.SendPushNotificationToTopicAsync("weather_alerts", "Severe Weather Alert", "Expect thunderstorms in your area!");
-                    }
-                    if (weather.Weather[0].Main == "Snow")
-                    {
-                        await this.SendPushNotificationToTopicAsync("weather_alerts", "Severe Weather Alert", "Expect snow in your area!");
-                    }
-                } catch (Exception ex)
-                {
-                    Console.WriteLine($"Error fetching weather: {ex.Message}");
-                }
-
-                await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
-            }
-        }
     }
+
 }

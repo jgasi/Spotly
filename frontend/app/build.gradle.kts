@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
 
+    id("com.google.gms.google-services")
     kotlin("plugin.serialization") version "2.0.20"
 }
 
@@ -81,6 +82,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
+
 
     implementation(project(":core"))
     implementation(project(":lookup_manual"))

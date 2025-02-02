@@ -38,6 +38,7 @@ builder.Services.AddScoped<IVoziloService, VoziloService>();
 builder.Services.AddScoped<ITipVozilaService, TipVozilaService>();
 builder.Services.AddScoped<IParkingMjestoService, ParkingMjestoService>();
 builder.Services.AddScoped<IRezervacijaService, RezervacijaService>();
+builder.Services.AddSingleton<NotificationSender>();
 builder.Services.AddHttpClient<WeatherService>();
 builder.Services.AddHostedService<WeatherBackgroundService>();
 
