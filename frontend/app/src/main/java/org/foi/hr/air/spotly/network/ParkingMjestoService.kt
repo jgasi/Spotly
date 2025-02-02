@@ -3,6 +3,7 @@ package org.foi.hr.air.spotly.network
 import android.util.Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -10,6 +11,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.UserStore
+import org.foi.hr.air.spotly.data.Reservation
+import org.foi.hr.air.spotly.data.ReservationPS
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -89,4 +92,35 @@ object ParkingMjestoService {
         }
     }
 
+
+    suspend fun reserveParkingSpace(
+        parkingSpaceId: Int,
+        voziloId: Int,
+        reservationStartTime: String,
+        reservationEndTime: String
+    ): Boolean {
+        val reservationDTO = Reservation(
+            id = 2,
+            parkingMjestoId = parkingSpaceId,
+            voziloId = voziloId,
+            datumVrijemeRezervacije = reservationStartTime,
+            datumVrijemeOdlaska = reservationEndTime
+        )
+
+        val json = Json { ignoreUnknownKeys = true }
+        val requestBody = json.encodeToString(reservationDTO).toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("$urlBase/ParkingMjesto")
+            .post(requestBody)
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Reservation failed: $response")
+
+            Log.d("ParkingSpace", "Reservation successful: ${response.body!!.string()}")
+            return true
+        }
+    }
 }

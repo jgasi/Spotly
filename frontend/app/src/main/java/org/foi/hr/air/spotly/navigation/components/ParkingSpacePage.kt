@@ -50,12 +50,21 @@ import kotlinx.coroutines.withContext
 import org.foi.hr.air.spotly.R
 import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.data.ParkingSpaceData
+import org.foi.hr.air.spotly.data.UserStore
+import org.foi.hr.air.spotly.data.Vehicle
 import org.foi.hr.air.spotly.data.ZoneList
 import org.foi.hr.air.spotly.network.ParkingMjestoService.fetchParkingSpaces
+import org.foi.hr.air.spotly.network.ParkingMjestoService.reserveParkingSpace
+import org.foi.hr.air.spotly.network.UserService
+import org.foi.hr.air.spotly.network.VoziloService
+import org.foi.hr.air.spotly.network.VoziloService.fetchVehicleByUserId
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Composable
 fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
+
 
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -81,6 +90,36 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     var parkingSpaces by remember { mutableStateOf(listOf<ParkingSpace>()) }
+//    var userVehicle = remember { mutableStateOf<Vehicle?>(null) }
+
+
+
+    val user = UserStore.getUser()
+//    user.let {
+//        val fetchedVehicle = VoziloService.fetchVehicleByUserId(it.id)
+//        userVehicle.value = fetchedVehicle
+//    }
+
+    var userVehicle = remember { mutableStateOf<Vehicle?>(null) }
+
+    fun fetchUserVehicle() {
+        coroutineScope.launch {
+            isLoading = true
+            try {
+                if (user != null) {
+                    userVehicle.value = withContext(Dispatchers.IO) {
+                        fetchVehicleByUserId(user.id)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Vehicle", "Error fetching user vehicle", e)
+                e.printStackTrace()
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
 
     fun fetchParkingSpaceData() {
         coroutineScope.launch {
@@ -100,10 +139,12 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
 
     LaunchedEffect(Unit) {
         fetchParkingSpaceData()
+        fetchUserVehicle()
     }
 
 
     Log.d("ParkingSpace", "Parking space is loaded: ${parkingSpaces}")
+    Log.d("Vehicle", "Vehicle is loaded: ${userVehicle}")
     parkingSpaces.forEach { parkingSpace ->
         Log.d("ParkingSpace", "ParkingSpace details: $parkingSpace")
     }
@@ -191,6 +232,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
 
             parkingSpaceData?.zones?.forEach { (zoneName, zone) ->
                 Log.d("Zone", "Zone is ${zoneName}")
+                Log.d("Zone", "Zone is ${zone}")
                 val zoneLocation = zone.location
                 if (zoneLocation.shape == "rect") {
                     zoneLocation.size?.let {
@@ -243,7 +285,9 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                 drawRect(
                                     color = when {
                                         zoneInList?.isClicked == true -> Color.Blue.copy(alpha = 0.5f)
-                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.status == "slobodno" -> Color.Green.copy(alpha = 0.5f)
+                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Slobodno" -> Color.Green.copy(alpha = 0.5f)
+                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.vehicleId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
+
                                         else -> Color.Red.copy(alpha = 0.5f)
                                     },
                                     topLeft = Offset(0f, 0f),
@@ -252,42 +296,82 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                             }
                         }
                     }
-                } else if (zoneLocation.shape == "polygon") {
-                    zoneLocation.points?.let { points ->
-                        val polygonPoints = points.split(" ").map {
-                            val point = it.split(",")
-                            val x = point[0].toFloat() * scaleFactor
-                            val y = point[1].toFloat() * scaleFactor
-                            Pair(x, y)
-                        }
-                        Log.d("PolygonZone", "Polygon points: $polygonPoints")
+                }
+            }
 
-                        Canvas(modifier = Modifier
-                            .pointerInput(Unit) {
-                                detectTapGestures(onTap = { tapOffset ->
-                                    val path = Path().apply {
-                                        polygonPoints.forEachIndexed { index, point ->
-                                            if (index == 0) moveTo(point.first, point.second)
-                                            else lineTo(point.first, point.second)
-                                        }
-                                        close()
+
+            val polygonsData = parkingSpaceData?.zones?.filter { it.value.location.shape == "polygon" }
+                ?.map { (zoneName, zone) ->
+                    val points = zone.location.points?.split(" ")?.map {
+                        val point = it.split(",")
+                        val x = point[0].toFloat() * scaleFactor
+                        val y = point[1].toFloat() * scaleFactor
+                        Pair(x, y)
+                    } ?: emptyList()
+                    Triple(zoneName, points, zonesListData.find { it.name == zoneName })
+                } ?: emptyList()
+
+            val canvasWidth = imageWidth * scaleFactor
+            val canvasHeight = imageHeight * scaleFactor
+            val density = LocalDensity.current.density
+            val canvasWidthWithScreen = canvasWidth / density
+            val canvasHeightWithScreen = canvasHeight / density
+
+
+            Log.d("CanvasSize", "Canvas width ${canvasWidth} and canvas height ${canvasHeight}!")
+            Log.d("CanvasSize", "SCREEN: Canvas width ${canvasWidthWithScreen} and canvas height ${canvasHeightWithScreen}!")
+            Canvas(modifier = Modifier
+//                .fillMaxSize()
+                .size(canvasWidthWithScreen.dp, canvasHeightWithScreen.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { tapOffset ->
+
+                        Log.d("PolygonClick", "Clicked inside polygon canvas!")
+                        polygonsData.forEachIndexed { index, (zoneName, polygonPoints, _) ->
+                            if (isPointInPolygon(tapOffset, polygonPoints)) {
+                                val clickedPolygonIndex = zonesListData.indexOfFirst { it.name == zoneName }
+                                if (clickedPolygonIndex != -1) {
+                                    val currentZone = zonesListData[clickedPolygonIndex]
+                                    val updatedZone = currentZone.copy(isClicked = !currentZone.isClicked)
+                                    zonesListData[clickedPolygonIndex] = updatedZone
+
+                                    Log.d("PolygonClick", "Clicked inside polygon $zoneName! Zone updated: $updatedZone")
+
+                                    if (lastZoneIndex == -1) {
+                                        lastZoneIndex = clickedPolygonIndex
+                                    } else {
+                                        val lastZone = zonesListData[lastZoneIndex]
+                                        val lastUpdatedZone = lastZone.copy(isClicked = false)
+                                        zonesListData[lastZoneIndex] = lastUpdatedZone
+
+                                        lastZoneIndex = clickedPolygonIndex
                                     }
-                                    if (isPointInPolygon(tapOffset, polygonPoints)) {
-                                        //TODO: Canvas size, layout offset, polygons not clickable because of canvases overlaying
-                                        Log.d("PolygonClick", "Clicked inside polygon!")
-                                    }
-                                })
-                            }) {
-                            val path = Path().apply {
-                                polygonPoints.forEachIndexed { index, point ->
-                                    if (index == 0) moveTo(point.first, point.second)
-                                    else lineTo(point.first, point.second)
+                                } else {
+                                    Log.d("PolygonClick", "Polygon zone not found: $zoneName")
                                 }
-                                close()
                             }
-                            drawPath(path, Color.Gray.copy(alpha = 0.3f))
                         }
+                    })
+                }
+            ) {
+                polygonsData.forEach { (zoneName, polygonPoints, zoneInList) ->
+                    val path = Path().apply {
+                        polygonPoints.forEachIndexed { index, point ->
+                            if (index == 0) moveTo(point.first, point.second)
+                            else lineTo(point.first, point.second)
+                        }
+                        close()
                     }
+                    drawPath(
+                        path,
+                        color = when {
+                            zoneInList?.isClicked == true -> Color.Blue.copy(alpha = 0.5f)
+                            parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Slobodno" -> Color.Green.copy(alpha = 0.5f)
+                            parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.vehicleId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
+
+                            else -> Color.Red.copy(alpha = 0.5f)
+                        },
+                    )
                 }
             }
         }
@@ -301,7 +385,42 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                 Button(
                     onClick = {
                         (context as? ComponentActivity)?.lifecycleScope?.launch {
-                            Toast.makeText(context, "Work in progress!", Toast.LENGTH_SHORT).show()
+                            (context as? ComponentActivity)?.lifecycleScope?.launch {
+                                try {
+                                    val reservationStartTime = LocalDateTime.now()
+                                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                    Log.d("RectangleClick", "Zone is ${lastZoneIndex}")
+                                    val result = userVehicle.value?.id?.let {
+                                        reserveParkingSpace(
+                                            parkingSpaceId = lastZoneIndex+1,
+                                            voziloId = it,
+                                            reservationStartTime = reservationStartTime,
+                                            reservationEndTime = reservationStartTime
+                                        )
+                                    }
+
+                                    if (result == true) {
+                                        Toast.makeText(
+                                            context,
+                                            "Parking space reserved successfully!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Failed to reserve parking space.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    Toast.makeText(
+                                        context,
+                                        "An error occurred while reserving the parking space.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         }
                     },
                     Modifier.size(140.dp, 50.dp).padding(0.dp),
