@@ -123,4 +123,37 @@ object ParkingMjestoService {
             return true
         }
     }
+
+    suspend fun blockParkingSpace(id: Int): Boolean {
+        val request = Request.Builder()
+            .url("$urlBase/ParkingMjesto/blokiraj/$id")
+            .put("".toRequestBody(null))
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) {
+                Log.e("ParkingSpace", "Greška prilikom blokiranja: $response")
+                return false
+            }
+            return true
+        }
+    }
+
+    suspend fun unblockParkingSpace(id: Int): Boolean {
+        val request = Request.Builder()
+            .url("$urlBase/ParkingMjesto/odblokiraj/$id")
+            .put("".toRequestBody(null))
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) {
+                Log.e("ParkingSpace", "Greška prilikom deblokiranja: $response")
+                return false
+            }
+            return true
+        }
+    }
+
 }
