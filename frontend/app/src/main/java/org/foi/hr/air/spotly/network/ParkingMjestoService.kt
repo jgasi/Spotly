@@ -41,8 +41,11 @@ object ParkingMjestoService {
     }
 
     suspend fun fetchParkingSpaces(): List<ParkingSpace> {
+        val url = "${urlBase}/ParkingMjesto"
+
         val request = Request.Builder()
-            .url("$urlBase/ParkingMjesto")
+            .url(url)
+            .get()
             .build()
 
         val response = executeRequest(request)
@@ -51,10 +54,11 @@ object ParkingMjestoService {
 
             val json = Json { ignoreUnknownKeys = true }
             val responseBody = response.body!!.string()
-            Log.d("ParkingSpace", "Parking space is: ${responseBody}")
-            return json.decodeFromString(responseBody)
+            val parkingSpace = json.decodeFromString<List<ParkingSpace>>(responseBody)
+            return parkingSpace
         }
     }
+
 
     suspend fun updateParkingSpace(parkingSpace: ParkingSpace): Boolean {
         val requestBody = Json.encodeToString(parkingSpace).toRequestBody("application/json".toMediaTypeOrNull())
@@ -73,7 +77,7 @@ object ParkingMjestoService {
         }
     }
 
-    suspend fun fetchParkingSpaceById(id: Int): ParkingSpace? {
+    suspend fun fetchParkingSpaceById(id: Int): ParkingSpace {
         val request = Request.Builder()
             .url("$urlBase/ParkingMjesto/$id")
             .build()

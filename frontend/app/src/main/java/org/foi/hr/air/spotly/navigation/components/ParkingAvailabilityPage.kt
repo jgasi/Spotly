@@ -48,7 +48,7 @@ fun ParkingAvailabilityPage() {
     val fetchParkingSpaces = {
         (context as? ComponentActivity)?.lifecycleScope?.launch {
             try {
-                val fetchedSpaces = ParkingMjestoService.fetchParkingSpaces().filter { it.tipMjestaId == 1 }
+                val fetchedSpaces = ParkingMjestoService.fetchParkingSpaces()
                 parkingSpaces.value = fetchedSpaces
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -64,7 +64,6 @@ fun ParkingAvailabilityPage() {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = "Parkirna mjesta zaposlenika", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 16.dp))
 
-        // Dropdown for selecting a parking space
         DropdownMenuExample(
             items = parkingSpaces.value,
             selectedItem = selectedParkingSpace.value,

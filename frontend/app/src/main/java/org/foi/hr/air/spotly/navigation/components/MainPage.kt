@@ -1,9 +1,6 @@
-import android.content.Context
 import android.graphics.ImageDecoder
-import android.health.connect.datatypes.units.Length
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -188,6 +185,16 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
                 navController.navigate("upravljanjeZahtjevima")
                 onClose()
             })
+            DrawerItem("Upravljanje zaposleničkim mjestima", onClick = {
+                navController.navigate("parkingAvailability")
+                onClose()
+            })
+        }
+        if (isZaposlenik){
+            DrawerItem("Upravljanje zaposleničkim mjestima", onClick = {
+                navController.navigate("parkingAvailability")
+                onClose()
+            })
         }
 
         DrawerItem("Profil korisnika", onClick = {
@@ -281,9 +288,7 @@ fun NavigationHost(
                 manualLookupHandler = ManualLookupHandler(context, RoomVehicleLookupDataSource(db)),
                 ocrLookupHandler = OcrLookupHandler(context, RoomVehicleLookupDataSource(db)),
                 onVehicleFetched = { vehicle ->
-                    if (vehicle != null) {
-                        onSuccessfulLookup(vehicle)
-                    }
+                    onSuccessfulLookup(vehicle)
                 },
                 onError = { errorMessage, errorStatus ->
                     Log.d("MainPage", "$errorMessage, $errorStatus")

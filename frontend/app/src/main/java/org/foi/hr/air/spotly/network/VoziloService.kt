@@ -61,7 +61,6 @@ object VoziloService {
         val response = executeRequest(request)
         response.use {
             if (!response.isSuccessful) throw IOException("Error: $response")
-
             val json = Json { ignoreUnknownKeys = true }
             val responseBody = response.body!!.string()
             val types = json.decodeFromString<Vehicle>(responseBody)
