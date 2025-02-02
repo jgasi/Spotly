@@ -11,5 +11,7 @@ namespace Spotly.Services
         Task AddKaznuAsync(Kazna kazna);
         Task UpdateKaznuAsync(Kazna kazna);
         Task DeleteKaznuAsync(int id);
+        Task<int> GetTotalKazneCountAsync();
+        Task<int> GetKazneCountByUserIdAsync(int userId);
     }
 }

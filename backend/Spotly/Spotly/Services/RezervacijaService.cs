@@ -1,4 +1,5 @@
 ﻿using Spotly.Data.Repositories;
+using Spotly.DTOs;
 using Spotly.Models;
 
 namespace Spotly.Services
@@ -18,6 +19,11 @@ namespace Spotly.Services
             await _rezervacijaRepository.AddAsync(rezervacija);
         }
 
+        public async Task DeleteRezervacijaAsync(int id)
+        {
+            await _rezervacijaRepository.DeleteAsync(id);
+        }
+
         public async Task<IEnumerable<Rezervacija>> GetAllRezervacijeAsync()
         {
             return await _rezervacijaRepository.GetAllAsync();
@@ -28,9 +34,14 @@ namespace Spotly.Services
             return _parkingMjestoRepository.GetByIdAsync(parkingMjestoId);
         }
 
-        public async Task<Rezervacija> GetRezervacijaByIdAsync(int id)
+        public async Task<RezervacijaDto> GetRezervacijaByIdAsync(int id)
         {
             return await _rezervacijaRepository.GetByIdAsync(id);
+        }
+
+        public async Task<RezervacijaDto> GetRezervacijaByVoziloIdAsync(int id)
+        {
+            return await _rezervacijaRepository.GetByVoziloIdAsync(id);
         }
 
         public async Task<Rezervacija> GetRezervacijaByVoziloAndParkingAsync(int voziloId, int parkingMjestoId)

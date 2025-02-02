@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.foi.hr.air.spotly.data.Kazna
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.network.KaznaService
 
 class ZahtjevZaBrisanjeKazneActivity : ComponentActivity() {
@@ -41,15 +42,16 @@ fun ZahtjevZaBrisanjeKazneScreen() {
     var selectedKazna by remember { mutableStateOf<Kazna?>(null) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val currentUser = UserStore.getUser()
 
-    // Dohvaćanje kazni
+
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             try {
-                val korisnikId = 2 // Zamijeniti s pravim korisničkim ID-om
+                val korisnikId = currentUser?.id
                 kazne = withContext(Dispatchers.IO) {
                     KaznaService.fetchKazneForUserr(korisnikId)
-                } ?: emptyList()  // Ako je rezultat null, koristi praznu listu
+                } ?: emptyList()
                 filteredKazne = kazne
             } catch (e: Exception) {
                 Toast.makeText(context, "Greška pri dohvaćanju kazni: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -57,7 +59,6 @@ fun ZahtjevZaBrisanjeKazneScreen() {
         }
     }
 
-    // Filtriranje kazni prema pretrazi
     LaunchedEffect(searchText) {
         filteredKazne = if (searchText.isEmpty()) {
             kazne
@@ -66,11 +67,9 @@ fun ZahtjevZaBrisanjeKazneScreen() {
         }
     }
 
-    // Layout
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Zahtjev za brisanje kazne", style = MaterialTheme.typography.headlineMedium)
 
-        // Polje za pretragu
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
@@ -80,7 +79,6 @@ fun ZahtjevZaBrisanjeKazneScreen() {
                 .padding(vertical = 8.dp)
         )
 
-        // Kazne i gumb "Dalje"
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 60.dp)) {
                 items(filteredKazne) { kazna ->
@@ -99,17 +97,16 @@ fun ZahtjevZaBrisanjeKazneScreen() {
                             Text("Datum: ${kazna.datumVrijeme}")
                         }
                     }
-                    Divider()
+                    HorizontalDivider()
                 }
             }
 
-            // Gumb "Dalje" koji je uvijek vidljiv
             Button(
                 onClick = {
                     if (selectedKazna != null) {
                         val intent = Intent(context, DetaljiZahtjevaActivity::class.java)
                         intent.putExtra("kazna_id", selectedKazna!!.id)
-                        intent.putExtra("korisnik_id", 2)  // Treba staviti ID ulogiranog korisnika
+                        intent.putExtra("korisnik_id", currentUser?.id)
                         context.startActivity(intent)
                     } else {
                         Toast.makeText(context, "Molimo odaberite kaznu!", Toast.LENGTH_SHORT).show()

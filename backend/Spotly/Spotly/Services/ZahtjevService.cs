@@ -18,6 +18,11 @@ namespace Spotly.Services
             return await _zahtjevRepository.GetAllAsync();
         }
 
+        public async Task<IEnumerable<ZahtjevDto>> GetAllZahtjeviNaCekanjuAsync()
+        {
+            return await _zahtjevRepository.GetZahtjeviNaCekanjuAsync();
+        }
+
         public async Task<IEnumerable<ZahtjevDto>> GetPagedZahtjeviAsync(int pageNumber, int pageSize)
         {
             if (pageNumber < 1 || pageSize < 1)
@@ -62,6 +67,16 @@ namespace Spotly.Services
         public async Task DeleteZahtjevAsync(int id)
         {
             await _zahtjevRepository.DeleteAsync(id);
-        }    
+        }
+
+        public async Task<IEnumerable<ZahtjevDto>> GetPagedZahtjeviOdgovoreniAsync(int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                throw new ArgumentException("Neispravni parametri za stranicu ili broj zahtjeva.");
+            }
+
+            return await _zahtjevRepository.GetPagedOdgovoreniAsync(pageNumber, pageSize);
+        }
     }
 }

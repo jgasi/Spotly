@@ -1,12 +1,12 @@
 package org.foi.hr.air.spotly.network
 
 import android.util.Log
-import android.widget.Toast
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.Zahtjev
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -19,7 +19,15 @@ object ZahtjevService {
     private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
 
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val userToken = UserStore.getUser()?.token
+
+        val finalRequest = userToken?.let {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $it")
+                .build()
+        } ?: request
+
+        client.newCall(finalRequest).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 continuation.resumeWithException(e)
             }
@@ -32,6 +40,34 @@ object ZahtjevService {
 
     suspend fun getPagedZahtjevi(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
         val url = "$urlBase/Zahtjev/paginated?pageNumber=$pageNumber&pageSize=$pageSize"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<org.foi.hr.air.spotly.data.Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
+    suspend fun getZahtjeviNaCekanju(): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/nacekanju"
 
         val request = Request.Builder()
             .url(url)
@@ -60,6 +96,34 @@ object ZahtjevService {
 
     suspend fun getPagedZahtjeviNaCekanju(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
         val url = "$urlBase/Zahtjev/paginated_na_cekanju?pageNumber=$pageNumber&pageSize=$pageSize"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        var response: Response? = null
+
+        return try {
+            response = executeRequest(request)
+
+            if (response?.isSuccessful == true) {
+                response.body?.string()?.let { responseBody ->
+                    Json.decodeFromString<List<Zahtjev>>(responseBody)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            response?.body?.close()
+        }
+    }
+
+    suspend fun getPagedZahtjeviOdgovoreni(pageNumber: Int, pageSize: Int): List<Zahtjev>? {
+        val url = "$urlBase/Zahtjev/paginated_odgovoreni?pageNumber=$pageNumber&pageSize=$pageSize"
 
         val request = Request.Builder()
             .url(url)
@@ -211,6 +275,4 @@ object ZahtjevService {
             false
         }
     }
-
-
 }

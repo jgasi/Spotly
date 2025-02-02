@@ -37,7 +37,31 @@ namespace Spotly.Data.Repositories
         public async Task<IEnumerable<ZahtjevDto>> GetPagedNaCekanjuAsync(int pageNumber, int pageSize)
         {
             var zahtjevi = await _context.Zahtjevs
-                .Where(z => z.Status == "Na cekanju")
+                .Where(z => z.Status == "Na čekanju")
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var zahtjeviDto = zahtjevi.Select(z => new ZahtjevDto
+            {
+                Id = z.Id,
+                Predmet = z.Predmet,
+                Poruka = z.Poruka,
+                Odgovor = z.Odgovor,
+                Status = z.Status,
+                DatumVrijeme = z.DatumVrijeme.ToString(),
+                AdminId = z.AdminId,
+                KorisnikId = z.KorisnikId,
+                TipZahtjevaId = z.TipZahtjevaId
+            });
+
+            return zahtjeviDto;
+        }
+
+        public async Task<IEnumerable<ZahtjevDto>> GetPagedOdgovoreniAsync(int pageNumber, int pageSize)
+        {
+            var zahtjevi = await _context.Zahtjevs
+                .Where(z => z.Status == "Odgovoren")
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -99,6 +123,28 @@ namespace Spotly.Data.Repositories
             return zahtjev;
         }
 
+        public async Task<IEnumerable<ZahtjevDto>> GetZahtjeviNaCekanjuAsync()
+        {
+            var zahtjevi = await _context.Zahtjevs
+                .Where(z => z.Status == "Na čekanju")
+                .ToListAsync();
+
+            var zahtjeviDto = zahtjevi.Select(z => new ZahtjevDto
+            {
+                Id = z.Id,
+                Predmet = z.Predmet,
+                Poruka = z.Poruka,
+                Odgovor = z.Odgovor,
+                Status = z.Status,
+                DatumVrijeme = z.DatumVrijeme.ToString(),
+                AdminId = z.AdminId,
+                KorisnikId = z.KorisnikId,
+                TipZahtjevaId = z.TipZahtjevaId
+            });
+
+            return zahtjeviDto;
+        }
+
         public async Task<ZahtjevDto> UpdateAsync(ZahtjevDto zahtjev)
         {
             if (zahtjev == null)
@@ -113,8 +159,11 @@ namespace Spotly.Data.Repositories
                 throw new KeyNotFoundException($"Zahtjev s ID-om {zahtjev.Id} nije pronađen.");
             }
 
+            existingZahtjev.Poruka = zahtjev.Poruka;
+            existingZahtjev.Predmet = zahtjev.Predmet;
             existingZahtjev.Odgovor = zahtjev.Odgovor;
             existingZahtjev.Status = zahtjev.Status;
+            existingZahtjev.AdminId = zahtjev.AdminId;
 
             _context.Zahtjevs.Update(existingZahtjev);
             await _context.SaveChangesAsync();
@@ -123,7 +172,8 @@ namespace Spotly.Data.Repositories
             {
                 Id = existingZahtjev.Id,
                 Odgovor = existingZahtjev.Odgovor,
-                Status = existingZahtjev.Status
+                Status = existingZahtjev.Status,
+                AdminId = existingZahtjev.AdminId
             };
 
             return updatedDto;

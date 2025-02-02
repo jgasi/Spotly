@@ -20,7 +20,7 @@ fun OfflineDatabasePage(repository: OfflineRepository) {
 
     Column(modifier = Modifier.padding(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Offline Mode")
+            Text("Kreiraj lokalnu kopiju baze")
             Spacer(modifier = Modifier.width(8.dp))
             Switch(
                 checked = isOffline,

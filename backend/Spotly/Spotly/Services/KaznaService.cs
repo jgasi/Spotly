@@ -43,5 +43,15 @@ namespace Spotly.Services
         {
             await _kaznaRepository.DeleteAsync(id);
         }
+
+        public async Task<int> GetTotalKazneCountAsync()
+        {
+            return await _kaznaRepository.GetTotalKazneCountAsync();
+        }
+
+        public async Task<int> GetKazneCountByUserIdAsync(int userId)
+        {
+            return await _kaznaRepository.GetKazneCountByUserIdAsync(userId);
+        }
     }
 }

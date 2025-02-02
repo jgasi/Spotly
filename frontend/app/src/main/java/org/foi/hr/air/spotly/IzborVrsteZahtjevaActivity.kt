@@ -41,10 +41,8 @@ fun RequestSelectionScreen() {
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Gumb za zahtjev za brisanje kazni
         Button(
             onClick = {
-                // Preusmjerenje na aktivnost za brisanje kazni
                 val intent = Intent(context, ZahtjevZaBrisanjeKazneActivity::class.java)
                 context.startActivity(intent)
             },

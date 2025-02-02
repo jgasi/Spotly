@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Spotly.Models;
 using Spotly.Services;
 
@@ -6,6 +7,7 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class VoziloController : ControllerBase
     {
         private readonly IVoziloService _voziloService;
@@ -78,6 +80,13 @@ namespace Spotly.Controllers
                 data = new[] { vozilo }
             });
 
+        }
+
+        [HttpGet("statistics/total-vehicles")]
+        public async Task<ActionResult<int>> GetTotalVehiclesCountAsync()
+        {
+            var totalVehicles = await _voziloService.GetTotalVehiclesCountAsync();
+            return Ok(totalVehicles);
         }
 
         [HttpPost]

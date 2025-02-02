@@ -1,4 +1,4 @@
-﻿using Azure.Core;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Spotly.DTOs;
 using Spotly.Models;
@@ -6,7 +6,6 @@ using Spotly.Services;
 
 namespace Spotly.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class ParkingMjestoController : ControllerBase
@@ -34,18 +33,74 @@ namespace Spotly.Controllers
             return Ok(parkingMjesta);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ParkingMjesto>> GetParkingMjestoByID(int id)
+        [HttpGet("statistics")]
+        public async Task<ActionResult> GetParkingStatisticsAsync()
         {
-            var parkingMjesto = await _parkingMjestoService.GetParkingMjestoById(id);
+            var total = await _parkingMjestoService.GetTotalParkingMjestaAsync();
+            var available = await _parkingMjestoService.GetAvailableParkingMjestaAsync();
+            var reserved = await _parkingMjestoService.GetReservedParkingMjestaAsync();
+            var blocked = await _parkingMjestoService.GetBlockedParkingMjestaAsync();
 
-            if(parkingMjesto == null)
+            return Ok(new
             {
-                return NotFound("Ovo parking mjesto ne postoji.");
+                Ukupno = total,
+                Slobodna = available,
+                Rezervirana = reserved,
+                Blokirana = blocked
+            });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ParkingMjesto>> GetParkingMjestoByIdAsync(int id)
+        {
+            var parkingMjesto = await _parkingMjestoService.GetParkingMjestoByIdAsync(id);
+
+            if (parkingMjesto == null)
+            {
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
             }
 
             return Ok(parkingMjesto);
         }
+
+        [HttpPut("blokiraj/{id}")]
+        public async Task<ActionResult> BlokirajParkingMjestoAsync(int id)
+        {
+            var uspjeh = await _parkingMjestoService.BlokirajParkingMjestoAsync(id);
+
+            if (!uspjeh)
+            {
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
+            }
+
+            return Ok($"Parking mjesto s ID {id} je blokirano.");
+        }
+
+        [HttpPut("odblokiraj/{id}")]
+        public async Task<ActionResult> OdblokirajParkingMjestoAsync(int id)
+        {
+            var uspjeh = await _parkingMjestoService.OdblokirajParkingMjestoAsync(id);
+
+            if (!uspjeh)
+            {
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
+            }
+
+            return Ok($"Parking mjesto s ID {id} je odblokirano.");
+        }
+
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<ParkingMjesto>> GetParkingMjestoByID(int id)
+        //{
+        //    var parkingMjesto = await _parkingMjestoService.GetParkingMjestoById(id);
+
+        //    if(parkingMjesto == null)
+        //    {
+        //        return NotFound("Ovo parking mjesto ne postoji.");
+        //    }
+
+        //    return Ok(parkingMjesto);
+        //}
 
         [HttpPost]
         public async Task<ActionResult> ReserveParkingSpace([FromBody] RezervacijaDto request)
