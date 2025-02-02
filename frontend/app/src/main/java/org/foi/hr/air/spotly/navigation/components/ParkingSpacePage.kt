@@ -294,7 +294,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                                         zoneInList?.isClicked == true -> Color.Blue.copy(alpha = 0.5f)
                                         parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Blokirano" -> Color.Gray.copy(alpha = 0.7f)
                                         parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Slobodno" -> Color.Green.copy(alpha = 0.5f)
-                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.vehicleId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
+                                        parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.voziloId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
                                         else -> Color.Red.copy(alpha = 0.5f)
                                     },
                                     topLeft = Offset(0f, 0f),
@@ -375,7 +375,7 @@ fun ParkingSpacePage(parkingSpaceData: ParkingSpaceData?) {
                             zoneInList?.isClicked == true -> Color.Blue.copy(alpha = 0.5f)
                             parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Blokirano" -> Color.Gray.copy(alpha = 0.7f)
                             parkingSpaces.getOrNull(zoneName.toInt() - 1)?.dostupnost == "Slobodno" -> Color.Green.copy(alpha = 0.5f)
-                            parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.vehicleId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
+                            parkingSpaces.getOrNull(zoneName.toInt() - 1)?.reservations?.firstOrNull()?.voziloId == userVehicle.value?.id -> Color.Cyan.copy(alpha = 0.5f)
                             else -> Color.Red.copy(alpha = 0.5f)
                         },
                     )

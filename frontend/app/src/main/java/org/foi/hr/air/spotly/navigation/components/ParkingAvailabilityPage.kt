@@ -25,6 +25,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.foi.hr.air.spotly.data.ParkingSpace
 import org.foi.hr.air.spotly.network.ParkingMjestoService
+import org.foi.hr.air.spotly.network.ParkingMjestoService.blockParkingSpace
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme
 
 class ParkingAvailabilityActivity : ComponentActivity() {
@@ -84,10 +85,13 @@ fun ParkingAvailabilityPage() {
                     val updatedSpace = space.copy(dostupnost = updatedStatus)
                     (context as? ComponentActivity)?.lifecycleScope?.launch {
                         try {
-                            val result = ParkingMjestoService.updateParkingSpace(updatedSpace)
+                            val result: Boolean = if(updatedSpace.dostupnost == "dostupno"){
+                                blockParkingSpace(updatedSpace.id)
+                            } else{
+                                ParkingMjestoService.unblockParkingSpace(updatedSpace.id)
+                            }
                             if (result) {
                                 Toast.makeText(context, "Dostupnost ažurirana!", Toast.LENGTH_SHORT).show()
-                                fetchParkingSpaces()
                             } else {
                                 Toast.makeText(context, "Greška pri ažuriranju dostupnosti.", Toast.LENGTH_SHORT).show()
                             }
