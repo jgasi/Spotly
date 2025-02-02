@@ -1,6 +1,8 @@
 package org.foi.hr.air.spotly.network
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -44,21 +46,16 @@ object ParkingMjestoService {
     }
 
     suspend fun fetchParkingSpaces(): List<ParkingSpace> {
-        val url = "${urlBase}/ParkingMjesto"
-
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .build()
-
-        val response = executeRequest(request)
-        response.use {
-            if (!response.isSuccessful) throw IOException("Greška: $response")
-
-            val json = Json { ignoreUnknownKeys = true }
-            val responseBody = response.body!!.string()
-            val parkingSpace = json.decodeFromString<List<ParkingSpace>>(responseBody)
-            return parkingSpace
+        return withContext(Dispatchers.IO) {
+            val url = "${urlBase}/ParkingMjesto"
+            val request = Request.Builder().url(url).get().build()
+            val response = executeRequest(request)
+            response.use {
+                if (!response.isSuccessful) throw IOException("Greška: $response")
+                val json = Json { ignoreUnknownKeys = true }
+                val responseBody = response.body!!.string()
+                json.decodeFromString<List<ParkingSpace>>(responseBody)
+            }
         }
     }
 
