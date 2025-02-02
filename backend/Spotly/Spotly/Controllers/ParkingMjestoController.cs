@@ -91,33 +91,6 @@ namespace Spotly.Controllers
             return Ok($"Parking mjesto s ID {id} je odblokirano.");
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateBlockStateAsync(ParkingMjesto parkingMjesto)
-        [HttpPut("blokiraj/{id}")]
-        public async Task<ActionResult> BlokirajParkingMjestoAsync(int id)
-        {
-            var uspjeh = await _parkingMjestoService.BlokirajParkingMjestoAsync(id);
-
-            if (!uspjeh)
-            {
-                return NotFound($"Parking mjesto s ID {id} ne postoji.");
-            }
-
-            return Ok($"Parking mjesto s ID {id} je blokirano.");
-        }
-
-        [HttpPut("odblokiraj/{id}")]
-        public async Task<ActionResult> OdblokirajParkingMjestoAsync(int id)
-        {
-            var uspjeh = await _parkingMjestoService.OdblokirajParkingMjestoAsync(id);
-
-            if (!uspjeh)
-            {
-                return NotFound($"Parking mjesto s ID {id} ne postoji.");
-            }
-
-            return Ok($"Parking mjesto s ID {id} je odblokirano.");
-        }
 
         //[HttpGet("{id}")]
         //public async Task<ActionResult<ParkingMjesto>> GetParkingMjestoByID(int id)
