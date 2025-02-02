@@ -46,17 +46,14 @@ fun UpravljajOdgovorenimZahtjevimaScreen(modifier: Modifier = Modifier) {
     var zahtjevi by remember { mutableStateOf<List<Zahtjev>?>(null) }
     var filteredZahtjevi by remember { mutableStateOf<List<Zahtjev>?>(null) }
     var searchText by remember { mutableStateOf("") }
-    var currentPage by remember { mutableStateOf(1) }
-    val pageSize = 3
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf<Zahtjev?>(null) }
 
-
-    LaunchedEffect(currentPage) {
+    LaunchedEffect(Unit) {
         coroutineScope.launch {
             zahtjevi = withContext(Dispatchers.IO) {
-                ZahtjevService.getPagedZahtjeviOdgovoreni(currentPage, pageSize)
+                ZahtjevService.getZahtjeviOdgovoreni()
             }
             filteredZahtjevi = zahtjevi
         }
@@ -94,28 +91,7 @@ fun UpravljajOdgovorenimZahtjevimaScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
-
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { if (currentPage > 1) currentPage-- },
-                enabled = currentPage > 1
-            ) {
-                Text("Prethodna")
-            }
-            Button(
-                onClick = { currentPage++ },
-                enabled = zahtjevi?.size == pageSize
-            ) {
-                Text("Sljedeća")
-            }
-        }
     }
-
 
     showEditDialog?.let { zahtjev ->
         EditZahtjevDialogUpravljaj(

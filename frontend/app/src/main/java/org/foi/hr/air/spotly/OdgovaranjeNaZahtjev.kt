@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,9 +14,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,24 +83,24 @@ fun OdgovaranjeScreen(zahtjevId: Int, onSave: (Zahtjev) -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            Text(text = "Predmet: ${it.predmet}", style = MaterialTheme.typography.titleMedium)
-            Text(text = "Poruka: ${it.poruka}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Datum: ${it.datumVrijeme}", style = MaterialTheme.typography.bodySmall)
+            Text(text = "Predmet: ${it.predmet}", style = MaterialTheme.typography.headlineSmall)
+            Text(text = "Poruka: ${it.poruka}", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Datum: ${it.datumVrijeme}", style = MaterialTheme.typography.bodyMedium)
 
-            Text(text = "Odgovor: ", style = MaterialTheme.typography.titleMedium)
+            Text(text = "Odgovor: ", style = MaterialTheme.typography.headlineSmall)
 
             BasicTextField(
                 value = odgovor,
                 onValueChange = { odgovor = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .height(120.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(8.dp),
+                    .padding(16.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                 decorationBox = { innerTextField ->
                     Box(
@@ -105,38 +108,52 @@ fun OdgovaranjeScreen(zahtjevId: Int, onSave: (Zahtjev) -> Unit) {
                             .fillMaxSize()
                             .padding(4.dp)
                     ) {
+                        if (odgovor.isEmpty()) {
+                            Text(
+                                text = "Unesite odgovor...",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Gray
+                            )
+                        }
                         innerTextField()
                     }
                 }
             )
 
-            Text(text = "Status: ", style = MaterialTheme.typography.titleMedium)
+            Text(text = "Status: ", style = MaterialTheme.typography.headlineSmall)
 
-            BasicTextField(
-                value = status,
-                onValueChange = { status = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(8.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                decorationBox = { innerTextField ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(4.dp)
-                    ) {
-                        innerTextField()
-                    }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { status = "Na čekanju" }
+                ) {
+                    RadioButton(
+                        selected = status == "Na čekanju",
+                        onClick = { status = "Na čekanju" }
+                    )
+                    Text(text = "Na čekanju", style = MaterialTheme.typography.bodyLarge)
                 }
-            )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { status = "Odgovoren" }
+                ) {
+                    RadioButton(
+                        selected = status == "Odgovoren",
+                        onClick = { status = "Odgovoren" }
+                    )
+                    Text(text = "Odgovoren", style = MaterialTheme.typography.bodyLarge)
+                }
+            }
 
             Button(
                 onClick = { showToast = true },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(56.dp)
             ) {
                 Text(text = "Pregledaj dokumente")
             }
@@ -152,7 +169,7 @@ fun OdgovaranjeScreen(zahtjevId: Int, onSave: (Zahtjev) -> Unit) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(56.dp)
             ) {
                 Text(text = "Spremi")
             }

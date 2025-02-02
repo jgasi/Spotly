@@ -30,6 +30,7 @@ import org.foi.hr.air.spotly.MojiZahtjeviScreen
 import org.foi.hr.air.spotly.ProfilePage
 import org.foi.hr.air.spotly.QueueScreen
 import org.foi.hr.air.spotly.RequestSelectionScreen
+import org.foi.hr.air.spotly.UpravljajOdgovorenimZahtjevimaScreen
 import org.foi.hr.air.spotly.UpravljanjeZahtjevimaScreen
 import org.foi.hr.air.spotly.data.QueueViewModel
 import org.foi.hr.air.spotly.data.UserStore
@@ -179,12 +180,16 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
                 navController.navigate("users")
                 onClose()
             })
-            DrawerItem("Brisanje kazni korisnika", onClick = {
+            DrawerItem("Upravljanje kaznama korisnika", onClick = {
                 navController.navigate("brisanjeKazniKorisnika")
                 onClose()
             })
             DrawerItem("Upravljanje zahtjevima", onClick = {
                 navController.navigate("upravljanjeZahtjevima")
+                onClose()
+            })
+            DrawerItem("Upravljanje odgovorenim zahtjevima", onClick = {
+                navController.navigate("upravljajOdgovorenimZahtjevima")
                 onClose()
             })
             DrawerItem("Upravljanje zaposleničkim mjestima", onClick = {
@@ -336,6 +341,7 @@ fun NavigationHost(
         composable("izborVrsteZahtjeva") { RequestSelectionScreen() }
         composable("mojiZahtjevi") { MojiZahtjeviScreen(userId = 2) }
         composable("upravljanjeZahtjevima") { UpravljanjeZahtjevimaScreen() }
+        composable("upravljajOdgovorenimZahtjevima") { UpravljajOdgovorenimZahtjevimaScreen() }
         composable("parkingAvailability") { ParkingAvailabilityPage() }
         composable("offlineDatabase") {
             val context = LocalContext.current

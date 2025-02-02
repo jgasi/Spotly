@@ -23,6 +23,8 @@ import kotlinx.coroutines.withContext
 import org.foi.hr.air.spotly.data.Kazna
 import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.network.KaznaService
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ZahtjevZaBrisanjeKazneActivity : ComponentActivity() {
 
@@ -43,7 +45,6 @@ fun ZahtjevZaBrisanjeKazneScreen() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val currentUser = UserStore.getUser()
-
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -67,8 +68,15 @@ fun ZahtjevZaBrisanjeKazneScreen() {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Zahtjev za brisanje kazne", style = MaterialTheme.typography.headlineMedium)
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)
+    ) {
+        Text(
+            "Zahtjev za brisanje kazne",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         OutlinedTextField(
             value = searchText,
@@ -76,28 +84,43 @@ fun ZahtjevZaBrisanjeKazneScreen() {
             label = { Text("Pretraži kazne po razlogu") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(bottom = 16.dp)
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 60.dp)) {
+            LazyColumn(modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp)
+            ) {
                 items(filteredKazne) { kazna ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(vertical = 8.dp)
                             .clickable { selectedKazna = kazna },
                         colors = CardDefaults.cardColors(
-                            containerColor = if (kazna == selectedKazna) Color.Green else Color.White
-                        )
+                            containerColor = if (kazna == selectedKazna) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(4.dp)
                     ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text("Razlog: ${kazna.razlog}")
-                            Text("Iznos: ${kazna.novcaniIznos} euro")
-                            Text("Datum: ${kazna.datumVrijeme}")
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                "Razlog: ${kazna.razlog}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (kazna == selectedKazna) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                "Iznos: ${kazna.novcaniIznos} euro",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (kazna == selectedKazna) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                "Datum: ${formatDate(kazna.datumVrijeme)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (kazna == selectedKazna) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
-                    HorizontalDivider()
                 }
             }
 
@@ -121,6 +144,13 @@ fun ZahtjevZaBrisanjeKazneScreen() {
             }
         }
     }
+}
+
+fun formatDate(dateString: String): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    val date = LocalDateTime.parse(dateString, formatter)
+    val outputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+    return date.format(outputFormatter)
 }
 
 @Preview(showBackground = true)
