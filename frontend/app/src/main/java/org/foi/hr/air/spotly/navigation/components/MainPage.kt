@@ -187,6 +187,16 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
                 navController.navigate("upravljanjeZahtjevima")
                 onClose()
             })
+            DrawerItem("Upravljanje zaposleničkim mjestima", onClick = {
+                navController.navigate("parkingAvailability")
+                onClose()
+            })
+        }
+        if (isZaposlenik){
+            DrawerItem("Upravljanje zaposleničkim mjestima", onClick = {
+                navController.navigate("parkingAvailability")
+                onClose()
+            })
         }
 
         DrawerItem("Profil korisnika", onClick = {
@@ -222,11 +232,6 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
             navController.navigate("parking")
             onClose()
         })
-        DrawerItem("Zaposleničko mjesto", onClick = {
-            navController.navigate("parkingAvailability")
-            onClose()
-        })
-        
         DrawerItem("Odjava", onClick = {
             onClose()
             onLogout()

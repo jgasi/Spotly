@@ -10,9 +10,9 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.foi.hr.air.spotly.data.ParkingSpace
-import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.Reservation
 import org.foi.hr.air.spotly.data.ReservationPS
+import org.foi.hr.air.spotly.data.UserStore
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -44,8 +44,11 @@ object ParkingMjestoService {
     }
 
     suspend fun fetchParkingSpaces(): List<ParkingSpace> {
+        val url = "${urlBase}/ParkingMjesto"
+
         val request = Request.Builder()
-            .url("$urlBase/ParkingMjesto")
+            .url(url)
+            .get()
             .build()
 
         val response = executeRequest(request)
@@ -54,10 +57,11 @@ object ParkingMjestoService {
 
             val json = Json { ignoreUnknownKeys = true }
             val responseBody = response.body!!.string()
-            Log.d("ParkingSpace", "Parking space is: ${responseBody}")
-            return json.decodeFromString(responseBody)
+            val parkingSpace = json.decodeFromString<List<ParkingSpace>>(responseBody)
+            return parkingSpace
         }
     }
+
 
     suspend fun updateParkingSpace(parkingSpace: ParkingSpace): Boolean {
         val requestBody = Json.encodeToString(parkingSpace).toRequestBody("application/json".toMediaTypeOrNull())
@@ -76,7 +80,7 @@ object ParkingMjestoService {
         }
     }
 
-    suspend fun fetchParkingSpaceById(id: Int): ParkingSpace? {
+    suspend fun fetchParkingSpaceById(id: Int): ParkingSpace {
         val request = Request.Builder()
             .url("$urlBase/ParkingMjesto/$id")
             .build()

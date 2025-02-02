@@ -14,8 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import org.foi.hr.air.spotly.data.UserStore
 import com.google.firebase.messaging.FirebaseMessaging
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.navigation.components.LoginPage
 import org.foi.hr.air.spotly.network.QueueService
 import org.foi.hr.air.spotly.ui.theme.SpotlyTheme

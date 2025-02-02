@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Spotly.DTOs;
@@ -8,6 +9,7 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ParkingMjestoController : ControllerBase
     {
         private readonly IParkingMjestoService _parkingMjestoService;
@@ -63,6 +65,34 @@ namespace Spotly.Controllers
             return Ok(parkingMjesto);
         }
 
+        [HttpPut("blokiraj/{id}")]
+        public async Task<ActionResult> BlokirajParkingMjestoAsync(int id)
+        {
+            var uspjeh = await _parkingMjestoService.BlokirajParkingMjestoAsync(id);
+
+            if (!uspjeh)
+            {
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
+            }
+
+            return Ok($"Parking mjesto s ID {id} je blokirano.");
+        }
+
+        [HttpPut("odblokiraj/{id}")]
+        public async Task<ActionResult> OdblokirajParkingMjestoAsync(int id)
+        {
+            var uspjeh = await _parkingMjestoService.OdblokirajParkingMjestoAsync(id);
+
+            if (!uspjeh)
+            {
+                return NotFound($"Parking mjesto s ID {id} ne postoji.");
+            }
+
+            return Ok($"Parking mjesto s ID {id} je odblokirano.");
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateBlockStateAsync(ParkingMjesto parkingMjesto)
         [HttpPut("blokiraj/{id}")]
         public async Task<ActionResult> BlokirajParkingMjestoAsync(int id)
         {

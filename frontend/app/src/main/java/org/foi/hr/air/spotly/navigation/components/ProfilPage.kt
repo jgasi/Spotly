@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.foi.hr.air.spotly.data.User
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.UserType
 import org.foi.hr.air.spotly.data.Vehicle
 import org.foi.hr.air.spotly.data.Zahtjev
@@ -54,14 +55,15 @@ fun ProfilePage() {
     val fetchUserDetails = {
         (context as? ComponentActivity)?.lifecycleScope?.launch {
             try {
-                val fetchedUser = UserService.fetchUserId(2) // dohvati prijavljenog korisnika
+                val fetchedUser =
+                    UserStore.getUser()?.let { UserService.fetchUserId(it.id) } // dohvati prijavljenog korisnika
                 user.value = fetchedUser
 
                 fetchedUser.let {
-                    val fetchedUserType = UserService.fetchUserTypeId(it.tipKorisnikaId!!)
+                    val fetchedUserType = it?.let { it1 -> UserService.fetchUserTypeId(it1.id) }
                     userType.value = fetchedUserType
 
-                    val fetchedVehicle = VoziloService.fetchVehicleByUserId(it.id)
+                    val fetchedVehicle = it?.let { it1 -> VoziloService.fetchVehicleByUserId(it1.id) }
                     userVehicle.value = fetchedVehicle
                 }
             } catch (e: Exception) {
