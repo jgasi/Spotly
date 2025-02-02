@@ -206,17 +206,17 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit, onLogout: (
             navController.navigate("mojiZahtjevi")
             onClose()
         })
-//        DrawerItem("Red čekanja poruka", onClick = {
-//            navController.navigate("queueScreen")
-//            onClose()
-//        })
-//        DrawerItem("Lokalna baza podataka", onClick = {
-//            navController.navigate("offlineDatabase")})
-//
-//        DrawerItem("Statistika", onClick = {
-//            navController.navigate("statistikaScreen/${user?.id}")
-//            onClose()
-//        })
+        DrawerItem("Red čekanja poruka", onClick = {
+            navController.navigate("queueScreen")
+            onClose()
+        })
+        DrawerItem("Lokalna baza podataka", onClick = {
+            navController.navigate("offlineDatabase")})
+
+        DrawerItem("Statistika", onClick = {
+            navController.navigate("statistikaScreen/${user?.id}")
+            onClose()
+        })
 
         DrawerItem("Parking", onClick = {
             navController.navigate("parking")
