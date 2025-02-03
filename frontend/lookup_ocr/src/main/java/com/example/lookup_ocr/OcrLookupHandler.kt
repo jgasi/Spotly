@@ -1,8 +1,10 @@
 package com.example.lookup_ocr
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import com.example.core.vehicle_lookup.*
+import com.example.core.vehicle_lookup.network.NetworkManager
 import com.example.core.vehicle_lookup.network.ResponseListener
 import com.example.core.vehicle_lookup.network.models.ErrorResponseBody
 import com.example.core.vehicle_lookup.network.models.SuccessfulResponseBody
@@ -13,40 +15,56 @@ import com.example.ws.request_handlers.*
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class OcrLookupHandler : LookupHandler {
-    override fun handleLookup(licensePlate: String, lookupListner: LookupOutcomeListener) {
+class OcrLookupHandler(
+    private val context: Context,
+    private val offlineDataSource: VehicleLookupDataSource
+) : LookupHandler {
+    private val networkManager = NetworkManager(context)
+
+
+    override fun handleLookup(licensePlate: String, token: String, lookupListner: LookupOutcomeListener) {
         require(licensePlate is String) { "Must receive String instance for 'licensePlate'!" }
 
-        val requestHandler = GetVehicleByLicensePlateRequestHandler(licensePlate)
-        requestHandler.sendRequest(object : ResponseListener<Vehicle> {
-            override fun onSuccessfulResponse(response: SuccessfulResponseBody<Vehicle>) {
-                val vehicle = response.data.firstOrNull()
-                vehicle?.let {
-                    val vehicleData = VehicleData(
-                        id = it.id,
-                        marka = it.marka,
-                        model = it.model,
-                        godiste = it.godiste,
-                        registracija = it.registracija,
-                        status = it.status,
-                        tipVozilaId = it.tipVozilaId,
-                        korisnikId = it.korisnikId,
-                        korisnik = it.korisnik?.toUserData(),
-                        tipVozila = it.tipVozila?.toVehicleTypeData()
-                    )
-                    lookupListner.onSuccessfulLookup(vehicleData)
+        if (!networkManager.isNetworkAvailable()) {
+            Log.d("Lookup", "Offline lookup triggered for plate: $licensePlate")
+            tryOfflineLookup(licensePlate, lookupListner)
+        } else {
+            Log.d("Lookup", "Online lookup triggered for plate: $licensePlate")
+            val requestHandler = GetVehicleByLicensePlateRequestHandler(licensePlate)
+            requestHandler.sendRequest(object : ResponseListener<Vehicle> {
+                override fun onSuccessfulResponse(response: SuccessfulResponseBody<Vehicle>) {
+                    val vehicle = response.data.firstOrNull()
+                    vehicle?.let {
+                        val vehicleData = VehicleData(
+                            id = it.id,
+                            marka = it.marka,
+                            model = it.model,
+                            godiste = it.godiste,
+                            registracija = it.registracija,
+                            status = it.status,
+                            tipVozilaId = it.tipVozilaId,
+                            korisnikId = it.korisnikId,
+                            korisnik = it.korisnik?.toUserData(),
+                            tipVozila = it.tipVozila?.toVehicleTypeData()
+                        )
+                        lookupListner.onSuccessfulLookup(vehicleData)
+                    }
                 }
-            }
 
-            override fun onErrorResponse(error: ErrorResponseBody) {
-                lookupListner.onFailedLookup(error.message, error.status)
-            }
+                override fun onErrorResponse(error: ErrorResponseBody) {
+                    lookupListner.onFailedLookup(error.message, error.status)
+                }
 
-            override fun onNetworkFailiure(t: Throwable) {
-                lookupListner.onFailedLookup("Network error: ${t.message}")
-            }
-        })
+                override fun onNetworkFailiure(t: Throwable) {
+                    lookupListner.onFailedLookup("Network error: ${t.message}")
+                }
+            }, token)
+        }
     }
 
     fun extractLicensePlateFromImage(bitmap: Bitmap, onResult: (String?) -> Unit) {
@@ -101,5 +119,20 @@ class OcrLookupHandler : LookupHandler {
             id = this.id,
             tip = this.tip
         )
+    }
+
+    private fun tryOfflineLookup(licensePlate: String, lookupListner: LookupOutcomeListener) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val vehicle = offlineDataSource.getVehicleByLicensePlate(licensePlate)
+            if (vehicle != null) {
+                withContext(Dispatchers.Main) {
+                    lookupListner.onSuccessfulLookup(vehicle)
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    lookupListner.onFailedLookup("Vozilo nije pronađeno", 404)
+                }
+            }
+        }
     }
 }

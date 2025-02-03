@@ -4,7 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,7 +28,6 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Pozivamo novu verziju Composable funkcije
             UpravljanjeZahtjevimaScreen()
         }
     }
@@ -32,31 +35,50 @@ class UpravljanjeZahtjevimaActivity : ComponentActivity() {
 
 @Composable
 fun UpravljanjeZahtjevimaScreen() {
-    var currentPage by remember { mutableStateOf(1) }
-    val pageSize = 4
     var zahtjevi by remember { mutableStateOf<List<Zahtjev>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
-    var hasMoreData by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    // Pokrećemo korutinu za dohvaćanje zahtjeva pri svakoj promjeni stranice
-    LaunchedEffect(currentPage) {
+    // Define the launcher for the result
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == ComponentActivity.RESULT_OK) {
+            // Refresh the list when returning from OdgovaranjeNaZahtjev
+            coroutineScope.launch {
+                isLoading = true
+                val updatedZahtjevi = withContext(Dispatchers.IO) {
+                    ZahtjevService.getZahtjeviNaCekanju()
+                }
+                if (updatedZahtjevi != null) {
+                    zahtjevi = updatedZahtjevi
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Greška pri dohvaćanju zahtjeva",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                isLoading = false
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
         coroutineScope.launch {
             isLoading = true
             val result = withContext(Dispatchers.IO) {
-                ZahtjevService.getPagedZahtjeviNaCekanju(currentPage, pageSize)
+                ZahtjevService.getZahtjeviNaCekanju()
             }
             if (result != null) {
                 zahtjevi = result
-                hasMoreData = result.size == pageSize
             } else {
                 Toast.makeText(
                     context,
                     "Greška pri dohvaćanju zahtjeva",
                     Toast.LENGTH_SHORT
                 ).show()
-                hasMoreData = false
             }
             isLoading = false
         }
@@ -88,57 +110,44 @@ fun UpravljanjeZahtjevimaScreen() {
                     .weight(1f)
             ) {
                 items(zahtjevi) { zahtjev ->
-                    ZahtjevItem(zahtjev)
+                    ZahtjevItem(zahtjev, launcher)
                 }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { if (currentPage > 1) currentPage-- }, // Promjena stranice
-                enabled = currentPage > 1
-            ) {
-                Text("Previous")
-            }
-            Text(
-                "Page: $currentPage",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-            Button(
-                onClick = { if (hasMoreData) currentPage++ }, // Promjena stranice
-                enabled = hasMoreData
-            ) {
-                Text("Next")
             }
         }
     }
 }
 
 @Composable
-fun ZahtjevItem(zahtjev: Zahtjev) {
+fun ZahtjevItem(zahtjev: Zahtjev, launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.elevatedCardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Naslov: ${zahtjev.predmet}")
-            Text("Poruka: ${zahtjev.poruka}")
-            Text("Status: ${zahtjev.status}")
+            Text(
+                "Naslov: ${zahtjev.predmet}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                "Poruka: ${zahtjev.poruka}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                "Status: ${zahtjev.status}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
                     val intent = Intent(context, OdgovaranjeNaZahtjev::class.java).apply {
                         putExtra("ZAHTJEV_ID", zahtjev.id)
                     }
-                    context.startActivity(intent)
+                    launcher.launch(intent)
                 }
             ) {
                 Text("Odgovori")

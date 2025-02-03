@@ -7,8 +7,8 @@ import retrofit2.*
 
 
 abstract class TemplateRequestHandler<T> : RequestHandler<T> {
-    override fun sendRequest(responseListener: ResponseListener<T>) {
-        val serviceCall = getServiceCall()
+    override fun sendRequest(responseListener: ResponseListener<T>, token: String) {
+        val serviceCall = getServiceCall(token)
 
         serviceCall.enqueue(object : Callback<SuccessfulResponseBody<T>> {
             override fun onResponse(
@@ -32,5 +32,5 @@ abstract class TemplateRequestHandler<T> : RequestHandler<T> {
         })
     }
 
-    protected abstract fun getServiceCall(): Call<SuccessfulResponseBody<T>>
+    protected abstract fun getServiceCall(token: String): Call<SuccessfulResponseBody<T>>
 }

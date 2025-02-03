@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.Vehicle
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -18,7 +19,15 @@ object VoziloService {
     private val client = OkHttpClient()
 
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val userToken = UserStore.getUser()?.token
+
+        val finalRequest = userToken?.let {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $it")
+                .build()
+        } ?: request
+
+        client.newCall(finalRequest).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 continuation.resumeWithException(e)
             }
@@ -52,7 +61,6 @@ object VoziloService {
         val response = executeRequest(request)
         response.use {
             if (!response.isSuccessful) throw IOException("Error: $response")
-
             val json = Json { ignoreUnknownKeys = true }
             val responseBody = response.body!!.string()
             val types = json.decodeFromString<Vehicle>(responseBody)

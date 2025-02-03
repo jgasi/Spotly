@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
@@ -7,6 +8,7 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ZahtjevController : ControllerBase
     {
         private readonly IZahtjevService _zahtjevService;
@@ -23,6 +25,32 @@ namespace Spotly.Controllers
             var zahtjevi = await _zahtjevService.GetAllZahtjeviAsync();
 
             if(zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
+        [HttpGet("nacekanju")]
+        public async Task<ActionResult<IEnumerable<Zahtjev>>> GetAllZahtjeviNaCekanjuAsync()
+        {
+            var zahtjevi = await _zahtjevService.GetAllZahtjeviNaCekanjuAsync();
+
+            if (zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
+        [HttpGet("odgovoreni")]
+        public async Task<ActionResult<IEnumerable<Zahtjev>>> GetAllZahtjeviOdgovoreniAsync()
+        {
+            var zahtjevi = await _zahtjevService.GetAllZahtjeviOdgovoreniAsync();
+
+            if (zahtjevi == null || !zahtjevi.Any())
             {
                 return NotFound("Nema dostupnih zahtjeva.");
             }
@@ -51,6 +79,19 @@ namespace Spotly.Controllers
             if (zahtjevi == null || !zahtjevi.Any())
             {
                 return NotFound("Nema dostupnih zahtjeva na čekanju.");
+            }
+
+            return Ok(zahtjevi);
+        }
+
+        [HttpGet("paginated_odgovoreni")]
+        public async Task<ActionResult<IEnumerable<ZahtjevDto>>> GetPagedZahtjeviOdgovorenAsync(int pageNumber, int pageSize)
+        {
+            var zahtjevi = await _zahtjevService.GetPagedZahtjeviOdgovoreniAsync(pageNumber, pageSize);
+
+            if (zahtjevi == null || !zahtjevi.Any())
+            {
+                return NotFound("Nema dostupnih zahtjeva sa statusom Odgovoren.");
             }
 
             return Ok(zahtjevi);

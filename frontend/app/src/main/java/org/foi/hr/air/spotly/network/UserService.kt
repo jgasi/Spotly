@@ -1,6 +1,7 @@
 package org.foi.hr.air.spotly.network
 
 import android.util.Log
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,6 +14,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import org.foi.hr.air.spotly.data.User
+import org.foi.hr.air.spotly.data.UserStore
 import org.foi.hr.air.spotly.data.UserType
 import java.io.IOException
 
@@ -21,7 +23,15 @@ object UserService {
     private val client = OkHttpClient()
 
     private suspend fun executeRequest(request: Request): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val userToken = UserStore.getUser()?.token
+
+        val finalRequest = userToken?.let {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $it")
+                .build()
+        } ?: request
+
+        client.newCall(finalRequest).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 continuation.resumeWithException(e)
             }
@@ -94,6 +104,22 @@ object UserService {
         }
     }
 
+    suspend fun fetchUserTypeByKorisnikId(id: Int): UserType {
+        val request = Request.Builder()
+            .url("$urlBase/Korisnik/user-types-by-userid/$id")
+            .build()
+
+        val response = executeRequest(request)
+        response.use {
+            if (!response.isSuccessful) throw IOException("Greška: $response")
+
+            val json = Json { ignoreUnknownKeys = true }
+            val responseBody = response.body!!.string()
+            val types = json.decodeFromString<UserType>(responseBody)
+            return types
+        }
+    }
+
     suspend fun registerUser(user: User): Boolean {
         val jsonBody = Json.encodeToString(user)
         val requestBody = jsonBody.toRequestBody("application/json".toMediaType())
@@ -132,12 +158,23 @@ object UserService {
 
             val response = executeRequest(request)
             if (response.isSuccessful) {
+                var responseBody = response.body?.string()
+                val json = Json { ignoreUnknownKeys = true }
+                val loginResponse = json.decodeFromString<LoginResponse>(responseBody!!)
+                UserStore.setUser(loginResponse.user)
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Prijava nije uspjela, provjerite podatke i pokušajte ponovno!, ${response.message}"))
             }
         } catch (e: Exception) {
+            Log.e("Login", "${e.message}")
             Result.failure(e)
         }
     }
+
+    @Serializable
+    data class LoginResponse(
+        val message: String,
+        val user: User
+    )
 }

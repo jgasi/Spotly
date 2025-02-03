@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Spotly.DTOs;
 using Spotly.Models;
 using Spotly.Services;
@@ -7,6 +8,7 @@ namespace Spotly.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class KaznaController : ControllerBase
     {
         private readonly IKaznaService _kaznaService;
@@ -106,6 +108,20 @@ namespace Spotly.Controllers
             await _kaznaService.DeleteKaznuAsync(id);
 
             return Ok();
+        }
+
+        [HttpGet("statistics/total")]
+        public async Task<ActionResult<int>> GetTotalKazneCountAsync()
+        {
+            var totalKazne = await _kaznaService.GetTotalKazneCountAsync();
+            return Ok(totalKazne);
+        }
+
+        [HttpGet("statistics/user/{korisnikId}")]
+        public async Task<ActionResult<int>> GetKazneCountByUserIdAsync(int korisnikId)
+        {
+            var userKazneCount = await _kaznaService.GetKazneCountByUserIdAsync(korisnikId);
+            return Ok(userKazneCount);
         }
     }
 }

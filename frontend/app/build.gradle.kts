@@ -2,7 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
 
+    id("com.google.gms.google-services")
     kotlin("plugin.serialization") version "2.0.20"
 }
 
@@ -54,6 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.room:room-common:2.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,11 +68,26 @@ dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.navigation:navigation-compose:2.7.4")
 
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.navigation:navigation-compose:2.8.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation ("androidx.compose.material:material-icons-extended:1.7.6")
+
+    implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
+
 
     implementation(project(":core"))
     implementation(project(":lookup_manual"))

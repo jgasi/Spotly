@@ -28,5 +28,14 @@ namespace Spotly.Data.Repositories
                 .ToListAsync();
         }
 
+        public async Task<int> GetTotalKazneCountAsync()
+        {
+            return await _context.Kaznas.CountAsync();
+        }
+
+        public async Task<int> GetKazneCountByUserIdAsync(int userId)
+        {
+            return await _context.Kaznas.CountAsync(k => k.KorisnikId == userId);
+        }
     }
 }
